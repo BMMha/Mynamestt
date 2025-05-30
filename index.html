@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر الأكواد الاحترافي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+        }
+        /* Custom styles for button hover effects */
+        .btn-primary {
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+        /* Responsive adjustments for product cards */
+        @media (max-width: 768px) {
+            .product-grid {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Adjust grid for smaller screens */
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-bold rounded-lg p-2 bg-white bg-opacity-10">متجر الأكواد</h1>
+            <nav>
+                <ul class="flex space-x-4 space-x-reverse">
+                    <li><a href="#" class="text-white hover:text-blue-200 text-lg font-medium">الرئيسية</a></li>
+                    <li><a href="#" class="text-white hover:text-blue-200 text-lg font-medium">الأكواد</a></li>
+                    <li><a href="#" class="text-white hover:text-blue-200 text-lg font-medium">اتصل بنا</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-8 flex-grow">
+        <section class="text-center mb-12">
+            <h2 class="text-5xl font-extrabold text-gray-900 mb-4">اكتشف أكواد التفعيل الخاصة بنا</h2>
+            <p class="text-xl text-gray-600">احصل على نقاط تفعيل لمشاريعك واحتياجاتك المختلفة.</p>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 product-grid">
+            <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center transform hover:scale-105 transition-transform duration-300">
+                <img src="https://placehold.co/150x150/4ade80/ffffff?text=10+نقاط" alt="Code 10 Points Icon" class="w-24 h-24 mb-4 rounded-full border-4 border-green-400">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-2">كود التفعيل 10 نقاط</h3>
+                <p class="text-gray-600 mb-4 flex-grow">كود تفعيل يوفر 10 نقاط لاستخدامها في خدماتنا.</p>
+                <div class="text-4xl font-bold text-green-600 mb-4">
+                    $5.00
+                </div>
+                <button onclick="buyCode('كود التفعيل 10 نقاط', '5.00')" class="btn-primary bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-md">
+                    اشترِ الآن
+                </button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center transform hover:scale-105 transition-transform duration-300">
+                <img src="https://placehold.co/150x150/60a5fa/ffffff?text=100+نقطة" alt="Code 100 Points Icon" class="w-24 h-24 mb-4 rounded-full border-4 border-blue-400">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-2">كود التفعيل 100 نقطة</h3>
+                <p class="text-gray-600 mb-4 flex-grow">كود تفعيل يوفر 100 نقطة لاستخدامها في خدماتنا.</p>
+                <div class="text-4xl font-bold text-blue-600 mb-4">
+                    $45.00
+                </div>
+                <button onclick="buyCode('كود التفعيل 100 نقطة', '45.00')" class="btn-primary bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-md">
+                    اشترِ الآن
+                </button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center transform hover:scale-105 transition-transform duration-300">
+                <img src="https://placehold.co/150x150/fde047/ffffff?text=500+نقطة" alt="Code 500 Points Icon" class="w-24 h-24 mb-4 rounded-full border-4 border-yellow-400">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-2">كود تفعيل 500 نقطة</h3>
+                <p class="text-gray-600 mb-4 flex-grow">كود تفعيل يوفر 500 نقطة لاستخدامها في خدماتنا.</p>
+                <div class="text-4xl font-bold text-yellow-600 mb-4">
+                    $200.00
+                </div>
+                <button onclick="buyCode('كود تفعيل 500 نقطة', '200.00')" class="btn-primary bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-6 rounded-full shadow-md">
+                    اشترِ الآن
+                </button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center transform hover:scale-105 transition-transform duration-300">
+                <img src="https://placehold.co/150x150/fb7185/ffffff?text=1000+نقطة" alt="Code 1000 Points Icon" class="w-24 h-24 mb-4 rounded-full border-4 border-rose-400">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-2">كود تفعيل 1000 نقطة</h3>
+                <p class="text-gray-600 mb-4 flex-grow">كود تفعيل يوفر 1000 نقطة لاستخدامها في خدماتنا.</p>
+                <div class="text-4xl font-bold text-rose-600 mb-4">
+                    $350.00
+                </div>
+                <button onclick="buyCode('كود تفعيل 1000 نقطة', '350.00')" class="btn-primary bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-6 rounded-full shadow-md">
+                    اشترِ الآن
+                </button>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center text-center transform hover:scale-105 transition-transform duration-300">
+                <img src="https://placehold.co/150x150/a78bfa/ffffff?text=2000+نقطة" alt="Code 2000 Points Icon" class="w-24 h-24 mb-4 rounded-full border-4 border-violet-400">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-2">كود تفعيل خاص (2000 نقطة)</h3>
+                <p class="text-gray-600 mb-4 flex-grow">كود تفعيل مميز يوفر 2000 نقطة، قيمة رائعة!</p>
+                <div class="text-4xl font-bold text-violet-600 mb-4">
+                    $600.00
+                </div>
+                <button onclick="buyCode('كود تفعيل خاص (2000 نقطة)', '600.00')" class="btn-primary bg-violet-500 hover:bg-violet-600 text-white font-bold py-3 px-6 rounded-full shadow-md">
+                    اشترِ الآن
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white p-6 text-center mt-8">
+        <div class="container mx-auto">
+            <p>&copy; 2023 متجر الأكواد. جميع الحقوق محفوظة.</p>
+            <div class="flex justify-center space-x-4 space-x-reverse mt-2">
+                <a href="#" class="text-gray-400 hover:text-white">سياسة الخصوصية</a>
+                <a href="#" class="text-gray-400 hover:text-white">شروط الاستخدام</a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="buyModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-8 shadow-xl max-w-sm w-full text-center">
+            <h3 class="text-2xl font-bold text-gray-800 mb-4" id="modalTitle"></h3>
+            <p class="text-gray-700 mb-6">شكرًا لاهتمامك! هذه وظيفة تجريبية. في موقع حقيقي، سيتم توجيهك لعملية الدفع الآمنة.</p>
+            <button onclick="closeModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-5 rounded-full">
+                إغلاق
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Function to handle "Buy Now" button click
+        function buyCode(codeName, price) {
+            const modal = document.getElementById('buyModal');
+            const modalTitle = document.getElementById('modalTitle');
+            modalTitle.textContent = `شراء ${codeName} بسعر $${price}`;
+            modal.classList.remove('hidden'); // Show the modal
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            const modal = document.getElementById('buyModal');
+            modal.classList.add('hidden'); // Hide the modal
+        }
+    </script>
+</body>
+</html>
