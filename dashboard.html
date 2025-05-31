@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - متابع تيك توك</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0V4LLanw2qksYuRlEzO+tcaEPQogQ0KaoIF2/2Q0z/l6D2d2e+b2+a2+a2+g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* Base styles for body and font */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light gray background */
+            overflow-x: hidden;
+        }
+        .gradient-bg-header {
+            background: linear-gradient(to right, #1a202c, #2d3748); /* Dark blue/gray gradient */
+        }
+        .gradient-bg-button {
+            background: linear-gradient(to right, #ef4444, #dc2626); /* Red gradient */
+        }
+        .btn-action {
+            @apply text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl;
+        }
+        .card-shadow {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        }
+        .input-field {
+            @apply w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition duration-200 bg-gray-50;
+        }
+        .disabled-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.75rem;
+            cursor: not-allowed;
+            z-index: 10;
+        }
+        .disabled-overlay-text {
+            color: #ef4444;
+            font-weight: bold;
+            font-size: 1.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .modal-overlay {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        .modal-content {
+            animation: zoomIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        /* Styles for the exclusive offer section */
+        .exclusive-offer-card {
+            background: linear-gradient(to right, #22c55e, #10b981); /* Green to teal gradient */
+            @apply text-white rounded-xl shadow-lg p-8 text-center animate-slide-in;
+            animation-delay: 0.2s; /* Delay for animation */
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .exclusive-offer-card .btn-offer {
+            background: linear-gradient(to right, #FFD700, #FFA500); /* Golden/Orange gradient */
+            @apply text-gray-900 font-extrabold py-3 px-8 rounded-full shadow-md transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl text-xl;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <header class="gradient-bg-header text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-3xl font-extrabold flex items-center gap-2">
+                <i class="fab fa-tiktok text-red-500"></i>
+                <span>متابع تيك توك</span>
+            </a>
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6 space-x-reverse text-lg">
+                    <li><a href="#" class="hover:text-red-400 transition duration-200">لوحة التحكم</a></li>
+                    <li><a href="#" class="hover:text-red-400 transition duration-200">الملف الشخصي</a></li>
+                    <li><a href="#" class="hover:text-red-400 transition duration-200">تسجيل الخروج</a></li>
+                </ul>
+            </nav>
+            <button id="mobile-menu-button" class="md:hidden text-white text-2xl focus:outline-none">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <div id="mobile-menu" class="md:hidden bg-gray-800 text-white w-full py-4 hidden">
+        <ul class="flex flex-col items-center space-y-4 text-lg">
+            <li><a href="#" class="block py-2 hover:text-red-400 transition duration-200">لوحة التحكم</a></li>
+            <li><a href="#" class="block py-2 hover:text-red-400 transition duration-200">الملف الشخصي</a></li>
+            <li><a href="#" class="block py-2 hover:text-red-400 transition duration-200">تسجيل الخروج</a></li>
+        </ul>
+    </div>
+
+    <main class="container mx-auto p-8 flex-grow">
+        <section class="bg-white rounded-xl card-shadow p-8 mb-8 text-center md:flex md:justify-between md:items-center">
+            <div>
+                <h1 class="text-4xl font-extrabold text-gray-900 mb-2">مرحباً بك، <span class="text-red-600">Bkmr113</span>!</h1>
+                <p class="text-xl text-gray-600">هنا يمكنك إدارة خدمات تيك توك الخاصة بك.</p>
+            </div>
+            <div class="mt-6 md:mt-0 md:text-left">
+                <div class="bg-blue-100 border border-blue-300 text-blue-800 p-4 rounded-lg inline-flex items-center gap-2">
+                    <i class="fas fa-wallet text-2xl"></i>
+                    <span class="text-2xl font-bold">رصيدي في الحساب: <span id="userBalance" class="text-blue-900">0.00$</span></span>
+                </div>
+                <p class="text-red-600 font-semibold text-lg mt-2">يجب شحن الرصيد لبدء العمل.</p>
+                <button onclick="showChargeModal()" class="gradient-bg-button btn-action mt-4 py-2 px-6 text-lg">
+                    <i class="fas fa-dollar-sign mr-2"></i> اشحن حسابك الآن
+                </button>
+            </div>
+        </section>
+
+        <section class="exclusive-offer-card mb-8">
+            <h2 class="text-3xl md:text-4xl font-extrabold mb-4">
+                🔥 عرض حصري خاص بك! 🔥
+            </h2>
+            <p class="text-xl md:text-2xl font-semibold mb-6">
+                احصل على <span class="text-yellow-200">1000 متابع</span> و <span class="text-yellow-200">500 لايك لكل فيديو</span>
+            </p>
+            <div class="text-4xl md:text-5xl font-extrabold text-white mb-8">
+                بسعر <span class="text-yellow-300">$0.20</span> فقط!
+            </div>
+            <button onclick="showChargeModal('عرض حصري: 1000 متابع + 500 لايك', '0.20')" class="btn-offer">
+                <i class="fas fa-bolt mr-2"></i> احصل على العرض الآن!
+            </button>
+        </section>
+
+        <section class="bg-white rounded-xl card-shadow p-8 mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">اختر الخدمة وابدأ العمل</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <div class="relative bg-gray-50 p-6 rounded-xl border border-gray-200 flex flex-col items-center text-center opacity-50 cursor-not-allowed">
+                    <div class="disabled-overlay" onclick="showChargeModal()">
+                        <span class="disabled-overlay-text">الرصيد 0 - يجب الشحن</span>
+                    </div>
+                    <div class="text-red-500 text-5xl mb-4">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-2">زيادة متابعين</h3>
+                    <p class="text-gray-600 mb-4 flex-grow">احصل على متابعين حقيقيين لحسابك على تيك توك.</p>
+                    <button disabled class="gradient-bg-button btn-action w-full py-2 text-base opacity-50 cursor-not-allowed">
+                        اختر الخدمة
+                    </button>
+                </div>
+
+                <div class="relative bg-gray-50 p-6 rounded-xl border border-gray-200 flex flex-col items-center text-center opacity-50 cursor-not-allowed">
+                    <div class="disabled-overlay" onclick="showChargeModal()">
+                        <span class="disabled-overlay-text">الرصيد 0 - يجب الشحن</span>
+                    </div>
+                    <div class="text-blue-500 text-5xl mb-4">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-2">زيادة لايكات</h3>
+                    <p class="text-gray-600 mb-4 flex-grow">عزز تفاعل فيديوهاتك بزيادة عدد الإعجابات.</p>
+                    <button disabled class="gradient-bg-button btn-action w-full py-2 text-base opacity-50 cursor-not-allowed">
+                        اختر الخدمة
+                    </button>
+                </div>
+
+                <div class="relative bg-gray-50 p-6 rounded-xl border border-gray-200 flex flex-col items-center text-center opacity-50 cursor-not-allowed">
+                    <div class="disabled-overlay" onclick="showChargeModal()">
+                        <span class="disabled-overlay-text">الرصيد 0 - يجب الشحن</span>
+                    </div>
+                    <div class="text-purple-500 text-5xl mb-4">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-2">زيادة مشاهدات</h3>
+                    <p class="text-gray-600 mb-4 flex-grow">اجعل فيديوهاتك تصل إلى جمهور أوسع.</p>
+                    <button disabled class="gradient-bg-button btn-action w-full py-2 text-base opacity-50 cursor-not-allowed">
+                        اختر الخدمة
+                    </button>
+                </div>
+            </div>
+
+            <div class="mt-10">
+                <label for="pageLink" class="block text-gray-700 text-xl font-medium mb-3">رابط صفحتك على تيك توك</label>
+                <input
+                    type="url"
+                    id="pageLink"
+                    class="input-field mb-6"
+                    placeholder="أدخل رابط صفحة تيك توك هنا (مثال: tiktok.com/@username)"
+                    required
+                    disabled
+                >
+                <p id="pageLinkError" class="text-red-500 text-sm mt-1 hidden"></p>
+
+                <button
+                    type="button"
+                    id="startWorkButton"
+                    class="gradient-bg-button btn-action w-full text-2xl py-4 opacity-50 cursor-not-allowed"
+                    disabled
+                    onclick="showChargeModal()"
+                >
+                    <i class="fas fa-play-circle mr-2"></i> ابدأ العمل
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <footer class="gradient-bg-header text-white p-6 text-center mt-auto">
+        <div class="container mx-auto">
+            <p>&copy; 2023 متابع تيك توك. جميع الحقوق محفوظة.</p>
+            <div class="flex justify-center space-x-4 space-x-reverse mt-2">
+                <a href="#" class="text-gray-400 hover:text-white transition duration-200">سياسة الخصوصية</a>
+                <a href="#" class="text-gray-400 hover:text-white transition duration-200">شروط الاستخدام</a>
+            </div>
+        </div>
+    </footer>
+
+    <div id="chargeModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center hidden z-50 modal-overlay">
+        <div class="bg-white rounded-xl p-8 shadow-2xl max-w-sm w-full text-center modal-content">
+            <div class="mb-6 text-red-500 text-6xl">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="text-3xl font-bold text-gray-800 mb-4" id="chargeModalTitle">رصيدك غير كافٍ!</h3>
+            <p class="text-gray-700 mb-6 text-lg" id="chargeModalMessage">
+                رصيدك الحالي هو <span class="font-bold text-blue-700">0.00$</span>. يرجى شحن حسابك لبدء استخدام الخدمات.
+            </p>
+            <button onclick="closeChargeModal()" class="gradient-bg-button btn-action py-2 px-6 text-lg">
+                <i class="fas fa-dollar-sign mr-2"></i> اذهب لصفحة الشحن
+            </button>
+            <button onclick="closeChargeModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-5 rounded-full transition duration-200 mt-4">
+                إغلاق
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Toggle mobile menu visibility
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when a link is clicked
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', function() {
+                document.getElementById('mobile-menu').classList.add('hidden');
+            });
+        });
+
+        // Function to show the charge modal, now can take offer details
+        function showChargeModal(offerName = null, offerPrice = null) {
+            const chargeModalTitle = document.getElementById('chargeModalTitle');
+            const chargeModalMessage = document.getElementById('chargeModalMessage');
+
+            if (offerName && offerPrice) {
+                chargeModalTitle.textContent = `للحصول على ${offerName}`;
+                chargeModalMessage.innerHTML = `هذا العرض بسعر <span class="font-bold text-red-700">$${offerPrice}</span>. رصيدك الحالي هو <span class="font-bold text-blue-700">0.00$</span>. يرجى شحن حسابك للاستفادة من هذا العرض الرائع!`;
+            } else {
+                chargeModalTitle.textContent = 'رصيدك غير كافٍ!';
+                chargeModalMessage.innerHTML = 'رصيدك الحالي هو <span class="font-bold text-blue-700">0.00$</span>. يرجى شحن حسابك لبدء استخدام الخدمات.';
+            }
+            document.getElementById('chargeModal').classList.remove('hidden');
+        }
+
+        // Function to close the charge modal
+        function closeChargeModal() {
+            document.getElementById('chargeModal').classList.add('hidden');
+        }
+
+        // Initial state setup (all services and input/button disabled)
+        document.addEventListener('DOMContentLoaded', function() {
+            // All service cards have a disabled-overlay and their buttons are disabled in HTML
+            // The page link input and start work button are also disabled in HTML
+            // The charge modal is set to hidden by default in HTML
+        });
+    </script>
+</body>
+</html>
