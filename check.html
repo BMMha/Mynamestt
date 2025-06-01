@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل الشحن - رشق وزيادة متابعين تيك توك</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light gray background */
+            color: #333;
+        }
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <header class="bg-white shadow-md p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold text-red-500">
+                رشق وزيادة متابعين تيك توك
+            </a>
+            <nav>
+                <ul class="flex space-x-4 space-x-reverse">
+                    <li><a href="index.html#services" class="text-gray-700 hover:text-red-500 font-medium">خدماتنا</a></li>
+                    <li><a href="index.html#how-it-works" class="text-gray-700 hover:text-red-500 font-medium">كيف يعمل؟</a></li>
+                    <li><a href="index.html#payment-methods" class="text-gray-700 hover:text-red-500 font-medium">طرق الدفع</a></li>
+                    <li><a href="index.html#contact" class="text-gray-700 hover:text-red-500 font-medium">اتصل بنا</a></li>
+                    <li><a href="dashboard.html" class="text-gray-700 hover:text-red-500 font-medium">لوحة التحكم</a></li>
+                    <li><a href="#" id="logoutButton" class="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-red-600 transition duration-300 ease-in-out">تسجيل الخروج</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center py-12 px-4">
+        <div class="bg-white p-8 md:p-10 rounded-xl shadow-lg w-full max-w-md text-center border border-gray-200">
+            <h2 class="text-3xl font-bold text-green-600 mb-6">✅ تم تأكيد طلب الشحن بنجاح!</h2>
+            <p class="text-gray-700 text-lg mb-4">
+                لقد تم استلام طلب شحن حسابك بنجاح.
+            </p>
+            <p class="text-gray-800 text-2xl font-bold mb-6">
+                المبلغ المشحون: <span id="rechargedAmount" class="text-red-500">قيد المراجعة$</span>
+            </p>
+            <p class="text-gray-600 text-md mb-8">
+                سيتم إضافة المبلغ إلى رصيدك في الموقع خلال
+                <span class="font-semibold text-red-500">ساعة إلى ساعتين</span> من الآن.
+                يرجى التحقق من لوحة التحكم لاحقًا.
+            </p>
+            <a href="/dashbord" class="inline-block bg-red-500 text-white px-8 py-3 rounded-full text-lg font-bold hover:bg-red-600 transition duration-300 ease-in-out shadow-md transform hover:scale-105">
+                العودة إلى لوحة التحكم
+            </a>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8 mt-auto rounded-t-lg shadow-inner">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 رشق وزيادة متابعين تيك توك. جميع الحقوق محفوظة.</p>
+            <div class="flex justify-center space-x-4 space-x-reverse mt-4">
+                <a href="#" class="text-gray-400 hover:text-white transition duration-200">سياسة الخصوصية</a>
+                <span class="text-gray-500">|</span>
+                <a href="#" class="text-gray-400 hover:text-white transition duration-200">شروط الخدمة</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Get the recharged amount from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const amount = urlParams.get('amount');
+
+        if (amount) {
+            document.getElementById('rechargedAmount').textContent = `${parseFloat(amount).toFixed(2)}$`;
+        }
+
+        // Logout button functionality
+        document.getElementById('logoutButton').addEventListener('click', function(event) {
+            event.preventDefault();
+            window.location.href = 'login.html'; // Redirect to login page
+        });
+    </script>
+</body>
+</html>

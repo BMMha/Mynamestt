@@ -3,334 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول - متابع تيك توك</title>
+    <title>تسجيل الدخول - رشق وزيادة متابعين تيك توك</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0V4LLanw2qksYuRlEzO+tcaEPQogQ0KaoIF2/2Q0z/l6D2d2e+b2+a2+a2+g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Base styles for body and font */
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(to right, #1a202c, #2d3748); /* Dark blue/gray gradient background */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+            background-color: #f0f2f5; /* Light gray background */
+            color: #333;
+        }
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        /* Style for the message box */
+        .message-box {
             padding: 1rem;
-            overflow-x: hidden; /* Prevent horizontal scrolling */
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 600;
         }
-
-        /* Login card container styling */
-        .login-card {
-            background-color: #ffffff;
-            border-radius: 1.75rem; /* Pronounced rounded corners */
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35); /* Deep shadow */
-            padding: 2.5rem;
-            width: 100%;
-            max-width: 450px; /* Optimal width for login form */
-            border: 1px solid #e2e8f0;
-            animation: fadeInScale 0.8s ease-out forwards; /* Animation on load */
+        .message-box.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: translateY(20px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+        .message-box.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
-
-        /* Input group and field styling */
-        .input-group {
-            position: relative;
+        /* Style for loading indicator */
+        .loading-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 20px; /* Adjust height as needed */
+            margin-bottom: 1rem;
         }
-        .input-field {
-            /* Adjusted padding-right for RTL to make space for the icon on the right */
-            @apply w-full p-4 pl-4 pr-14 border rounded-xl focus:outline-none focus:ring-4 focus:ring-red-400 transition duration-300 ease-in-out text-lg bg-gray-50;
-            border-color: #cbd5e1; /* Default border color */
+        .loading-indicator .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #ef4444; /* Red color for spinner */
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
         }
-        .input-field.error {
-            border-color: #ef4444 !important; /* Red border for errors */
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3); /* Red ring for errors */
-        }
-        .input-group .icon {
-            position: absolute;
-            left: 1.25rem; /* Icon position changed to left for RTL */
-            top: 50%;
-            transform: translateY(-50%);
-            color: #9ca3af; /* Muted icon color */
-            font-size: 1.4rem; /* Slightly larger icons */
-        }
-
-        /* Login button styling with gradient and hover effects */
-        .btn-login {
-            background: linear-gradient(to right, #ef4444, #dc2626); /* Red gradient */
-            @apply w-full text-white font-extrabold py-5 px-6 rounded-xl shadow-lg transition duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl text-2xl;
-        }
-        .btn-login:disabled {
-            background: linear-gradient(to right, #9ca3af, #a0aec0); /* Muted gradient when disabled */
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        /* Modal overlay and content animations */
-        .modal-overlay {
-            animation: fadeIn 0.3s ease-out forwards;
-        }
-        .modal-content {
-            animation: zoomIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes zoomIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 640px) {
-            .login-card {
-                padding: 1.5rem;
-                border-radius: 1.25rem;
-            }
-            .text-4xl {
-                font-size: 2rem; /* Smaller heading on mobile */
-            }
-            .input-field {
-                padding: 1rem 1rem 1rem 3.5rem; /* Adjust padding for smaller screens */
-            }
-            .input-group .icon {
-                left: 0.75rem; /* Adjust icon position for mobile */
-                font-size: 1.2rem;
-            }
-            .btn-login {
-                font-size: 1.5rem;
-                padding: 1.25rem 1.5rem;
-            }
-            .modal-content {
-                padding: 1.5rem;
-            }
-            .text-3xl {
-                font-size: 1.75rem;
-            }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body>
-
-    <div class="login-card">
-        <div class="flex justify-center mb-8">
-            <a href="#" class="text-4xl md:text-5xl font-extrabold flex items-center gap-2 text-gray-900">
-                <i class="fab fa-tiktok text-red-500 text-4xl md:text-5xl"></i>
-                <span>متابع تيك توك</span>
+<body class="flex flex-col min-h-screen">
+    <header class="bg-white shadow-md p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold text-red-500">
+                رشق وزيادة متابعين تيك توك
             </a>
+            <nav>
+                <ul class="flex space-x-4 space-x-reverse">
+                    <li><a href="index.html#services" class="text-gray-700 hover:text-red-500 font-medium">خدماتنا</a></li>
+                    <li><a href="index.html#how-it-works" class="text-gray-700 hover:text-red-500 font-medium">كيف يعمل؟</a></li>
+                    <li><a href="index.html#payment-methods" class="text-gray-700 hover:text-red-500 font-medium">طرق الدفع</a></li>
+                    <li><a href="index.html#contact" class="text-gray-700 hover:text-red-500 font-medium">اتصل بنا</a></li>
+                </ul>
+            </nav>
         </div>
+    </header>
 
-        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-8">تسجيل الدخول</h2>
+    <main class="flex-grow flex items-center justify-center py-12 px-4">
+        <div class="bg-white p-8 md:p-10 rounded-xl shadow-lg w-full max-w-md border border-gray-200">
+            <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">تسجيل الدخول</h2>
 
-        <form id="loginForm" class="space-y-6">
-            <div class="input-group">
-                <label for="username" class="block text-gray-700 text-xl font-medium mb-2">اسم المستخدم أو البريد الإلكتروني</label>
-                <div class="relative">
-                    <input
-                        type="text"
-                        id="username"
-                        class="input-field"
-                        placeholder="أدخل اسم المستخدم أو البريد الإلكتروني"
-                        required
-                    />
-                    <i class="fas fa-user icon"></i>
-                </div>
-                <p id="usernameError" class="text-red-500 text-sm mt-1 hidden"></p>
+            <div id="messageBox" class="message-box hidden"></div>
+
+            <div id="loadingIndicator" class="loading-indicator hidden">
+                <div class="spinner"></div>
             </div>
 
-            <div class="input-group">
-                <label for="password" class="block text-gray-700 text-xl font-medium mb-2">كلمة المرور</label>
-                <div class="relative">
-                    <input
-                        type="password"
-                        id="password"
-                        class="input-field"
-                        placeholder="أدخل كلمة المرور"
-                        required
-                    />
-                    <i class="fas fa-lock icon"></i>
+            <form id="loginForm" action="#" method="POST">
+                <div class="mb-6">
+                    <label for="usernameOrEmail" class="block text-gray-700 text-lg font-medium mb-2">البريد الإلكتروني أو اسم المستخدم</label>
+                    <input type="text" id="usernameOrEmail" name="usernameOrEmail" class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" placeholder="أدخل بريدك الإلكتروني أو اسم المستخدم" required>
                 </div>
-                <p id="passwordError" class="text-red-500 text-sm mt-1 hidden"></p>
-            </div>
-
-            <div class="flex items-center justify-between text-lg">
-                <div class="flex items-center">
-                    <input type="checkbox" id="rememberMe" class="h-5 w-5 text-red-600 rounded border-gray-300 focus:ring-red-500">
-                    <label for="rememberMe" class="mr-2 text-gray-700">تذكرني</label>
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 text-lg font-medium mb-2">كلمة المرور</label>
+                    <input type="password" id="password" name="password" class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" placeholder="أدخل كلمة المرور" required>
                 </div>
-                <a href="#" class="text-blue-600 hover:underline transition duration-200">نسيت كلمة المرور؟</a>
-            </div>
-
-            <button
-                type="submit"
-                id="loginButton"
-                class="btn-login flex items-center justify-center gap-3"
-            >
-                <i class="fas fa-sign-in-alt text-xl"></i>
-                <span id="loginButtonText">تسجيل الدخول</span>
-            </button>
-        </form>
-
-        <div class="text-center mt-8 text-lg">
-            <p class="text-gray-700">ليس لديك حساب؟ <a href="#" class="text-blue-600 hover:underline transition duration-200 font-semibold">إنشاء حساب جديد</a></p>
-        </div>
-
-        <div id="statusModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 hidden modal-overlay">
-            <div class="bg-white rounded-xl p-10 shadow-2xl max-w-sm w-full text-center modal-content">
-                <div id="modalIcon" class="mb-6 text-6xl"></div>
-                <h3 id="modalTitle" class="text-3xl font-bold text-gray-800 mb-4"></h3>
-                <p id="modalMessage" class="text-gray-700 mb-6 text-lg"></p>
-                <button onclick="closeModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full transition duration-300">
-                    موافق
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="remember-me" name="remember-me" class="h-5 w-5 text-red-600 rounded border-gray-300 focus:ring-red-500">
+                        <label for="remember-me" class="mr-2 block text-gray-700 text-base">تذكرني</label>
+                    </div>
+                    <a href="#" class="text-sm text-red-500 hover:text-red-700 font-medium transition duration-200">نسيت كلمة المرور؟</a>
+                </div>
+                <button type="submit" id="loginButton" class="w-full bg-red-500 text-white px-6 py-3 rounded-full text-lg font-bold hover:bg-red-600 transition duration-300 ease-in-out shadow-md transform hover:scale-105">
+                    تسجيل الدخول
                 </button>
+            </form>
+            <p class="text-center text-gray-600 mt-6">
+                ليس لديك حساب؟
+                <a href="register.html" class="text-red-500 hover:text-red-700 font-medium transition duration-200">سجل الآن</a>
+            </p>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8 mt-auto rounded-t-lg shadow-inner">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 رشق وزيادة متابعين تيك توك. جميع الحقوق محفوظة.</p>
+            <div class="flex justify-center space-x-4 space-x-reverse mt-4">
+                <a href="#" class="text-gray-400 hover:text-white transition duration-200">سياسة الخصوصية</a>
+                <span class="text-gray-500">|</span>
+                <a href="#" class="text-gray-400 hover:text-white transition duration-200">شروط الخدمة</a>
             </div>
         </div>
-    </div>
+    </footer>
 
     <script>
-        // Get references to DOM elements
+        // Get references to the form elements and message box
         const loginForm = document.getElementById('loginForm');
-        const usernameInput = document.getElementById('username');
+        const usernameOrEmailInput = document.getElementById('usernameOrEmail');
         const passwordInput = document.getElementById('password');
+        const messageBox = document.getElementById('messageBox');
+        const loadingIndicator = document.getElementById('loadingIndicator');
         const loginButton = document.getElementById('loginButton');
-        const loginButtonText = document.getElementById('loginButtonText');
 
-        const usernameError = document.getElementById('usernameError');
-        const passwordError = document.getElementById('passwordError');
+        // Function to display messages
+        function showMessage(message, type) {
+            messageBox.textContent = message;
+            messageBox.className = `message-box ${type}`; // Apply success or error class
+            messageBox.classList.remove('hidden'); // Show the message box
 
-        const statusModal = document.getElementById('statusModal');
-        const modalIcon = document.getElementById('modalIcon');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalMessage = document.getElementById('modalMessage');
-
-        let isLoading = false; // Flag to manage button loading state
-
-        // Helper function to display an error message for an input field
-        function displayError(inputElement, errorElement, message) {
-            errorElement.textContent = message;
-            errorElement.classList.remove('hidden');
-            inputElement.classList.add('error'); // Add error class for red border/shadow
+            // Hide the message after 3 seconds
+            setTimeout(() => {
+                messageBox.classList.add('hidden');
+                messageBox.textContent = ''; // Clear message
+                messageBox.className = 'message-box hidden'; // Reset classes
+            }, 3000);
         }
 
-        // Helper function to hide an error message for an input field
-        function hideError(inputElement, errorElement) {
-            errorElement.textContent = '';
-            errorElement.classList.add('hidden');
-            inputElement.classList.remove('error'); // Remove error class
-        }
+        // Add event listener for form submission
+        loginForm.addEventListener('submit', function(event) {
+            // Prevent the default form submission behavior (page reload)
+            event.preventDefault();
 
-        // Validate a single input field
-        function validateField(inputElement, errorElement) {
-            let isValid = true;
-            const value = inputElement.value.trim();
+            // Hide any previous messages
+            messageBox.classList.add('hidden');
+            messageBox.textContent = '';
 
-            if (inputElement.id === 'username') {
-                if (value.length < 3) {
-                    displayError(inputElement, errorElement, 'اسم المستخدم أو البريد الإلكتروني قصير جداً.');
-                    isValid = false;
-                } else {
-                    hideError(inputElement, errorElement);
-                }
-            } else if (inputElement.id === 'password') {
-                if (value.length < 6) {
-                    displayError(inputElement, errorElement, 'كلمة المرور يجب أن تكون 6 أحرف على الأقل.');
-                    isValid = false;
-                } else {
-                    hideError(inputElement, errorElement);
-                }
-            }
-            return isValid;
-        }
-
-        // Event listeners for real-time validation
-        usernameInput.addEventListener('input', function() {
-            validateField(usernameInput, usernameError);
-        });
-
-        passwordInput.addEventListener('input', function() {
-            validateField(passwordInput, passwordError);
-        });
-
-        // Function to show the status modal (success or error)
-        function showStatusModal(isSuccess, title, message) {
-            if (isSuccess) {
-                modalIcon.innerHTML = '<i class="fas fa-check-circle text-green-500"></i>';
-                modalIcon.classList.remove('text-red-500');
-                modalIcon.classList.add('text-green-500');
-            } else {
-                modalIcon.innerHTML = '&#x2716;'; // X mark
-                modalIcon.classList.remove('text-green-500');
-                modalIcon.classList.add('text-red-500');
-            }
-            modalTitle.textContent = title;
-            modalMessage.textContent = message;
-            statusModal.classList.remove('hidden');
-        }
-
-        // Function to close the status modal
-        function closeModal() {
-            statusModal.classList.add('hidden');
-        }
-
-        // Handle form submission
-        loginForm.addEventListener('submit', async function(event) {
-            event.preventDefault(); // Prevent default form submission
-
-            // Validate all fields on submission
-            const isUsernameValid = validateField(usernameInput, usernameError);
-            const isPasswordValid = validateField(passwordInput, passwordError);
-
-            const formIsValid = isUsernameValid && isPasswordValid;
-
-            if (!formIsValid) {
-                showStatusModal(false, 'خطأ في الإدخال', 'يرجى تصحيح الأخطاء في النموذج قبل المتابعة.');
-                return;
-            }
-
-            // Prevent multiple submissions if already loading
-            if (isLoading) return;
-            isLoading = true;
-
-            // Update button to show loading state
+            // Show loading indicator and disable button
+            loadingIndicator.classList.remove('hidden');
             loginButton.disabled = true;
-            loginButton.classList.add('opacity-70', 'cursor-not-allowed');
-            loginButtonText.innerHTML = '<i class="fas fa-spinner fa-spin text-xl"></i> <span>جاري تسجيل الدخول...</span>';
+            loginButton.classList.add('opacity-50', 'cursor-not-allowed');
 
-            try {
-                // Simulate an API call for login
-                // In a real application, you would send credentials to your backend for authentication.
-                // Example: const response = await fetch('/api/login', { method: 'POST', body: JSON.stringify({ username: usernameInput.value, password: passwordInput.value }) });
-                // const data = await response.json();
+            // Get the values from the input fields
+            const username = usernameOrEmailInput.value;
+            const password = passwordInput.value;
 
-                await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate 2 seconds login process
-
-                // Simulate successful login for specific credentials
-                if (usernameInput.value === 'user@example.com' && passwordInput.value === 'password123') {
-                    showStatusModal(true, 'تم تسجيل الدخول بنجاح!', 'أهلاً بك في حسابك. سيتم توجيهك الآن.');
-                    // In a real app, redirect to dashboard: window.location.href = '/dashboard';
-                } else {
-                    showStatusModal(false, 'فشل تسجيل الدخول', 'اسم المستخدم أو كلمة المرور غير صحيحة.');
-                }
-
-                // Clear password field after attempt
-                passwordInput.value = '';
-                hideError(passwordInput, passwordError);
-
-            } catch (error) {
-                showStatusModal(false, 'خطأ في الاتصال', 'حدث خطأ أثناء محاولة تسجيل الدخول. يرجى المحاولة لاحقاً.');
-                console.error('Login error:', error);
-            } finally {
-                isLoading = false; // Reset loading flag
-                // Reset button to original state
+            // Simulate a network request or processing delay
+            setTimeout(() => {
+                // Hide loading indicator and re-enable button
+                loadingIndicator.classList.add('hidden');
                 loginButton.disabled = false;
-                loginButton.classList.remove('opacity-70', 'cursor-not-allowed');
-                loginButtonText.innerHTML = '<i class="fas fa-sign-in-alt text-xl"></i> <span>تسجيل الدخول</span>';
-            }
+                loginButton.classList.remove('opacity-50', 'cursor-not-allowed');
+
+                // Check credentials
+                if (username === 'mansoor' && password === '87832677') {
+                    showMessage('تم تسجيل الدخول بنجاح!', 'success');
+                    // In a real application, you would redirect the user here
+                      window.location.href = '/dashboard.html';
+                } else {
+                    showMessage('اسم المستخدم أو كلمة المرور غير صحيحة.', 'error');
+                }
+            }, 1500); // 1.5 seconds delay
         });
     </script>
 </body>

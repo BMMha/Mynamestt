@@ -3,748 +3,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الدفع الآمن - متابع تيك توك</title>
+    <title>شحن حسابك - رشق وزيادة متابعين تيك توك</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" xintegrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0V4LLanw2qksYuRlEzO+tcaEPQogQ0KaoIF2/2Q0z/l6D2d2e+b2+a2+a2+g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Base styles matching the screenshot's background and font */
         body {
-            font-family: 'Inter', sans-serif; /* Closest to the screenshot font */
-            background-color: #F8F8F8; /* Light gray background from screenshot */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start; /* Align to top to match screenshot */
-            min-height: 100vh;
-            padding: 0;
-            margin: 0;
-            overflow-x: hidden;
-            color: #333; /* Default text color */
-        }
-
-        /* Header Gradient for consistency with other pages */
-        .gradient-bg-header {
-            background: linear-gradient(to right, #1a202c, #2d3748); /* Dark blue/gray gradient */
-        }
-        /* Main button gradient for consistency with other pages */
-        .gradient-bg-button {
-            background: linear-gradient(to right, #ef4444, #dc2626); /* Red gradient */
-        }
-
-        /* Main content card styling */
-        .main-content-card {
-            background-color: #fff;
-            width: 100%;
-            max-width: 500px; /* Max width from screenshot */
-            padding: 1.5rem 1.5rem; /* Padding from screenshot */
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08); /* Subtle shadow for a premium feel */
-            border-radius: 0.75rem; /* Slightly rounded corners for the main card */
-            margin-top: 2rem; /* Space from header */
-            margin-bottom: 2rem; /* Space from footer */
-        }
-
-        /* Form section styling */
-        .form-section {
-            padding-top: 1.5rem;
-        }
-
-        /* Form group styling */
-        .form-group {
-            margin-bottom: 1rem; /* Spacing between input groups */
-        }
-        .form-group label {
-            display: block;
-            font-size: 0.95rem; /* Label size from screenshot */
-            font-weight: 600; /* Heavier font weight for labels */
-            margin-bottom: 0.6rem; /* Spacing below label */
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light gray background */
             color: #333;
         }
-        .form-group input {
-            width: 100%;
-            padding: 0.9rem 0.8rem; /* Padding inside input */
-            border: 1px solid #ccc; /* Border color */
-            border-radius: 0.25rem; /* Slightly rounded corners */
-            font-size: 1.05rem; /* Input text size */
-            color: #333;
-            box-sizing: border-box;
-            transition: border-color 0.2s ease-in-out;
-            background-color: #fff; /* White background for inputs */
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        /* Error state for input fields */
-        .form-group input.input-error-border {
-            border-color: #EF4444; /* Red border */
-            box-shadow: 0 0 0 1px #EF4444; /* Red outline */
-        }
-        .form-group input:focus {
-            outline: none;
-            border-color: #007bff; /* Blue border on focus */
-            box-shadow: 0 0 0 1px #007bff; /* Thin blue outline on focus */
-        }
-        .form-group input::placeholder {
-            color: #aaa; /* Placeholder color */
-        }
-
-        /* Order Summary styling */
-        .order-summary {
-            padding: 1.5rem 0; /* Vertical padding */
-            border-bottom: 1px solid #eee; /* Separator line */
-            margin-bottom: 1.5rem;
-        }
-        .order-summary h2 {
-            font-size: 0.95rem; /* "Order Summary" text size */
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: #333;
-        }
-        .order-summary-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 1.05rem; /* Amount text size */
-            font-weight: 500;
-            color: #333;
-        }
-        .order-summary-item .amount {
-            font-weight: 700;
-        }
-
-
-        /* Payment method section */
-        .payment-method-section {
-            margin-top: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .payment-method-section h2 {
-            font-size: 0.95rem;
-            font-weight: 600;
-            margin-bottom: 0.6rem;
-            color: #333;
-        }
-
-        /* Card information input group */
-        .card-info-group {
-            display: flex;
-            border: 1px solid #ccc;
-            border-radius: 0.25rem;
-            overflow: hidden; /* To contain inner elements */
-            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-        }
-        .card-info-group.focused {
-            border-color: #007bff;
-            box-shadow: 0 0 0 1px #007bff;
-        }
-        .card-info-group input {
-            border: none; /* Remove individual input borders */
-            flex-grow: 1;
-            padding: 0.9rem 0.8rem;
-            font-size: 1.05rem;
-            color: #333;
-            background-color: #fff;
-        }
-        .card-info-group input:focus {
-            outline: none;
-            box-shadow: none;
-        }
-        .card-info-group .card-icon-display {
-            padding: 0.9rem 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #fff;
-        }
-        .card-info-group .card-icon-display img {
-            height: 1.25rem; /* VISA icon size */
-            width: auto;
-            object-fit: contain;
-        }
-
-        /* Expiry and CVV group */
-        .expiry-cvv-group {
-            display: flex;
-            gap: 1rem; /* Gap between inputs */
-            margin-top: 1rem;
-        }
-        .expiry-cvv-group .input-wrapper {
-            flex: 1;
-            position: relative;
-        }
-        .expiry-cvv-group .input-wrapper input {
-            width: 100%;
-            padding: 0.9rem 0.8rem;
-            border: 1px solid #ccc;
-            border-radius: 0.25rem;
-            font-size: 1.05rem;
-            color: #333;
-            background-color: #fff;
-        }
-        .expiry-cvv-group .input-wrapper input:focus {
-            outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 0 1px #007bff;
-        }
-        .expiry-cvv-group .cvv-info-icon {
-            position: absolute;
-            left: 0.8rem; /* Position on the left for RTL */
-            top: 50%;
-            transform: translateY(-50%);
-            color: #aaa;
-            font-size: 1.2rem;
-            cursor: pointer;
-        }
-
-        /* Cardholder name and Country/Region */
-        .country-select {
-            width: 100%;
-            padding: 0.9rem 0.8rem;
-            border: 1px solid #ccc;
-            border-radius: 0.25rem;
-            font-size: 1.05rem;
-            color: #333;
-            background-color: #fff;
-            appearance: none; /* Remove default select arrow */
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13.2-6.4H18.8c-7.7%200-13.5%204.2-13.2%2012.4l132%20146c4.6%205%2011.4%205%2016%200l132-146c.3-8.2-5.5-12.4-13.2-12.4z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow */
-            background-repeat: no-repeat;
-            background-position: left 0.8rem center; /* Position arrow on the left for RTL */
-            background-size: 0.8rem;
-        }
-        .country-select:focus {
-            outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 0 1px #007bff;
-        }
-
-        /* Pay button */
-        .pay-button {
-            width: 100%;
-            padding: 1rem;
-            background-color: #007bff; /* Blue from screenshot */
-            color: #fff;
-            border: none;
-            border-radius: 0.25rem;
-            font-size: 1.25rem; /* "Pay" text size */
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s ease-in-out;
-            margin-top: 1.5rem;
-        }
-        .pay-button:hover:not(:disabled) {
-            background-color: #0056b3; /* Darker blue on hover */
-        }
-        .pay-button:disabled {
-            background-color: #E0E0E0; /* Gray when disabled */
-            color: #888; /* Gray text when disabled */
-            cursor: not-allowed;
-        }
-
-        /* Powered by Stripe info */
-        .powered-by-stripe {
-            text-align: center;
-            margin-top: 1.5rem;
-            font-size: 0.875rem;
-            color: #666;
-        }
-        .powered-by-stripe a {
-            color: #007bff;
-            text-decoration: none;
-            margin: 0 0.5rem;
-        }
-        .powered-by-stripe a:hover {
-            text-decoration: underline;
-        }
-        /* Gemini tips button */
-        .gemini-tips-button {
-            background-color: #4285F4; /* Google Blue */
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 25px;
-            border: none;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px; /* Adjusted margin */
-            transition: background-color 0.3s ease, transform 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: fit-content; /* Make button fit content */
-            margin-left: auto; /* Center button */
-            margin-right: auto; /* Center button */
-        }
-        .gemini-tips-button:hover {
-            background-color: #3367D6;
-            transform: translateY(-2px);
-        }
-
-        /* Gemini modal styling */
-        .gemini-modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        .gemini-modal-content {
-            background-color: #fff;
-            padding: 30px;
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            max-width: 450px;
-            width: 90%;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        /* Style for the message box */
+        .message-box {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
             text-align: center;
-            position: relative;
+            font-weight: 600;
         }
-        .gemini-modal-content h2 {
-            font-size: 24px;
-            color: #333;
-            margin-bottom: 20px;
-            font-weight: bold;
+        .message-box.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
-        .gemini-tips-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            text-align: right;
+        .message-box.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
-        .gemini-tips-list li {
-            margin-bottom: 10px;
-            padding-right: 20px; /* Space for bullet/icon */
-            position: relative;
-            color: #555;
+        /* Hide payment method details by default */
+        .payment-details {
+            display: none;
         }
-        .gemini-tips-list li::before {
-            content: '\2022'; /* Bullet point */
-            color: #4CAF50; /* Green bullet */
-            font-weight: bold;
-            display: inline-block;
-            width: 1em;
-            margin-right: -1em;
-            position: absolute;
-            right: 0;
-        }
-        .gemini-loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .gemini-close-button {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #aaa;
-        }
-        .gemini-close-button:hover {
-            color: #777;
-        }
-
-
-        /* Responsive adjustments */
-        @media (max-width: 600px) {
-            .main-content-card {
-                padding: 1rem;
-                margin-top: 1rem;
-                margin-bottom: 1rem;
-            }
-            .form-group label {
-                font-size: 0.85rem;
-            }
-            .form-group input, .country-select {
-                padding: 0.75rem 0.6rem;
-                font-size: 0.9rem;
-            }
-            .expiry-cvv-group {
-                gap: 0.75rem;
-            }
-            .pay-button {
-                padding: 0.75rem;
-                font-size: 1.1rem;
-            }
-            .powered-by-stripe {
-                font-size: 0.75rem;
-            }
-            .gemini-modal-content {
-                padding: 20px;
-            }
-            .gemini-modal-content h2 {
-                font-size: 20px;
-            }
-            .gemini-tips-button {
-                font-size: 14px;
-                padding: 8px 15px;
-            }
+        .payment-details.active {
+            display: block;
         }
     </style>
 </head>
-<body>
-
-    <header class="gradient-bg-header text-white p-4 shadow-md w-full">
+<body class="flex flex-col min-h-screen">
+    <header class="bg-white shadow-md p-4 sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="#" class="text-3xl font-extrabold flex items-center gap-2">
-                <i class="fab fa-tiktok text-red-500"></i>
-                <span>متابع تيك توك</span>
+            <a href="index.html" class="text-2xl font-bold text-red-500">
+                رشق وزيادة متابعين تيك توك
             </a>
-            <nav class="hidden md:block">
-                <ul class="flex space-x-6 space-x-reverse text-lg">
-                    <li><a href="dashboard.html" class="hover:text-red-400 transition duration-200">لوحة التحكم</a></li>
-                    <li><a href="charge-account-page.html" class="hover:text-red-400 transition duration-200">شحن الحساب</a></li>
-                    <li><a href="#" class="hover:text-red-400 transition duration-200">تسجيل الخروج</a></li>
+            <nav>
+                <ul class="flex space-x-4 space-x-reverse">
+                    <li><a href="index.html#services" class="text-gray-700 hover:text-red-500 font-medium">خدماتنا</a></li>
+                    <li><a href="index.html#how-it-works" class="text-gray-700 hover:text-red-500 font-medium">كيف يعمل؟</a></li>
+                    <li><a href="index.html#payment-methods" class="text-gray-700 hover:text-red-500 font-medium">طرق الدفع</a></li>
+                    <li><a href="index.html#contact" class="text-gray-700 hover:text-red-500 font-medium">اتصل بنا</a></li>
+                    <li><a href="dashboard.html" class="text-gray-700 hover:text-red-500 font-medium">لوحة التحكم</a></li>
+                    <li><a href="#" id="logoutButton" class="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold hover:bg-red-600 transition duration-300 ease-in-out">تسجيل الخروج</a></li>
                 </ul>
             </nav>
-            <button id="mobile-menu-button" class="md:hidden text-white text-2xl focus:outline-none">
-                <i class="fas fa-bars"></i>
-            </button>
         </div>
     </header>
 
-    <div id="mobile-menu" class="md:hidden bg-gray-800 text-white w-full py-4 hidden">
-        <ul class="flex flex-col items-center space-y-4 text-lg">
-            <li><a href="dashboard.html" class="block py-2 hover:text-red-400 transition duration-200">لوحة التحكم</a></li>
-            <li><a href="charge-account-page.html" class="block py-2 hover:text-red-400 transition duration-200">شحن الحساب</a></li>
-            <li><a href="#" class="block py-2 hover:text-red-400 transition duration-200">تسجيل الخروج</a></li>
-        </ul>
-    </div>
+    <main class="flex-grow flex items-center justify-center py-12 px-4">
+        <div class="bg-white p-8 md:p-10 rounded-xl shadow-lg w-full max-w-2xl border border-gray-200">
+            <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">شحن حسابك</h2>
 
-    <div class="main-content-card">
+            <div id="messageBox" class="message-box hidden"></div>
 
-        <div class="order-summary">
-            <h2>Order Summary</h2>
-            <div class="order-summary-item">
-                <span>Total Amount</span>
-                <span class="amount">$0.20</span>
-            </div>
-        </div>
+            <form id="rechargeForm" action="#" method="POST">
+                <div class="mb-6">
+                    <label for="amount" class="block text-gray-700 text-lg font-medium mb-2">المبلغ المراد شحنه ($)</label>
+                    <input type="number" id="amount" name="amount" min="0.30" step="0.01" class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" placeholder="أدخل المبلغ (الحد الأدنى: 0.30$)" required>
+                </div>
 
-        <div class="payment-method-section">
-            <h2>Payment method</h2>
+                <div class="mb-6">
+                    <label for="paymentMethod" class="block text-gray-700 text-lg font-medium mb-2">اختر طريقة الدفع</label>
+                    <select id="paymentMethod" name="paymentMethod" class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" required>
+                        <option value="">اختر طريقة دفع</option>
+                        <option value="vodafone-cash">فودافون كاش</option>
+                        <option value="orange-cash">أورانج كاش</option>
+                        <option value="credit-card">بطاقة ائتمانية</option>
+                    </select>
+                </div>
 
-            <div class="form-group">
-                <label for="card-number">Card information</label>
-                <div class="card-info-group" id="card-info-group">
-                    <input type="text" id="card-number" placeholder="1234 1234 1234 1234" maxlength="19" inputmode="numeric">
-                    <div class="card-icon-display">
-                        <img id="visa-card-icon" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="VISA">
+                <div id="vodafoneCashDetails" class="payment-details bg-gray-50 p-6 rounded-lg mb-6 border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">تفاصيل الدفع عبر فودافون كاش</h3>
+                    <p class="text-gray-700 mb-4">
+                        يرجى تحويل المبلغ المطلوب إلى الرقم التالي:
+                        <span class="block text-red-600 text-2xl font-extrabold my-2">01012345678</span>
+                    </p>
+                    <p class="text-gray-600 text-sm">
+                        بعد التحويل، يرجى إدخال رقم الهاتف الذي قمت بالتحويل منه ورقم عملية التحويل (إن وجد) في الحقول أدناه.
+                    </p>
+                    <div class="mt-4">
+                        <label for="vodafonePhone" class="block text-gray-700 text-base font-medium mb-2">رقم الهاتف المحول منه</label>
+                        <input type="text" id="vodafonePhone" name="vodafonePhone" class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" placeholder="مثال: 010xxxxxxx">
+                    </div>
+                    <div class="mt-4">
+                        <label for="vodafoneTransactionId" class="block text-gray-700 text-base font-medium mb-2">رقم عملية التحويل (اختياري)</label>
+                        <input type="text" id="vodafoneTransactionId" name="vodafoneTransactionId" class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" placeholder="أدخل رقم العملية">
+                    </div>
+                </div>
+
+                <div id="orangeCashDetails" class="payment-details bg-gray-50 p-6 rounded-lg mb-6 border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">تفاصيل الدفع عبر أورانج كاش</h3>
+                    <p class="text-gray-700 mb-4">
+                        يرجى تحويل المبلغ المطلوب إلى الرقم التالي:
+                        <span class="block text-red-600 text-2xl font-extrabold my-2">01212345678</span>
+                    </p>
+                    <p class="text-gray-600 text-sm">
+                        بعد التحويل، يرجى إدخال رقم الهاتف الذي قمت بالتحويل منه ورقم عملية التحويل (إن وجد) في الحقول أدناه.
+                    </p>
+                    <div class="mt-4">
+                        <label for="orangePhone" class="block text-gray-700 text-base font-medium mb-2">رقم الهاتف المحول منه</label>
+                        <input type="text" id="orangePhone" name="orangePhone" class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" placeholder="مثال: 012xxxxxxx">
+                    </div>
+                    <div class="mt-4">
+                        <label for="orangeTransactionId" class="block text-gray-700 text-base font-medium mb-2">رقم عملية التحويل (اختياري)</label>
+                        <input type="text" id="orangeTransactionId" name="orangeTransactionId" class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" placeholder="أدخل رقم العملية">
+                    </div>
+                </div>
+
+                <div id="creditCardDetails" class="payment-details bg-gray-50 p-6 rounded-lg mb-6 border border-gray-200">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">تفاصيل البطاقة الائتمانية</h3>
+                    <p class="text-gray-600 text-sm mb-4">
+                        يرجى إدخال تفاصيل بطاقتك الائتمانية بأمان.
+                    </p>
+                    <div class="mb-4">
+                        <label for="cardNumber" class="block text-gray-700 text-base font-medium mb-2">رقم البطاقة</label>
+                        <input type="text" id="cardNumber" name="cardNumber" 
+                               class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" 
+                               placeholder="XXXX XXXX XXXX XXXX" 
+                               maxlength="19" 
+                               pattern="[0-9]{4} ?[0-9]{4} ?[0-9]{4} ?[0-9]{4}" 
+                               title="أدخل رقم بطاقة ائتمانية صحيح (16 رقمًا)" required>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label for="expiryDate" class="block text-gray-700 text-base font-medium mb-2">تاريخ الانتهاء (MM/YY)</label>
+                            <input type="text" id="expiryDate" name="expiryDate" 
+                                   class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" 
+                                   placeholder="MM/YY" 
+                                   maxlength="5" 
+                                   pattern="(0[1-9]|1[0-2])\/?([0-9]{2})" 
+                                   title="أدخل تاريخ انتهاء صلاحية صحيح (MM/YY)" required>
                         </div>
+                        <div>
+                            <label for="cvv" class="block text-gray-700 text-base font-medium mb-2">CVV</label>
+                            <input type="text" id="cvv" name="cvv" 
+                                   class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" 
+                                   placeholder="XXX" 
+                                   maxlength="4" 
+                                   pattern="[0-9]{3,4}" 
+                                   title="أدخل رمز CVV صحيح (3 أو 4 أرقام)" required>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="cardholderName" class="block text-gray-700 text-base font-medium mb-2">اسم حامل البطاقة</label>
+                        <input type="text" id="cardholderName" name="cardholderName" 
+                               class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" 
+                               placeholder="الاسم كما يظهر على البطاقة" required>
+                    </div>
                 </div>
-                <div class="error-message" id="card-number-error">الرجاء إدخال رقم بطاقة صحيح.</div>
-            </div>
 
-            <div class="expiry-cvv-group">
-                <div class="input-wrapper">
-                    <input type="text" id="expiry-date" placeholder="MM/YY" maxlength="5" inputmode="numeric">
-                    <div class="error-message" id="expiry-date-error">الرجاء إدخال تاريخ انتهاء صلاحية صحيح.</div>
-                </div>
-                <div class="input-wrapper">
-                    <input type="text" id="cvv" placeholder="333" maxlength="4" inputmode="numeric">
-                    <i class="fas fa-question-circle cvv-info-icon"></i>
-                    <div class="error-message" id="cvv-error">الرجاء إدخال رمز CVV/CVC صحيح.</div>
-                </div>
-            </div>
+                <button type="submit" class="w-full bg-red-500 text-white px-6 py-3 rounded-full text-lg font-bold hover:bg-red-600 transition duration-300 ease-in-out shadow-md transform hover:scale-105">
+                    تأكيد الشحن
+                </button>
+            </form>
         </div>
+    </main>
 
-        <div class="form-section">
-            <div class="form-group">
-                <label for="cardholder-name">Cardholder name</label>
-                <input type="text" id="cardholder-name" placeholder="Full name on card">
-                <div class="error-message" id="cardholder-name-error">الرجاء إدخال اسم حامل البطاقة.</div>
-            </div>
-        </div>
-
-        <button type="submit" class="pay-button" id="pay-button">Pay</button>
-
-        <div class="powered-by-stripe">
-            Powered by stripe
-            <div>
-                <a href="#">Terms</a>
-                <a href="#">Privacy</a>
-            </div>
-        </div>
-
-        <button class="gemini-tips-button" id="showGeminiTipsButton">
-            نصائح للدفع الآمن ✨
-        </button>
-
-    </div>
-
-    <footer class="gradient-bg-header text-white p-6 text-center mt-auto w-full">
-        <div class="container mx-auto">
-            <p>&copy; 2023 متابع تيك توك. جميع الحقوق محفوظة.</p>
-            <div class="flex justify-center space-x-4 space-x-reverse mt-2">
+    <footer class="bg-gray-800 text-white py-8 mt-auto rounded-t-lg shadow-inner">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 رشق وزيادة متابعين تيك توك. جميع الحقوق محفوظة.</p>
+            <div class="flex justify-center space-x-4 space-x-reverse mt-4">
                 <a href="#" class="text-gray-400 hover:text-white transition duration-200">سياسة الخصوصية</a>
-                <a href="#" class="text-gray-400 hover:text-white transition duration-200">شروط الاستخدام</a>
+                <span class="text-gray-500">|</span>
+                <a href="#" class="text-gray-400 hover:text-white transition duration-200">شروط الخدمة</a>
             </div>
         </div>
     </footer>
 
-    <div id="geminiTipsModal" class="gemini-modal-overlay hidden">
-        <div class="gemini-modal-content">
-            <button class="gemini-close-button" id="closeGeminiTipsModal">&times;</button>
-            <h2>نصائح أمان الدفع ✨</h2>
-            <div id="geminiTipsLoading" class="gemini-loading-spinner"></div>
-            <ul id="geminiTipsList" class="gemini-tips-list hidden">
-                </ul>
-            <p id="geminiTipsError" class="error-message" style="display: none; text-align: center;">حدث خطأ أثناء تحميل النصائح. يرجى المحاولة لاحقاً.</p>
-        </div>
-    </div>
-
     <script>
-        $(document).ready(function() {
-            // Get jQuery references to elements
-            const $cardNumberInput = $('#card-number');
-            const $expiryDateInput = $('#expiry-date');
-            const $cvvInput = $('#cvv');
-            const $cardholderNameInput = $('#cardholder-name');
-            const $payButton = $('#pay-button');
-            const $cardInfoGroup = $('#card-info-group');
-            const $visaCardIcon = $('#visa-card-icon'); // The default VISA icon in the screenshot
+        const paymentMethodSelect = document.getElementById('paymentMethod');
+        const vodafoneCashDetails = document.getElementById('vodafoneCashDetails');
+        const orangeCashDetails = document.getElementById('orangeCashDetails');
+        const creditCardDetails = document.getElementById('creditCardDetails');
+        const rechargeForm = document.getElementById('rechargeForm');
+        const messageBox = document.getElementById('messageBox');
+        const amountInput = document.getElementById('amount');
 
-            const $showGeminiTipsButton = $('#showGeminiTipsButton');
-            const $geminiTipsModal = $('#geminiTipsModal');
-            const $closeGeminiTipsModal = $('#closeGeminiTipsModal');
-            const $geminiTipsLoading = $('#geminiTipsLoading');
-            const $geminiTipsList = $('#geminiTipsList');
-            const $geminiTipsError = $('#geminiTipsError');
+        const MIN_RECHARGE_AMOUNT = 0.30;
 
-            const $mobileMenuButton = $('#mobile-menu-button');
-            const $mobileMenu = $('#mobile-menu');
+        // Credit Card specific inputs
+        const cardNumberInput = document.getElementById('cardNumber');
+        const expiryDateInput = document.getElementById('expiryDate');
+        const cvvInput = document.getElementById('cvv');
+        const cardholderNameInput = document.getElementById('cardholderName');
 
-            // --- Error Message Elements ---
-            const $cardNumberError = $('#card-number-error');
-            const $expiryDateError = $('#expiry-date-error');
-            const $cvvError = $('#cvv-error');
-            const $cardholderNameError = $('#cardholder-name-error');
+        // Function to display messages
+        function showMessage(message, type) {
+            messageBox.textContent = message;
+            messageBox.className = `message-box ${type}`;
+            messageBox.classList.remove('hidden');
 
+            setTimeout(() => {
+                messageBox.classList.add('hidden');
+                messageBox.textContent = '';
+                messageBox.className = 'message-box hidden';
+            }, 3000);
+        }
 
-            // Toggle mobile menu visibility
-            $mobileMenuButton.on('click', function() {
-                $mobileMenu.toggleClass('hidden');
-            });
+        // Event listener to show/hide payment details based on selection
+        paymentMethodSelect.addEventListener('change', function() {
+            // Hide all details sections first
+            vodafoneCashDetails.classList.add('hidden');
+            orangeCashDetails.classList.add('hidden');
+            creditCardDetails.classList.add('hidden');
 
-            // Close mobile menu when a link is clicked
-            $('#mobile-menu a').on('click', function() {
-                $mobileMenu.addClass('hidden');
-            });
+            // Set all required attributes to false initially
+            cardNumberInput.removeAttribute('required');
+            expiryDateInput.removeAttribute('required');
+            cvvInput.removeAttribute('required');
+            cardholderNameInput.removeAttribute('required');
 
-            // Helper function to show/hide error message
-            function showError($inputElement, $errorElement, message) {
-                $errorElement.text(message).show();
-                $inputElement.addClass('input-error-border');
+            // Show the selected payment method's details and set required attributes
+            if (this.value === 'vodafone-cash') {
+                vodafoneCashDetails.classList.remove('hidden');
+                vodafoneCashDetails.classList.add('active');
+                // For Vodafone Cash, you might want to make phone number required
+                document.getElementById('vodafonePhone').setAttribute('required', 'true');
+            } else if (this.value === 'orange-cash') {
+                orangeCashDetails.classList.remove('hidden');
+                orangeCashDetails.classList.add('active');
+                // For Orange Cash, you might want to make phone number required
+                document.getElementById('orangePhone').setAttribute('required', 'true');
+            } else if (this.value === 'credit-card') {
+                creditCardDetails.classList.remove('hidden');
+                creditCardDetails.classList.add('active');
+                // Make credit card fields required when selected
+                cardNumberInput.setAttribute('required', 'true');
+                expiryDateInput.setAttribute('required', 'true');
+                cvvInput.setAttribute('required', 'true');
+                cardholderNameInput.setAttribute('required', 'true');
+            }
+        });
+
+        // Add input formatting for expiry date (MM/YY)
+        expiryDateInput.addEventListener('input', function(e) {
+            let input = e.target.value.replace(/\D/g, ''); // Remove non-digits
+            if (input.length > 2) {
+                input = input.substring(0, 2) + '/' + input.substring(2, 4);
+            }
+            e.target.value = input;
+        });
+
+        // Add input formatting for card number (XXXX XXXX XXXX XXXX)
+        cardNumberInput.addEventListener('input', function(e) {
+            let input = e.target.value.replace(/\D/g, ''); // Remove non-digits
+            input = input.replace(/(.{4})/g, '$1 ').trim(); // Add space every 4 digits
+            e.target.value = input;
+        });
+
+        // Handle form submission for recharge
+        rechargeForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const amount = parseFloat(amountInput.value);
+            const selectedMethod = paymentMethodSelect.value;
+
+            // Validate amount against minimum
+            if (isNaN(amount) || amount < MIN_RECHARGE_AMOUNT) {
+                showMessage(`الرجاء إدخال مبلغ صحيح لا يقل عن ${MIN_RECHARGE_AMOUNT}$ للشحن.`, 'error');
+                return;
             }
 
-            function hideError($inputElement, $errorElement) {
-                $errorElement.hide();
-                $inputElement.removeClass('input-error-border');
+            if (selectedMethod === '') {
+                showMessage('الرجاء اختيار طريقة الدفع.', 'error');
+                return;
             }
 
-            // Function to detect card type and update icons
-            function detectCardType(cardNumber) {
-                // More comprehensive regex for basic detection
-                const visaRegex = /^4/;
-                const mastercardRegex = /^5[1-5]/;
-                const amexRegex = /^3[47]/;
-                const discoverRegex = /^(6011|65|64[4-9])/;
-
-                // Reset all icons
-                $('.card-icon-display img').hide(); // Hide all card icons by default
-
-                if (visaRegex.test(cardNumber)) {
-                    $visaCardIcon.show();
-                    return 'visa';
-                }
-                // In a real scenario, you'd have more img tags for other card types
-                // and show them based on detection. For this replica, we only have VISA.
-                return null;
-            }
-
-            // --- Individual Field Validation Functions ---
-            // These functions now ONLY return true/false. They do NOT show/hide errors.
-            // Errors are handled by show/hideError functions called on 'change' or 'submit'.
-            function isValidCardNumber() {
-                const value = $cardNumberInput.val().replace(/\s/g, '');
-                return value.length === 16 && /^\d+$/.test(value);
-            }
-
-            function isValidExpiryDate() {
-                const value = $expiryDateInput.val();
-                const parts = value.split('/');
-                if (parts.length !== 2 || parts[0].length !== 2 || parts[1].length !== 2) return false;
-
-                const month = parseInt(parts[0], 10);
-                const year = parseInt(parts[1], 10) + 2000;
-
-                if (month < 1 || month > 12) return false;
-
-                const now = new Date();
-                const currentYear = now.getFullYear();
-                const currentMonth = now.getMonth() + 1;
-
-                return year > currentYear || (year === currentYear && month >= currentMonth);
-            }
-
-            function isValidCvv() {
-                const value = $cvvInput.val();
-                return /^\d{3,4}$/.test(value);
-            }
-
-            function isValidCardholderName() {
-                const value = $cardholderNameInput.val().trim();
-                return value.length >= 3;
-            }
-
-            // --- Overall Form Validity Check (for button state) ---
-            function updatePayButtonState() {
-                // This function uses the isValid* functions to determine button state.
-                // It does NOT show errors.
-                if (isValidCardNumber() && isValidExpiryDate() && isValidCvv() && isValidCardholderName()) {
-                    $payButton.prop('disabled', false);
-                } else {
-                    $payButton.prop('disabled', true);
-                }
-            }
-
-            // --- Event Listeners for Real-time Formatting and On-Change Validation ---
-            // Formatting and hiding errors on 'input'
-            $cardNumberInput.on('input', function() {
-                let value = $(this).val().replace(/\s/g, '');
-                value = value.replace(/\D/g, '');
-                value = value.replace(/(.{4})/g, '$1 ').trim();
-                if (value.length > 19) value = value.substring(0, 19);
-                $(this).val(value);
-                detectCardType(value);
-                hideError($(this), $cardNumberError); // Hide error immediately on input
-                updatePayButtonState(); // Update button state
-            });
-            $expiryDateInput.on('input', function() {
-                let value = $(this).val().replace(/\s/g, '');
-                value = value.replace(/\D/g, '');
-                if (value.length > 2) value = value.substring(0, 2) + '/' + value.substring(2);
-                if (value.length > 5) value = value.substring(0, 5);
-                $(this).val(value);
-                hideError($(this), $expiryDateError); // Hide error immediately on input
-                updatePayButtonState(); // Update button state
-            });
-            $cvvInput.on('input', function() {
-                let value = $(this).val().replace(/\D/g, '');
-                $(this).val(value);
-                hideError($(this), $cvvError); // Hide error immediately on input
-                updatePayButtonState(); // Update button state
-            });
-            $cardholderNameInput.on('input', function() {
-                hideError($(this), $cardholderNameError); // Hide error immediately on input
-                updatePayButtonState(); // Update button state
-            });
-
-            // Validation and showing errors on 'change' (when field loses focus)
-            $cardNumberInput.on('change', function() {
-                if (!isValidCardNumber()) showError($(this), $cardNumberError, 'الرجاء إدخال رقم بطاقة صحيح (16 رقمًا).');
-            });
-            $expiryDateInput.on('change', function() {
-                if (!isValidExpiryDate()) showError($(this), $expiryDateError, 'الرجاء إدخال تاريخ انتهاء صلاحية صحيح (MM/YY) وليس منتهياً.');
-            });
-            $cvvInput.on('change', function() {
-                if (!isValidCvv()) showError($(this), $cvvError, 'الرجاء إدخال رمز CVV/CVC صحيح (3 أو 4 أرقام).');
-            });
-            $cardholderNameInput.on('change', function() {
-                if (!isValidCardholderName()) showError($(this), $cardholderNameError, 'الرجاء إدخال اسم حامل البطاقة (3 أحرف على الأقل).');
-            });
-
-            // Initial check on page load to set button state (no errors shown initially)
-            updatePayButtonState();
-
-            // --- Form Submission (Simulated) ---
-            $('#pay-button').on('click', function(event) {
-                event.preventDefault(); // Prevent actual form submission
-
-                // Run all validations explicitly on submit and show errors
-                const formIsValid = isValidCardNumber() && validateCardNumber() && // Call to show error if invalid
-                                  isValidExpiryDate() && validateExpiryDate() &&
-                                  isValidCvv() && validateCvv() &&
-                                  isValidCardholderName() && validateCardholderName();
-
-                if (!formIsValid) {
-                    // If validation fails, the individual error messages are already shown.
+            // Client-side validation for Credit Card fields if selected
+            if (selectedMethod === 'credit-card') {
+                if (!cardNumberInput.value || !expiryDateInput.value || !cvvInput.value || !cardholderNameInput.value) {
+                    showMessage('الرجاء تعبئة جميع حقول البطاقة الائتمانية المطلوبة.', 'error');
                     return;
                 }
+                // Further regex validation can be added here if needed,
+                // but HTML5 pattern attribute already provides basic client-side check.
+            }
 
-                alert('Payment simulated successfully!'); // Use alert as per previous requests
-                console.log('Payment Details:', {
-                    cardNumber: $cardNumberInput.val(),
-                    expiryDate: $expiryDateInput.val(),
-                    cvv: $cvvInput.val(),
-                    cardholderName: $cardholderNameInput.val()
-                });
+            // Simulate processing
+            showMessage('جاري تأكيد عملية الشحن، يرجى الانتظار...', 'success');
 
-                // In a real application, you would send this data to Stripe or your backend
-                // and handle success/failure responses.
-            });
+            setTimeout(() => {
+                // In a real application, you would send this data to a backend
+                // for verification and actual balance update.
+                console.log('Recharge request submitted:');
+                console.log('Amount:', amount);
+                console.log('Payment Method:', selectedMethod);
 
-            // --- Gemini API Integration for Secure Payment Tips ---
-            $showGeminiTipsButton.on('click', function() {
-                $geminiTipsModal.removeClass('hidden');
-                $geminiTipsLoading.show();
-                $geminiTipsList.hide().empty(); // Clear previous tips
-                $geminiTipsError.hide();
+                if (selectedMethod === 'vodafone-cash') {
+                    const vodafonePhone = document.getElementById('vodafonePhone').value;
+                    const vodafoneTransactionId = document.getElementById('vodafoneTransactionId').value;
+                    console.log('Vodafone Phone:', vodafonePhone);
+                    console.log('Vodafone Transaction ID:', vodafoneTransactionId);
+                } else if (selectedMethod === 'orange-cash') {
+                    const orangePhone = document.getElementById('orangePhone').value;
+                    const orangeTransactionId = document.getElementById('orangeTransactionId').value;
+                    console.log('Orange Phone:', orangePhone);
+                    console.log('Orange Transaction ID:', orangeTransactionId);
+                } else if (selectedMethod === 'credit-card') {
+                    console.log('Card Number:', cardNumberInput.value);
+                    console.log('Expiry Date:', expiryDateInput.value);
+                    console.log('CVV:', cvvInput.value);
+                    console.log('Cardholder Name:', cardholderNameInput.value);
+                }
 
-                const prompt = "قدم 5 نصائح موجزة جداً للدفع الآمن عبر الإنترنت. اجعلها نقاطًا محددة ومباشرة.";
-                let chatHistory = [];
-                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // Canvas will automatically provide this in runtime
+                showMessage('تم استلام طلب الشحن بنجاح! سيتم مراجعة طلبك وتحديث رصيدك قريباً.', 'success');
+                // In a real app, you would redirect or update UI after successful backend processing
+                setTimeout(() => { window.location.href ='/check'; }, 3000);
+            }, 2000); // Simulate 2 seconds processing time
+        });
 
-                fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                })
-                .then(response => response.json())
-                .then(result => {
-                    $geminiTipsLoading.hide();
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const text = result.candidates[0].content.parts[0].text;
-                        // Split text into lines/tips and display as list items
-                        const tips = text.split('\n').filter(tip => tip.trim() !== '');
-                        tips.forEach(tip => {
-                            $geminiTipsList.append('<li>' + tip.trim() + '</li>');
-                        });
-                        $geminiTipsList.show();
-                    } else {
-                        $geminiTipsError.text('لم نتمكن من جلب النصائح حالياً.').show();
-                    }
-                })
-                .catch(error => {
-                    $geminiTipsLoading.hide();
-                    $geminiTipsError.text('حدث خطأ في الاتصال. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.').show();
-                    console.error('Gemini API Error:', error);
-                });
-            });
-
-            $closeGeminiTipsModal.on('click', function() {
-                $geminiTipsModal.addClass('hidden');
-            });
+        // Logout button functionality (from previous pages)
+        document.getElementById('logoutButton').addEventListener('click', function(event) {
+            event.preventDefault();
+            window.location.href = 'login.html'; // Redirect to login page
         });
     </script>
-
 </body>
 </html>
