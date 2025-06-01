@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل حساب جديد - رشق وزيادة متابعين تيك توك</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Light gray background */
+            color: #333;
+        }
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        /* Style for the message box */
+        .message-box {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            font-weight: 600;
+        }
+        .message-box.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .message-box.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        /* Style for loading indicator */
+        .loading-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 20px; /* Adjust height as needed */
+            margin-bottom: 1rem;
+        }
+        .loading-indicator .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #ef4444; /* Red color for spinner */
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+    <header class="bg-white shadow-md p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold text-red-500">
+                رشق وزيادة متابعين تيك توك
+            </a>
+            <nav>
+                <ul class="flex space-x-4 space-x-reverse">
+                    <li><a href="index.html#services" class="text-gray-700 hover:text-red-500 font-medium">خدماتنا</a></li>
+                    <li><a href="index.html#how-it-works" class="text-gray-700 hover:text-red-500 font-medium">كيف يعمل؟</a></li>
+                    <li><a href="index.html#payment-methods" class="text-gray-700 hover:text-red-500 font-medium">طرق الدفع</a></li>
+                    <li><a href="index.html#contact" class="text-gray-700 hover:text-red-500 font-medium">اتصل بنا</a></li>
+                    <li><a href="login.html" class="text-gray-700 hover:text-red-500 font-medium">تسجيل الدخول</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center py-12 px-4">
+        <div class="bg-white p-8 md:p-10 rounded-xl shadow-lg w-full max-w-md border border-gray-200">
+            <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">تسجيل حساب جديد</h2>
+
+            <div id="messageBox" class="message-box hidden"></div>
+
+            <div id="loadingIndicator" class="loading-indicator hidden">
+                <div class="spinner"></div>
+            </div>
+
+            <form id="registerForm" action="#" method="POST">
+                <div class="mb-6">
+                    <label for="username" class="block text-gray-700 text-lg font-medium mb-2">اسم المستخدم</label>
+                    <input type="text" id="username" name="username" class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" placeholder="أدخل اسم المستخدم" required>
+                </div>
+                <div class="mb-6">
+                    <label for="email" class="block text-gray-700 text-lg font-medium mb-2">البريد الإلكتروني</label>
+                    <input type="email" id="email" name="email" class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" placeholder="أدخل بريدك الإلكتروني" required>
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 text-lg font-medium mb-2">كلمة المرور</label>
+                    <input type="password" id="password" name="password" class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" placeholder="أدخل كلمة المرور" required>
+                </div>
+                <div class="mb-6">
+                    <label for="confirmPassword" class="block text-gray-700 text-lg font-medium mb-2">تأكيد كلمة المرور</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" placeholder="أعد إدخال كلمة المرور" required>
+                </div>
+                <button type="submit" id="registerButton" class="w-full bg-red-500 text-white px-6 py-3 rounded-full text-lg font-bold hover:bg-red-600 transition duration-300 ease-in-out shadow-md transform hover:scale-105">
+                    تسجيل
+                </button>
+            </form>
+            <p class="text-center text-gray-600 mt-6">
+                لديك حساب بالفعل؟
+                <a href="/login.html" class="text-red-500 hover:text-red-700 font-medium transition duration-200">تسجيل الدخول</a>
+            </p>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8 mt-auto rounded-t-lg shadow-inner">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2024 رشق وزيادة متابعين تيك توك. جميع الحقوق محفوظة.</p>
+            <div class="flex justify-center space-x-4 space-x-reverse mt-4">
+                <a href="#" class="text-gray-400 hover:text-white transition duration-200">سياسة الخصوصية</a>
+                <span class="text-gray-500">|</span>
+                <a href="#" class="text-gray-400 hover:text-white transition duration-200">شروط الخدمة</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const registerForm = document.getElementById('registerForm');
+        const usernameInput = document.getElementById('username');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const messageBox = document.getElementById('messageBox');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const registerButton = document.getElementById('registerButton');
+
+        // Function to display messages
+        function showMessage(message, type) {
+            messageBox.textContent = message;
+            messageBox.className = `message-box ${type}`;
+            messageBox.classList.remove('hidden');
+
+            setTimeout(() => {
+                messageBox.classList.add('hidden');
+                messageBox.textContent = '';
+                messageBox.className = 'message-box hidden';
+            }, 3000);
+        }
+
+        // Add event listener for form submission
+        registerForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Hide any previous messages
+            messageBox.classList.add('hidden');
+            messageBox.textContent = '';
+
+            // Basic client-side validation
+            if (usernameInput.value.trim() === '' || emailInput.value.trim() === '' ||
+                passwordInput.value.trim() === '' || confirmPasswordInput.value.trim() === '') {
+                showMessage('الرجاء تعبئة جميع الحقول المطلوبة.', 'error');
+                return;
+            }
+
+            if (passwordInput.value !== confirmPasswordInput.value) {
+                showMessage('كلمة المرور وتأكيد كلمة المرور غير متطابقين.', 'error');
+                return;
+            }
+
+            // Show loading indicator and disable button
+            loadingIndicator.classList.remove('hidden');
+            registerButton.disabled = true;
+            registerButton.classList.add('opacity-50', 'cursor-not-allowed');
+
+            // Simulate server-side processing (e.g., sending activation email)
+            setTimeout(() => {
+                // Hide loading indicator and re-enable button
+                loadingIndicator.classList.add('hidden');
+                registerButton.disabled = false;
+                registerButton.classList.remove('opacity-50', 'cursor-not-allowed');
+
+                // In a real application, you would send registration data to a backend
+                // and then handle the response (e.g., success/failure of email sending).
+                console.log('Registration data:', {
+                    username: usernameInput.value,
+                    email: emailInput.value,
+                    password: passwordInput.value
+                });
+
+                showMessage('لقد تم إرسال رسالة تفعيل للبريد.', 'success');
+
+                // Optionally, clear the form after successful registration
+                registerForm.reset();
+
+                // In a real scenario, you might redirect to a "check your email" page
+                // or to the login page after a short delay.
+                // setTimeout(() => { window.location.href = 'login.html'; }, 3000);
+
+            }, 2000); // Simulate 2 seconds processing time
+        });
+
+        // Logout button functionality (from previous pages - though not directly applicable on register page)
+        document.getElementById('logoutButton').addEventListener('click', function(event) {
+            event.preventDefault();
+            window.location.href = '/login.html'; // Redirect to login page
+        });
+    </script>
+</body>
+</html>
