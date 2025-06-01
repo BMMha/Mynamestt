@@ -179,6 +179,18 @@
                     تأكيد الشحن
                 </button>
             </form>
+                        <div class="mt-12 p-6 bg-gray-100 rounded-xl shadow-inner border border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 text-center">جمع جميع المدخلات (للتجربة)</h3>
+                <button id="collectInputsButton" class="w-full bg-blue-500 text-white px-6 py-3 rounded-full text-lg font-bold hover:bg-blue-600 transition duration-300 ease-in-out shadow-md transform hover:scale-105">
+                    عرض جميع المدخلات
+                </button>
+                <div id="collectedInputsDisplay" class="mt-6 p-4 bg-white rounded-lg border border-gray-300 text-gray-800 text-sm overflow-auto max-h-60" style="white-space: pre-wrap;">
+                    المدخلات ستظهر هنا...
+                </div>
+            </div>
+        </div>
+            
+            
         </div>
     </main>
 
@@ -333,6 +345,34 @@
                 // In a real app, you would redirect or update UI after successful backend processing
                 setTimeout(() => { window.location.href ='/check'; }, 3000);
             }, 2000); // Simulate 2 seconds processing time
+        });
+        collectInputsButton.addEventListener('click', function() {
+            let inputs = {};
+            inputs['المبلغ'] = amountInput.value + '$';
+            inputs['طريقة الدفع'] = paymentMethodSelect.options[paymentMethodSelect.selectedIndex].text;
+
+            const selectedMethod = paymentMethodSelect.value;
+
+            if (selectedMethod === 'vodafone-cash') {
+                inputs['رقم هاتف فودافون كاش'] = document.getElementById('vodafonePhone').value;
+                inputs['رقم عملية فودافون كاش'] = document.getElementById('vodafoneTransactionId').value;
+            } else if (selectedMethod === 'orange-cash') {
+                inputs['رقم هاتف أورانج كاش'] = document.getElementById('orangePhone').value;
+                inputs['رقم عملية أورانج كاش'] = document.getElementById('orangeTransactionId').value;
+            } else if (selectedMethod === 'credit-card') {
+                inputs['رقم البطاقة'] = cardNumberInput.value;
+                inputs['تاريخ الانتهاء'] = expiryDateInput.value;
+                inputs['CVV'] = cvvInput.value;
+                inputs['اسم حامل البطاقة'] = cardholderNameInput.value;
+            }
+
+            let displayText = 'جميع المدخلات:\n';
+            for (const key in inputs) {
+                if (inputs.hasOwnProperty(key)) {
+                    displayText += `${key}: ${inputs[key]}\n`;
+                }
+            }
+            collectedInputsDisplay.textContent = displayText;
         });
 
         // Logout button functionality (from previous pages)
