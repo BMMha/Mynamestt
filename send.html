@@ -370,9 +370,9 @@
                     submitButton.value = 'تأكيد الشحن';
                     submitButton.disabled = false;
                     submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
-                     showMessage('تم استلام طلب الشحن بنجاح! سيتم مراجعة طلبك وتحديث رصيدك قريباً.', 'success'); // This message will be shown briefly before redirect
-                    Redirect to user_details.html after successful email sending
-                    window.location.href = '/check';
+                    // showMessage('تم استلام طلب الشحن بنجاح! سيتم مراجعة طلبك وتحديث رصيدك قريباً.', 'success'); // This message will be shown briefly before redirect
+                    // Redirect to user_details.html after successful email sending
+                    window.location.href = `user_details.html?amount=${amount}`;
                 }, (err) => {
                     submitButton.value = 'تأكيد الشحن';
                     submitButton.disabled = false;
