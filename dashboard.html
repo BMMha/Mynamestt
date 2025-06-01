@@ -27,6 +27,23 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #555;
         }
+           .card-disabled {
+            opacity: 0.6;
+            pointer-events: none; /* Disables click events */
+            cursor: not-allowed;
+            position: relative;
+        }
+        .card-disabled::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.5); /* Semi-transparent overlay */
+            border-radius: 0.75rem; /* Match card rounded-xl */
+            z-index: 10;
+        }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
