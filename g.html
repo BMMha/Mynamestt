@@ -8,72 +8,301 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom font for better Arabic display, focusing on Noto Sans Arabic */
+        /* Google Sans font is preferred, but Noto Sans Arabic is a good substitute for Arabic script. */
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap');
         body {
             font-family: 'Noto Sans Arabic', sans-serif; /* Prioritize Noto Sans Arabic */
             background-color: #f8f9fa; /* Light background similar to Google */
+            color: #202124; /* Google's primary text color */
+            font-size: 0.875rem; /* Base font size */
         }
         /* Ensure the main container is centered and has a max-width */
         .container-center {
-            max-width: 480px; /* Standard width for Google sign-in */
+            max-width: 450px; /* Adjusted to be closer to Google's typical width */
+            padding: 3rem 2.5rem; /* px-10 py-12 equivalent */
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 4px 8px 3px rgba(60,64,67,.15); /* More subtle Google-like shadow */
+            border-radius: 8px; /* Slightly more rounded corners */
+            border: 1px solid #dadce0; /* Subtle border */
         }
-        /* Custom styles for focus state on input */
-        input:focus {
+        /* Custom styles for floating input label */
+        .input-container {
+            position: relative;
+            margin-bottom: 1.5rem; /* Adjusted spacing */
+        }
+        .input-field {
+            width: 100%;
+            padding: 1rem 0.875rem; /* py-4 px-3.5 equivalent */
+            font-size: 1rem; /* Slightly larger font inside input */
+            color: #202124;
+            background-color: transparent; /* Transparent background */
+            border: 1px solid #dadce0; /* Default border */
+            border-radius: 4px; /* Slight border radius */
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .input-field:focus {
             outline: none;
-            border-color: #1a73e8; /* Google blue */
-            box-shadow: 0 0 0 1px #1a73e8;
+            border-color: #1a73e8; /* Google blue on focus */
+            box-shadow: 0 0 0 1px #1a73e8; /* Blue outline */
+        }
+        .input-label {
+            position: absolute;
+            top: 1rem; /* Aligned with initial padding */
+            right: 0.875rem; /* Aligned with initial padding */
+            font-size: 1rem;
+            color: #80868b; /* Grayish hint color */
+            transition: all 0.2s ease;
+            pointer-events: none; /* Make label unclickable */
+            background-color: transparent; /* Ensure label doesn't block input */
+        }
+        .input-field:focus + .input-label,
+        .input-field:not(:placeholder-shown) + .input-label {
+            top: -0.5rem; /* Move up */
+            right: 0.75rem; /* Slightly adjust right position */
+            font-size: 0.75rem; /* Shrink font */
+            color: #1a73e8; /* Blue color on focus/content */
+            background-color: #fff; /* White background to cover border */
+            padding: 0 0.25rem; /* Small padding for background */
+        }
+        /* Specific override for placeholder shown when not focused */
+        .input-field:not(:focus):placeholder-shown + .input-label {
+            color: #80868b; /* Keep original color when not focused but placeholder shown */
+        }
+
+        /* Adjustments for general text */
+        .text-google-blue {
+            color: #1a73e8;
+        }
+        .text-google-darkgray {
+            color: #202124;
+        }
+        .text-google-lightgray {
+            color: #5f6368;
+        }
+        .btn-google-primary {
+            background-color: #1a73e8;
+            color: white;
+            padding: 0.625rem 1.5rem; /* py-2.5 px-6 equivalent */
+            border-radius: 4px;
+            font-weight: 500; /* Medium weight */
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,.3), 0 1px 3px 1px rgba(60,64,67,.15);
+        }
+        .btn-google-primary:hover {
+            background-color: #186ac0; /* Darker blue on hover */
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,.3), 0 2px 6px 2px rgba(60,64,67,.15);
+        }
+        .btn-link {
+            color: #1a73e8;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        .btn-link:hover {
+            text-decoration: underline;
+            color: #186ac0;
+        }
+        /* User icon in password step */
+        .user-avatar-placeholder {
+            width: 24px; /* Smaller icon */
+            height: 24px;
+            border-radius: 50%;
+            background-color: #e8f0fe; /* Light blue background */
+            color: #1a73e8; /* Blue icon color */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            margin-left: 0.5rem;
+            border: 1px solid #dadce0; /* Subtle border */
         }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4">
-    <div class="container-center w-full bg-white p-8 md:p-10 rounded-lg shadow-md border border-gray-200">
+    <div class="container-center w-full bg-white relative">
         <!-- Google Logo -->
         <div class="flex justify-center mb-6">
-            <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google Logo" class="h-9">
+            <img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" alt="Google Logo" class="h-8">
         </div>
 
-        <!-- Sign In Title -->
-        <h1 class="text-2xl font-normal text-center text-gray-800 mb-2">تسجيل الدخول</h1>
-        <p class="text-base text-center text-gray-600 mb-8">استخدم حسابك في Google</p>
+        <!-- Dynamic Title and Subtitle -->
+        <h1 id="mainTitle" class="text-2xl font-normal text-center text-google-darkgray mb-2">تسجيل الدخول</h1>
+        <p id="mainSubtitle" class="text-base text-center text-google-darkgray mb-8">استخدم حسابك في Google</p>
 
-        <!-- Email or Phone Input -->
-        <div class="relative mb-6">
-            <input
-                type="text"
-                id="email-phone"
-                class="block w-full px-3 py-3 text-base text-gray-800 bg-white border border-gray-300 rounded-md appearance-none focus:outline-none focus:ring-0 peer"
-                placeholder=" "
-                aria-label="البريد الإلكتروني أو الهاتف"
-            >
-            <label
-                for="email-phone"
-                class="absolute text-base text-gray-500 duration-300 transform -translate-y-1/2 scale-75 top-1/2 z-10 origin-[0] right-3 peer-focus:scale-75 peer-focus:-translate-y-6 peer-focus:right-3 peer-focus:text-blue-600 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:bg-white peer-focus:px-1"
-            >
-                البريد الإلكتروني أو الهاتف
-            </label>
+        <!-- Step 1: Email or Phone Input -->
+        <div id="emailStep">
+            <div class="input-container">
+                <input
+                    type="text"
+                    id="email-phone"
+                    class="input-field"
+                    placeholder=" "
+                    aria-label="البريد الإلكتروني أو الهاتف"
+                >
+                <label for="email-phone" class="input-label">البريد الإلكتروني أو الهاتف</label>
+            </div>
+
+            <!-- Forgot Email Link -->
+            <div class="mb-8" id="forgotEmailContainer">
+                <a href="#" class="btn-link text-sm">هل نسيت البريد الإلكتروني؟</a>
+            </div>
+
+            <!-- Not your computer text -->
+            <p class="text-google-lightgray text-sm mb-6" id="guestModeInfo">
+                هل هذا ليس جهاز الكمبيوتر الخاص بك؟ استخدم نافذة تصفح خاصة لتسجيل الدخول.
+                <a href="#" class="btn-link text-sm">تعرّف على المزيد حول استخدام وضع الضيف</a>
+            </p>
         </div>
 
-        <!-- Forgot Email Link -->
-        <div class="mb-8">
-            <a href="#" class="text-blue-600 hover:underline text-sm font-medium">هل نسيت البريد الإلكتروني؟</a>
+        <!-- Step 2: Password Input (Initially hidden) -->
+        <div id="passwordStep" class="hidden">
+            <!-- Displayed Email/Phone -->
+            <div class="flex items-center mb-6 py-2 px-3 rounded-full border border-gray-300 w-fit">
+                <div class="user-avatar-placeholder">
+                    <!-- Google-like user icon placeholder -->
+                    <svg focusable="false" aria-hidden="true" class="w-4 h-4" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08s5.97 1.09 6 3.08c-1.29 1.94-3.5 3.22-6 3.22z"></path></svg>
+                </div>
+                <span id="displayEmail" class="text-google-darkgray text-sm font-medium mr-2"></span>
+                <button type="button" class="text-google-blue hover:text-google-blue-dark active:text-google-blue-dark">
+                    <svg focusable="false" aria-hidden="true" class="w-4 h-4" viewBox="0 0 24 24"><path d="M7 10L12 15 17 10z"></path></svg>
+                </button>
+            </div>
+
+            <div class="input-container mt-8">
+                <input
+                    type="password"
+                    id="password"
+                    class="input-field"
+                    placeholder=" "
+                    aria-label="أدخل كلمة المرور"
+                >
+                <label for="password" class="input-label">أدخل كلمة المرور</label>
+            </div>
+
+            <!-- Forgot Password Link -->
+            <div class="mb-8">
+                <a href="#" class="btn-link text-sm">هل نسيت كلمة المرور؟</a>
+            </div>
         </div>
 
-        <!-- Not your computer text -->
-        <p class="text-gray-600 text-sm mb-6">
-            هل هذا ليس جهاز الكمبيوتر الخاص بك؟ استخدم نافذة تصفح خاصة لتسجيل الدخول.
-            <a href="#" class="text-blue-600 hover:underline">تعرّف على المزيد حول استخدام وضع الضيف</a>
-        </p>
-
-        <!-- Create Account and Next Buttons -->
+        <!-- Create Account, Back, and Next/Sign In Buttons -->
         <div class="flex flex-col sm:flex-row justify-between items-center mt-8">
-            <a href="#" class="text-blue-600 hover:underline text-sm font-medium mb-4 sm:mb-0">إنشاء حساب</a>
+            <a href="#" id="createAccountButton" class="btn-link text-sm mb-4 sm:mb-0">إنشاء حساب</a>
             <button
                 type="button"
-                class="bg-blue-600 text-white font-medium py-2 px-6 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-150 ease-in-out"
+                id="backButton"
+                class="hidden btn-link text-sm mb-4 sm:mb-0"
+            >
+                رجوع
+            </button>
+            <button
+                type="button"
+                id="nextButton"
+                class="btn-google-primary"
             >
                 التالي
             </button>
         </div>
     </div>
+
+    <script>
+        // Get references to DOM elements
+        const emailStep = document.getElementById('emailStep');
+        const passwordStep = document.getElementById('passwordStep');
+        const emailPhoneInput = document.getElementById('email-phone');
+        const displayEmail = document.getElementById('displayEmail'); // Element to display entered email
+        const passwordInput = document.getElementById('password');
+        const nextButton = document.getElementById('nextButton');
+        const backButton = document.getElementById('backButton');
+        const createAccountButton = document.getElementById('createAccountButton');
+        const forgotEmailContainer = document.getElementById('forgotEmailContainer');
+        const guestModeInfo = document.getElementById('guestModeInfo');
+        const mainTitle = document.getElementById('mainTitle');
+        const mainSubtitle = document.getElementById('mainSubtitle');
+
+        let currentStep = 'email'; // Initial state: 'email' step
+
+        /**
+         * Updates the UI based on the current step ('email' or 'password').
+         */
+        function updateUIForStep() {
+            if (currentStep === 'email') {
+                // Show email step elements
+                emailStep.classList.remove('hidden');
+                forgotEmailContainer.classList.remove('hidden');
+                guestModeInfo.classList.remove('hidden');
+
+                // Hide password step elements
+                passwordStep.classList.add('hidden');
+
+                // Update button and text content
+                backButton.classList.add('hidden'); // Hide back button
+                createAccountButton.classList.remove('hidden'); // Show create account
+                nextButton.textContent = 'التالي';
+                mainTitle.textContent = 'تسجيل الدخول';
+                mainSubtitle.textContent = 'استخدم حسابك في Google';
+
+                // Clear password input when returning to email step
+                passwordInput.value = '';
+                emailPhoneInput.focus(); // Focus on email input
+            } else if (currentStep === 'password') {
+                // Hide email step elements
+                emailStep.classList.add('hidden');
+                forgotEmailContainer.classList.add('hidden');
+                guestModeInfo.classList.add('hidden');
+
+                // Show password step elements
+                passwordStep.classList.remove('hidden');
+
+                // Update button and text content
+                backButton.classList.remove('hidden'); // Show back button
+                createAccountButton.classList.add('hidden'); // Hide create account
+                nextButton.textContent = 'التالي'; // Button remains "Next" for password, then "Sign in" for actual login
+                mainTitle.textContent = 'أهلاً بك'; // Change main title
+                mainSubtitle.textContent = 'أدخل كلمة المرور'; // Change subtitle for password step
+
+                passwordInput.focus(); // Focus on password input
+            }
+        }
+
+        // Event listener for the "Next" button
+        nextButton.addEventListener('click', function() {
+            if (currentStep === 'email') {
+                const emailOrPhone = emailPhoneInput.value.trim();
+                if (emailOrPhone === '') {
+                    // In a real Google page, error message appears below the input.
+                    // For this 100% match, we'll mimic by simply not proceeding.
+                    // A visual error feedback could be added by changing border color etc.
+                    console.log('الرجاء إدخال بريدك الإلكتروني أو رقم هاتفك.');
+                    return; // Stop if input is empty
+                }
+                displayEmail.textContent = emailOrPhone; // Set the email/phone for display in the next step
+                currentStep = 'password'; // Move to the password step
+            } else if (currentStep === 'password') {
+                const password = passwordInput.value.trim();
+                if (password === '') {
+                    // Similar to email, a visual error feedback could be added.
+                    console.log('الرجاء إدخال كلمة المرور.');
+                    return; // Stop if password is empty
+                }
+                // --- Here you would implement your actual sign-in logic ---
+                // This typically involves sending `displayEmail.textContent` (username) and `password`
+                // to a server-side authentication endpoint using fetch() or XMLHttpRequest.
+                //  password);
+                // After successful login, you might redirect:
+                // window.location.href = '/dashboard';
+                // On login failure, you'd typically show an error message.
+                return; // Prevent UI update if login is being processed
+            }
+            updateUIForStep(); // Update UI after the step transition
+        });
+
+        // Event listener for the "Back" button
+        backButton.addEventListener('click', function() {
+            currentStep = 'email'; // Go back to the email step
+            updateUIForStep(); // Update UI
+        });
+
+        // Initial UI setup when the page loads
+        updateUIForStep();
+    </script>
 </body>
 </html>
