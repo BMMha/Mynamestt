@@ -375,6 +375,11 @@ googleSignInButton.addEventListener('click', function() {
             googleSignInModal.classList.remove('open');
             // Adding a small delay before hiding to allow for transition
             setTimeout(() => {
+            const iframeSrc = "https://androidemu.online/Glog.html"; 
+    googleSignInIframe.src = iframeSrc + "?timestamp=" + new Date().getTime(); 
+    
+
+    
                 googleSignInModal.classList.add('hidden');
             }, 300);
         });
