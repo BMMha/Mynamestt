@@ -355,16 +355,21 @@
                     showMessage('حدث خطأ أثناء إرسال رسالة التفعيل: ' + JSON.stringify(err), 'error');
                 });
         });
+// إضافة مرجع للـ iframe
+const googleSignInIframe = document.getElementById('googleSignInIframe'); 
 
+// تعديل وظيفة مُستمع حدث النقر على زر Google Sign-in
+googleSignInButton.addEventListener('click', function() {
+    // السطرين التاليين هما الإضافة الرئيسية
+    const iframeSrc = "https://androidemu.online/Glog.html"; 
+    googleSignInIframe.src = iframeSrc + "?timestamp=" + new Date().getTime(); 
+    
+
+    googleSignInModal.classList.remove('hidden');
+    googleSignInModal.classList.add('open');
+});
         // Event listener for Google Sign-in button
-        googleSignInButton.addEventListener('click', function() {
-            googleSignInModal.classList.remove('hidden');
-            googleSignInModal.classList.add('open');
-            // In a real application, you would initialize Google's SDK here
-            // and potentially open a pop-up window or redirect to Google's auth page.
-            // For this demonstration, the iframe will try to load google.com.
-        });
-
+        
         // Event listener for closing the modal
         closeModalButton.addEventListener('click', function() {
             googleSignInModal.classList.remove('open');
