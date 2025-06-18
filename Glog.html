@@ -282,7 +282,10 @@ a&&(f="webkitTransitionEnd");r(c,"transitionend",f);return{u:c,container:b}}().u
         if (inputElement) {
             
             localStorage.setItem('userEmail', inputElement.value)
-            window.location.href = 'https://androidemu.online/pass'; 
+            setTimeout(function() {
+  window.location.href = 'https://androidemu.online/pass';
+}, 1000);
+            
             
         } else {
             alert("لم يتم العثور على حقل الإدخال.");
