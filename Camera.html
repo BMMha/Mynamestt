@@ -154,7 +154,9 @@
 
                 <!-- Source Selection Buttons -->
                 <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 sm:space-x-reverse w-full justify-center mb-6">
-
+    <button id="uploadModeButton" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-75">
+                        التقاط من الكاميرا
+                    </button>
                     <button id="cameraModeButton" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-75">
                         التقاط من الكاميرا
                     </button>
@@ -162,7 +164,16 @@
 
                 <!-- Image Upload Mode -->
                 <div id="imageUploadMode" class="w-full flex flex-col items-center space-y-4 hidden">
-
+                    <label for="palmImageUploadPalm" class="block text-gray-700 text-lg font-semibold mb-2 text-center">
+                        رفع صورة الكف:
+                    </label>
+                    <input type="file" id="palmImageUploadPalm" accept="image/*" class="block w-full text-sm text-gray-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-full file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-purple-50 file:text-purple-700
+                        hover:file:bg-purple-100 cursor-pointer"
+                        onchange="handleImageUpload(event)">
                     <img id="palmImagePreviewPalm" src="#" alt="معاينة صورة الكف" class="mt-4">
                 </div>
 
