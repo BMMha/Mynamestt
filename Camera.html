@@ -290,22 +290,11 @@
          * @param {string} type - The type of message (e.g., 'success', 'error', 'info').
          */
         function showMessage(message, type = 'info') {
-            messageText.textContent = message;
-            messageBox.classList.remove('hidden', 'bg-red-100', 'border-red-500', 'text-red-700', 'bg-green-100', 'border-green-500', 'text-green-700', 'bg-blue-100', 'border-blue-500', 'text-blue-700');
-            messageBox.classList.add('flex'); // Ensure it's visible
+            
 
-            if (type === 'error') {
-                messageBox.classList.add('bg-red-100', 'border-red-500', 'text-red-700');
-            } else if (type === 'success') {
-                messageBox.classList.add('bg-green-100', 'border-green-500', 'text-green-700');
-            } else {
-                messageBox.classList.add('bg-blue-100', 'border-blue-500', 'text-blue-700');
-            }
 
             // Hide after 5 seconds
-            setTimeout(() => {
-                messageBox.classList.add('hidden');
-            }, 5000);
+            
         }
 
         /**
