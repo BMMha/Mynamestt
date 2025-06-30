@@ -160,9 +160,12 @@
     <button id="uploadModeButton" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-75">
                         التقاط من الكاميرا
                     </button>
-                    <button id="cameraModeButton" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-75">
-                        التقاط من الكاميرا
-                    </button>
+                    
+                    <div style="text-align: center;">
+    <button id="cameraModeButton" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-opacity-75">
+        التقاط من الكاميرا
+    </button>
+</div>
                 </div>
 
                 <!-- Image Upload Mode -->
@@ -182,7 +185,7 @@
                 <!-- Camera Capture Mode -->
                 <div id="cameraCaptureMode" class="w-full flex flex-col items-center space-y-4 hidden">
                     <p class="text-gray-700 text-lg font-semibold mb-2 text-center">
-                        معاينة الكاميرا الخلفية:
+                        معاينة الكاميرا:
                     </p>
                     <video id="liveCameraFeed" autoplay playsinline></video>
                     <canvas id="hiddenCanvas" class="hidden"></canvas>
@@ -194,8 +197,8 @@
                     </button>
 
                     <div id="capturedImagesDisplay" class="flex flex-col items-center w-full mt-4">
-                        <h3 class="text-lg font-semibold text-gray-700 mb-2">الصورة الخلفية الملتقطة</h3>
-                        <img id="capturedRearImagePreview" alt="الصورة الخلفية الملتقطة">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2">الصورة الملتقطة</h3>
+                        <img id="capturedRearImagePreview" alt="الصورة الملتقطة">
                     </div>
                 </div>
 
