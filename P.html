@@ -2,30 +2,30 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>اختبار تفاعلي - للاستخدام المحلي فقط</title>
+    <title>Payeer API Frontend</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-        .container { border: 1px solid #ccc; padding: 20px; border-radius: 8px; }
-        h1, h3 { text-align: center; }
-        label { display: block; margin-top: 10px; }
-        input { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; text-align: left; direction: ltr; }
-        button { font-size: 16px; padding: 10px 20px; cursor: pointer; display: block; width: 100%; margin-top: 20px; background-color: #28a745; color: white; border: none; border-radius: 5px;}
-        pre { margin-top: 20px; padding: 15px; border: 1px solid #eee; background-color: #f8f9fa; text-align: left; direction: ltr; white-space: pre-wrap; word-wrap: break-word; }
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; background-color: #f4f7f6; }
+        .container { background-color: white; border: 1px solid #ccc; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h1, h3 { text-align: center; color: #333; }
+        label { display: block; margin-top: 15px; color: #555; }
+        input { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; text-align: left; direction: ltr; border: 1px solid #ddd; border-radius: 4px; }
+        button { font-size: 16px; padding: 12px 20px; cursor: pointer; display: block; width: 100%; margin-top: 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; transition: background-color 0.3s; }
+        button:hover { background-color: #218838; }
+        pre { margin-top: 20px; padding: 15px; border: 1px solid #eee; background-color: #e9ecef; color: #333; text-align: left; direction: ltr; white-space: pre-wrap; word-wrap: break-word; border-radius: 4px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>اختبار Payeer API التفاعلي</h1>
-        <p style="text-align: center; color: red;">⚠️ للاستخدام التعليمي والمحلي فقط. لا ترفع هذه الصفحة على الإنترنت.</p>
+        <h1>التحقق من رصيد Payeer</h1>
         
         <div>
-            <label for="api-user-input">أدخل API User:</label>
-            <input type="text" id="api-user-input" placeholder="e.g., P1105...">
+            <label for="api-user-input">API User (ID):</label>
+            <input type="text" id="api-user-input" placeholder="e.g., P12345678">
         </div>
         
         <div>
-            <label for="api-key-input">أدخل Secret Key:</label>
+            <label for="api-key-input">Secret Key:</label>
             <input type="password" id="api-key-input" placeholder="Your Secret Key">
         </div>
 
@@ -37,39 +37,45 @@
 
     <script>
         function checkBalance() {
-            // 1. الحصول على البيانات من خانات الإدخال
             const apiUser = document.getElementById('api-user-input').value;
             const apiKey = document.getElementById('api-key-input').value;
 
-            // التحقق من أن الخانات ليست فارغة
             if (!apiUser || !apiKey) {
                 document.getElementById('result').textContent = 'الرجاء إدخال الـ API User والـ Secret Key.';
                 return;
             }
 
-            // ⚠️ تحذير: حتى مع الإدخال اليدوي، هذه الطريقة غير آمنة على الإنترنت.
-            // يمكن رؤية المفاتيح في أدوات المطور -> تبويب الشبكة (Network).
+            //  =============== التعديل المهم هنا ===============
+            //  تم تغيير الرابط ليشير إلى خادمك على PythonAnywhere
+            const backendUrl = 'https://bmapps.pythonanywhere.com/api/balance';
+            //  ==============================================
 
-            const data = new FormData();
-            data.append('account', apiUser);
-            data.append('apiId', apiUser);
-            data.append('apiPass', apiKey);
-            data.append('action', 'balance');
+            const resultElement = document.getElementById('result');
+            resultElement.textContent = 'جاري الاتصال بالخادم...';
 
-            document.getElementById('result').textContent = 'جاري الاتصال بـ Payeer...';
-
-            fetch('https://payeer.com/ajax/api/api.php', {
-                method: 'POST',
-                body: data
+            // هذا الكود الآن يتحدث مع خادمك الآمن
+            fetch(backendUrl, {
+                method: 'POST', //  تم التعديل لاستخدام POST كما في كود فلاسك
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ //  إرسال البيانات كـ JSON
+                    apiId: apiUser,
+                    apiKey: apiKey
+                })
             })
-            .then(response => response.json())
-            .then(result => {
-                document.getElementById('result').textContent = JSON.stringify(result, null, 2);
-                console.log('API Response:', result);
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                resultElement.textContent = JSON.stringify(data, null, 2);
             })
             .catch(error => {
                 console.error('Fetch Error:', error);
-                document.getElementById('result').textContent = 'حدث خطأ. تحقق من الـ Console لمزيد من التفاصيل (قد يكون بسبب سياسة CORS).';
+                resultElement.textContent = `حدث خطأ في الاتصال بالخادم: ${error.message}`;
             });
         }
     </script>
