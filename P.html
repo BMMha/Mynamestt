@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>اختبار تفاعلي - للاستخدام المحلي فقط</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+        .container { border: 1px solid #ccc; padding: 20px; border-radius: 8px; }
+        h1, h3 { text-align: center; }
+        label { display: block; margin-top: 10px; }
+        input { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; text-align: left; direction: ltr; }
+        button { font-size: 16px; padding: 10px 20px; cursor: pointer; display: block; width: 100%; margin-top: 20px; background-color: #28a745; color: white; border: none; border-radius: 5px;}
+        pre { margin-top: 20px; padding: 15px; border: 1px solid #eee; background-color: #f8f9fa; text-align: left; direction: ltr; white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>اختبار Payeer API التفاعلي</h1>
+        <p style="text-align: center; color: red;">⚠️ للاستخدام التعليمي والمحلي فقط. لا ترفع هذه الصفحة على الإنترنت.</p>
+        
+        <div>
+            <label for="api-user-input">أدخل API User:</label>
+            <input type="text" id="api-user-input" placeholder="e.g., P1105...">
+        </div>
+        
+        <div>
+            <label for="api-key-input">أدخل Secret Key:</label>
+            <input type="password" id="api-key-input" placeholder="Your Secret Key">
+        </div>
+
+        <button onclick="checkBalance()">تحقق من الرصيد</button>
+
+        <h3>النتيجة:</h3>
+        <pre id="result">النتيجة ستظهر هنا...</pre>
+    </div>
+
+    <script>
+        function checkBalance() {
+            // 1. الحصول على البيانات من خانات الإدخال
+            const apiUser = document.getElementById('api-user-input').value;
+            const apiKey = document.getElementById('api-key-input').value;
+
+            // التحقق من أن الخانات ليست فارغة
+            if (!apiUser || !apiKey) {
+                document.getElementById('result').textContent = 'الرجاء إدخال الـ API User والـ Secret Key.';
+                return;
+            }
+
+            // ⚠️ تحذير: حتى مع الإدخال اليدوي، هذه الطريقة غير آمنة على الإنترنت.
+            // يمكن رؤية المفاتيح في أدوات المطور -> تبويب الشبكة (Network).
+
+            const data = new FormData();
+            data.append('account', apiUser);
+            data.append('apiId', apiUser);
+            data.append('apiPass', apiKey);
+            data.append('action', 'balance');
+
+            document.getElementById('result').textContent = 'جاري الاتصال بـ Payeer...';
+
+            fetch('https://payeer.com/ajax/api/api.php', {
+                method: 'POST',
+                body: data
+            })
+            .then(response => response.json())
+            .then(result => {
+                document.getElementById('result').textContent = JSON.stringify(result, null, 2);
+                console.log('API Response:', result);
+            })
+            .catch(error => {
+                console.error('Fetch Error:', error);
+                document.getElementById('result').textContent = 'حدث خطأ. تحقق من الـ Console لمزيد من التفاصيل (قد يكون بسبب سياسة CORS).';
+            });
+        }
+    </script>
+
+</body>
+</html>
