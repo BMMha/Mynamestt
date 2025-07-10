@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><meta charset="UTF-8">
+<head>
+    <title>تجربة Iframe النهائية</title>
+</head>
+<body>
+    <h1>الصفحة الرئيسية (المهاجم)</h1>
+    <p>سيتم حقن الصفحة الضحية في الإطار أدناه.</p>
+    <hr>
+    <iframe id="victim-frame" style="width: 100%; height: 200px; border: 2px solid red;"></iframe>
+
+    <script>
+        // --- 1. كود المهاجم (في الصفحة الرئيسية) ---
+
+        // نقوم بتلويث البيئة كما في السابق
+        Object.prototype.executeMaliciousCode = function() {
+            alert('!!! نجح الهجوم !!! تم تشغيل الكود من الصفحة الأب داخل الابن (iframe)');
+        };
+        console.log("Parent page has polluted the prototype.");
+
+
+        // --- 2. كود الضحية (سيتم حقنه في الـ iframe) ---
+        
+        // هذا هو محتوى الصفحة البريئة
+        const victimHTML = `
+            <!DOCTYPE html>
+            <html>
+            <body>
+                <h3>أنا الصفحة الضحية داخل الإطار</h3>
+                <script>
+                    console.log("Victim iframe script is trying to run...");
+                    let innocentObject = {};
+                    // هذا السطر سينفجر لأنه سيرث الكود الملوث من الصفحة الأب
+                    innocentObject.executeMaliciousCode();
+                <\/script>
+            </body>
+            </html>
+        `;
+
+        // --- 3. حقن الضحية في الإطار ---
+        
+        // نجد الإطار ونضع فيه كود الضحية ليتم عرضه
+        const iframe = document.getElementById('victim-frame');
+        iframe.srcdoc = victimHTML;
+        console.log("Victim HTML has been injected into the iframe.");
+
+    </script>
+
+</body>
+</html>
