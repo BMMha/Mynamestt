@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مشغل فيديو - تصميم جديد</title>
+    <!-- 1. تضمين مكتبة Font Awesome للأيقونات -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- 2. تضمين مكتبة hls.js -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            font-family: system-ui, sans-serif;
+            color: white;
+        }
+
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #videoPlayer {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* استخدام contain للحفاظ على أبعاد الفيديو */
+            cursor: pointer;
+        }
+        
+        /* حاوية التحكم الرئيسية */
+        .controls-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 30px;
+            background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* المسافة بين الصفوف */
+
+            /* إخفاء الأزرار بشكل افتراضي */
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .video-container.controls-visible .controls-container {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* الصف العلوي: شريط التقدم */
+        .top-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            width: 100%;
+        }
+        .timeline-container {
+            flex-grow: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: height 0.2s ease;
+        }
+        .timeline-container:hover {
+            height: 6px;
+        }
+        .timeline {
+            height: 100%;
+            background: white;
+            width: 0;
+            border-radius: 5px;
+            position: relative;
+        }
+        .timeline::after { /* مؤشر شريط التقدم */
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+        }
+        .time-display {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* الصف السفلي: أزرار التحكم الرئيسية */
+        .bottom-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 40px; /* مسافة كبيرة بين الأزرار */
+        }
+        .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.8rem; /* حجم الأيقونات الصغيرة */
+            transition: transform 0.2s ease;
+        }
+        .control-btn:hover {
+            transform: scale(1.1);
+        }
+        .main-play-btn {
+            font-size: 3.5rem; /* تكبير زر التشغيل/الإيقاف */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="video-container" id="videoContainer">
+        <video id="videoPlayer" autoplay muted></video>
+        
+        <div class="controls-container">
+            <!-- الصف العلوي -->
+            <div class="top-controls">
+                <span class="time-display" id="currentTime">0:00</span>
+                <div class="timeline-container">
+                    <div class="timeline"></div>
+                </div>
+                <span class="time-display" id="totalTime">0:00</span>
+            </div>
+            <!-- الصف السفلي -->
+            <div class="bottom-controls">
+                <button class="control-btn" id="rewindBtn"><i class="fas fa-history"></i></button>
+                <button class="control-btn main-play-btn" id="playPauseBtn"><i class="fas fa-play"></i></button>
+                <button class="control-btn" id="forwardBtn"><i class="fas fa-redo"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- الكود الوظيفي (معظمه من الإصدار السابق) ---
+        const videoSrc = 'http://bdd78.4rouwanda-shop.store/live/31009988005/index.m3u8?t=JUN3tZx7aBoh1cZuUk1YRQ&e=1755199323';
+        const videoContainer = document.getElementById('videoContainer');
+        const videoElement = document.getElementById('videoPlayer');
+        
+        // استهداف الأزرار الجديدة
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const rewindBtn = document.getElementById('rewindBtn');
+        const forwardBtn = document.getElementById('forwardBtn');
+        const timelineContainer = document.querySelector('.timeline-container');
+        const timeline = document.querySelector('.timeline');
+        const currentTimeEl = document.getElementById('currentTime');
+        const totalTimeEl = document.getElementById('totalTime');
+
+        // إظهار وإخفاء الأزرار عند النقر
+        videoElement.addEventListener('click', () => {
+            videoContainer.classList.toggle('controls-visible');
+        });
+
+        // تشغيل وإيقاف
+        playPauseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            videoElement.paused ? videoElement.play() : videoElement.pause();
+        });
+        videoElement.addEventListener('play', () => playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>');
+        videoElement.addEventListener('pause', () => playPauseBtn.innerHTML = '<i class="fas fa-play"></i>');
+
+        // تقديم وإرجاع
+        rewindBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            videoElement.currentTime -= 10;
+        });
+        forwardBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            videoElement.currentTime += 10;
+        });
+
+        // شريط التقدم والوقت
+        videoElement.addEventListener('loadeddata', () => totalTimeEl.textContent = formatTime(videoElement.duration));
+        videoElement.addEventListener('timeupdate', () => {
+            const percent = (videoElement.currentTime / videoElement.duration) * 100;
+            timeline.style.width = `${percent}%`;
+            currentTimeEl.textContent = formatTime(videoElement.currentTime);
+        });
+        timelineContainer.addEventListener('click', e => {
+            e.stopPropagation();
+            const rect = timelineContainer.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            videoElement.currentTime = percent * videoElement.duration;
+        });
+        function formatTime(time) {
+            const seconds = Math.floor(time % 60);
+            const minutes = Math.floor(time / 60);
+            return `${minutes}:${String(seconds).padStart(2, '0')}`;
+        }
+
+
+        // --- كود تشغيل HLS.js (بدون تغيير) ---
+        class JsSegmentLoader extends Hls.DefaultConfig.loader {
+            constructor(config) { super(config); this.urlMap = config.urlMap; }
+            load(context, config, callbacks) {
+                if (this.urlMap.has(context.url)) { context.url = this.urlMap.get(context.url); }
+                super.load(context, config, callbacks);
+            }
+        }
+        async function initializePlayer() {
+            try {
+                const response = await fetch(videoSrc);
+                if (!response.ok) { throw new Error('Failed to fetch M3U8'); }
+                const playlistText = await response.text();
+                const urlMap = new Map();
+                let modifiedPlaylist = '';
+                const baseUrl = videoSrc.substring(0, videoSrc.lastIndexOf('/') + 1);
+                playlistText.split('\n').forEach(line => {
+                    if (line.trim().length > 0 && !line.startsWith('#') && line.includes('.js')) {
+                        const originalUrl = line.startsWith('http') ? line : baseUrl + line;
+                        const modifiedUrl = originalUrl.replace(/\.js/g, '.ts');
+                        urlMap.set(modifiedUrl, originalUrl);
+                        modifiedPlaylist += line.replace(/\.js/g, '.ts') + '\n';
+                    } else {
+                        modifiedPlaylist += line + '\n';
+                    }
+                });
+                if (Hls.isSupported()) {
+                    const hls = new Hls({ fLoader: (config) => new JsSegmentLoader({ ...config, urlMap }), });
+                    const blob = new Blob([modifiedPlaylist], { type: 'application/vnd.apple.mpegurl' });
+                    const blobUrl = URL.createObjectURL(blob);
+                    hls.loadSource(blobUrl);
+                    hls.attachMedia(videoElement);
+                    hls.on(Hls.Events.MEDIA_ATTACHED, () => videoElement.play());
+                }
+            } catch (error) {
+                console.error('Error initializing player:', error);
+                videoElement.src = videoSrc;
+            }
+        }
+        initializePlayer();
+    </script>
+
+</body>
+</html>
