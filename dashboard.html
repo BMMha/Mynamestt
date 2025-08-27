@@ -82,7 +82,7 @@
             const statusIndicator = document.getElementById('status-indicator');
 
             // =======================================================================
-            
+            //  دالة العداد المتحرك التي تعمل مرة واحدة فقط
             // =======================================================================
             function animateValue(obj, start, end, duration) {
                 let startTimestamp = null;
@@ -97,22 +97,22 @@
                 window.requestAnimationFrame(step);
             }
             
-            /
+
             animateValue(emailsVerifiedElement, 0, 7843, 2000);
 
-            // إضافة رسالة ترحيب أولية للسجل
+
             const welcomeLog = document.createElement('p');
             welcomeLog.innerHTML = `<span class="text-gray-500">[${new Date().toLocaleTimeString('ar-EG')}]</span> <span class="text-cyan-400">النظام:</span> تم الاتصال بنجاح. في انتظار أول رسالة اختبار...`;
             logContainer.prepend(welcomeLog);
 
             // =======================================================================
-
+            //  محاكاة وصول أول رسالة بعد 5 ثوانٍ ثم التوقف
             // =======================================================================
             setTimeout(() => {
                 // 1. تحديث الرصيد
                 balanceElement.textContent = `$0.10`;
 
-
+                // 2. زيادة العداد بواحد
                 animateValue(emailsVerifiedElement, 7843, 7844, 500);
 
                 // 3. إضافة سجل جديد للعملية
@@ -122,7 +122,7 @@
                 newLog.innerHTML = `<span class="text-gray-500">[${timeString}]</span> <span class="text-green-400">نجاح:</span> تم التحقق من وصول رسالة الاختبار #1 وتسجيل الربح.`;
                 logContainer.prepend(newLog);
 
-
+                // 4. تغيير حالة النظام إلى "في وضع الاستعداد"
                 statusIndicator.innerHTML = `<span class="w-2 h-2 bg-gray-400 rounded-full ml-2"></span> في وضع الاستعداد`;
                 statusIndicator.classList.remove('bg-yellow-100', 'text-yellow-800');
                 statusIndicator.classList.add('bg-gray-200', 'text-gray-700');
