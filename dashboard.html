@@ -54,7 +54,7 @@
             <!-- Card 1: Main Balance -->
             <div class="bg-gradient-to-br from-cyan-500 to-blue-600 text-white p-6 rounded-lg shadow-lg fade-in" style="animation-delay: 0.2s;">
                 <p class="text-lg text-cyan-100">رصيدك الحالي</p>
-                <p id="balance" class="text-5xl font-extrabold tracking-wider mt-2">$0.70</p>
+                <p id="balance" class="text-5xl font-extrabold tracking-wider mt-2">$0.00</p>
                 <p class="text-sm text-cyan-200 mt-4">سيتم تحديث الرصيد تلقائيًا.</p>
             </div>
             <!-- Card 2: Emails Verified -->
@@ -110,7 +110,7 @@
             // =======================================================================
             setTimeout(() => {
                 // 1. تحديث الرصيد
-                balanceElement.textContent = `$1.20`;
+                balanceElement.textContent = `$0.10`;
 
                 // 2. زيادة العداد بواحد
                 animateValue(emailsVerifiedElement, 7843, 7844, 500);
