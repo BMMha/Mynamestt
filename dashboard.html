@@ -44,7 +44,7 @@
                 <h1 class="text-3xl font-bold text-gray-800">لوحة التحكم</h1>
                 <span id="status-indicator" class="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm font-bold rounded-full flex items-center">
                     <span class="w-2 h-2 bg-yellow-500 rounded-full ml-2 animate-pulse"></span>
-                    في انتظار أول رسالة...
+                    في المزامنه...
                 </span>
             </div>
         </div>
@@ -112,15 +112,15 @@
                 window.requestAnimationFrame(step);
             }
             
-            animateValue(emailsVerifiedElement, 0, 7843, 2000);
+            animateValue(emailsVerifiedElement, 0, 12, 2000);
 
             const welcomeLog = document.createElement('p');
             welcomeLog.innerHTML = `<span class="text-gray-500">[${new Date().toLocaleTimeString('ar-EG')}]</span> <span class="text-cyan-400">النظام:</span> تم الاتصال بنجاح. في انتظار أول رسالة اختبار...`;
             logContainer.prepend(welcomeLog);
 
             setTimeout(() => {
-                balanceElement.textContent = `$0.10`;
-                animateValue(emailsVerifiedElement, 7843, 1, 500);
+                balanceElement.textContent = `$1.20`;
+                animateValue(emailsVerifiedElement, 12, 1, 500);
                 const now = new Date();
                 const timeString = now.toLocaleTimeString('ar-EG');
                 const newLog = document.createElement('p');
