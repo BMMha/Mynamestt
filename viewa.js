@@ -230,7 +230,7 @@ function addTimer(id, seconds = 0, tabId = null) {
     $("#start-ads-" + id).css({ "display": "none" });
     $("#started-ads-" + id).css({ "display": "none" });
     $("#ads_checking_btn_" + id).css({ "display": "" });
-    $("#ads_btn_confirm_" + timer.idCampaign).click();
+    $("#ads_btn_confirm_" + timer.idCampaign)[0].click();
     // 3. نحدّث عنوان الصفحة ليعكس أن المهمة جاهزة للتأكيد
     updateTitle();
 
