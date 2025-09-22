@@ -160,8 +160,113 @@ function updateTitle() {
         console.error('Ошибка при обновлении заголовка:', error);
     }
 }
-
 function addTimer(id, seconds = 0, tabId = null) {
+
+    if (!tabId || tabId !== tabUniqueId) {
+        return;
+    }
+
+    let newTimer = {
+        id: `ads_${id}`,
+        idCampaign: id,
+        startTimer: seconds,
+        totalSeconds: seconds,
+        tabId: tabUniqueId,
+        isLoading: true,
+        addedTime: Date.now()
+    };
+
+    const existingTabId = localStorage.getItem(`timer_tab_${id}`);
+    if (existingTabId) {
+        const existingTimerIndex = timersAdsDirect.findIndex(t => t.idCampaign === id);
+        if (existingTimerIndex !== -1 && timersAdsDirect[existingTimerIndex].startTimer > 0) {
+            timersAdsDirect[existingTimerIndex].isLoading = true;
+            updateTitle();
+
+            (() => {
+                let blob = new Blob([
+                    `self.onmessage = function(e) {
+                        setTimeout(function() {
+                            self.postMessage('timeout');
+                        }, e.data);
+                    }`
+                ], {
+                    type: 'application/javascript'
+                });
+                let workerStartAndUpdateTimer = new Worker(URL.createObjectURL(blob));
+                workerStartAndUpdateTimer.onmessage = function() {
+                    if (timersAdsDirect[existingTimerIndex]) {
+                        timersAdsDirect[existingTimerIndex].isLoading = false;
+                        updateTitle();
+                    }
+                    workerStartAndUpdateTimer.terminate();
+                };
+                workerStartAndUpdateTimer.postMessage(5000);
+                return workerStartAndUpdateTimer;
+            })();
+            return;
+        }
+        localStorage.removeItem(`timer_tab_${id}`);
+        localStorage.removeItem(`timer_state_${id}`);
+    }
+
+    localStorage.setItem(`timer_tab_${id}`, tabId);
+
+    const timerState = {
+        startTime: Date.now(),
+        duration: seconds
+    };
+    localStorage.setItem(`timer_state_${id}`, JSON.stringify(timerState));
+
+    addOrUpdateTimer(newTimer);
+
+    // --- بداية التعديل التلقائي ---
+
+    // 1. نجعل المؤقت يعتقد أن وقته قد انتهى فورًا بتعيين قيمته إلى صفر
+    newTimer.startTimer = 0;
+    newTimer.needConfirm = true; // نُخبر النظام أن المهمة تحتاج إلى تأكيد
+
+    // 2. نخفي واجهة البدء والعداد، ونظهر زر التأكيد مباشرةً
+    $("#start-ads-" + id).css({ "display": "none" });
+    $("#started-ads-" + id).css({ "display": "none" });
+    $("#ads_checking_btn_" + id).css({ "display": "" });
+
+    // 3. نحدّث عنوان الصفحة ليعكس أن المهمة جاهزة للتأكيد
+    updateTitle();
+
+    // 4. تم تعطيل الكود الأصلي الذي كان يبدأ المؤقت، لذلك لن يتم تشغيله
+    /*
+    newTimer.loadTimerWorker = (() => {
+        let blob1 = new Blob([
+            `self.onmessage = function(e) {
+                setTimeout(function() {
+                    self.postMessage('timeout');
+                }, e.data);
+            }`
+        ], {type: 'application/javascript'});
+        let workerStartTimer = new Worker(URL.createObjectURL(blob1));
+        workerStartTimer.onmessage = function () {
+            let timerIndex = timersAdsDirect.findIndex(t => t.id === `ads_${id}`);
+            if (timerIndex !== -1) {
+                timersAdsDirect[timerIndex].isLoading = false;
+                if (workerAdsDirect) {
+                    timersAdsDirect[timerIndex].currentTime = Date.now();
+                    workerAdsDirect.postMessage({action: 'start', timer: timersAdsDirect[timerIndex]});
+                } else {
+                    console.error('worker_timer_direct не инициализирован');
+                }
+                updateTitle();
+            }
+            workerStartTimer.terminate();
+        };
+        workerStartTimer.postMessage(5000);
+        return worker;
+    })();
+    */
+
+    // --- نهاية التعديل التلقائي ---
+}
+function addTimergyoj(id, seconds = 0, tabId = null) {
 
     if(!tabId || tabId !== tabUniqueId){
         return;
