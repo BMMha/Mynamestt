@@ -527,7 +527,7 @@ funcjs['start_youtube_new'] = function (id = '', timer = 0, url = '', checkCooki
         $("#start-ads-" + id).html('<div class="youtube-button"><span class="status-link-youtube" onclick="window.location.reload(); return false;">Обновить страницу </span></div>');
         return false;
     }
-
+startTask = false;
     if (startTask && (new Date().getTime() - startTask) < 14000) {
         error_start('<span class="msg-error">Вы уже выполняете задачу. Подождите 10 секунд, прежде чем открыть следующую.</span>', '#error-footer', 3000);
         return false;
