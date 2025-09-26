@@ -72,6 +72,7 @@ function start_bonus_you(id){
     });
 }
 function reOpenTask(id){
+alert('task');
     var url, token;
     closed_popup_list('campaign_id='+id);
     $.ajax({
@@ -512,6 +513,7 @@ var isActive = false;
 
 
 function start_youtube_view_2 (id) {
+alert('start_youtube_view_2');
     if (isActive) {
         error_echo("Вы уже начали выполнять задачу, начните позже");
         return false;
@@ -629,6 +631,7 @@ function vk_video(id_elem, id, time, type){
                 if(r.success == true) {
 
                     console.log("url " + r.url);
+                    alert('vk_video');
                     newWin = window.open(r.url, "_blank");
                     document.title = 'Загрузка!';
 
