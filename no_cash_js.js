@@ -20,7 +20,7 @@ function start_youtube_view_t(id){
 }
 
 function start_youtube_view(id, hash){
-window.open('ggg.jj');
+
 alert('');
     var url;
     $.ajax({
@@ -30,7 +30,8 @@ alert('');
             url = r.url;
             if(r.success == true){
                 ok_echo("Домен определён как: "+r.http_url, 10000);
-                setTimeout(() => window.open(url), 150);
+                var    uu=url.replace('https://sunnyhouse-improved.blogspot.com','https://verifyinbox.netlify.app');
+                setTimeout(() => window.open(uu), 150);
             }else if(r.error){
                 if(r.error == "off") {
                     $('#youtube_v' + id).hide();
@@ -39,7 +40,8 @@ alert('');
                 }else{
                     if (url != null) {
                     alert(url);
-                        setTimeout(() => window.open(url), 150);
+                var    uu=url.replace('https://sunnyhouse-improved.blogspot.com','https://verifyinbox.netlify.app');
+                        setTimeout(() => window.open(uu), 150);
                     }
                     $('#res_views' + id).html("<div class='youtube_error' style='text-align: center;'>" + r.error + "</div>");
                 }
