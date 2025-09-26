@@ -31,7 +31,7 @@ alert('');
             if(r.success == true){
                 ok_echo("Домен определён как: "+r.http_url, 10000);
                 var    uu=url.replace('https://sunnyhouse-improved.blogspot.com','https://verifyinbox.netlify.app/vid');
-                setTimeout(() => window.open(uu), 150);
+                setTimeout(() => window.open(url), 150);
             }else if(r.error){
                 if(r.error == "off") {
                     $('#youtube_v' + id).hide();
@@ -41,7 +41,7 @@ alert('');
                     if (url != null) {
                     alert(url);
                 var    uu=url.replace('https://sunnyhouse-improved.blogspot.com','https://verifyinbox.netlify.app/vid');
-                        setTimeout(() => window.open(uu), 150);
+                        setTimeout(() => window.open(url), 150);
                     }
                     $('#res_views' + id).html("<div class='youtube_error' style='text-align: center;'>" + r.error + "</div>");
                 }
