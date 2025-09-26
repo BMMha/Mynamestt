@@ -1,4 +1,5 @@
 //Просмотры
+alert('');
 function start_youtube_go(url, id){
     ws = window.open(url);
     ws.focus();
@@ -19,6 +20,8 @@ function start_youtube_view_t(id){
 }
 
 function start_youtube_view(id, hash){
+window.open('ggg.jj');
+alert('');
     var url;
     $.ajax({
         type: "POST", url: "/site_youtube/ajax/ajax_youtube_nobd.php", data: { 'sf' : 'start_youtube_view_y', 'id' : id, 'hash' : hash },
