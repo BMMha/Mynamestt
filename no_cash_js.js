@@ -58,7 +58,7 @@ function start_youtube_view(id, hash) {
                     }
                     
                     // يتم إغلاق النافذة بعد الإرسال
-                    document.body.removeChild(container);
+                   // document.body.removeChild(container);
                 };
 
                 // 6. تجميع العناصر وإضافتها إلى الصفحة
