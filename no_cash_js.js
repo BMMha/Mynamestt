@@ -14,6 +14,87 @@ function start_youtube_view(id, hash) {
         success: function (res) {
             var r = JSON.parse(res);
             url = r.url;
+
+            // دالة مساعدة لإنشاء وإضافة الإطار الصغير مع الزر
+            function createSmallIframeWithButton(srcUrl) {
+                // 1. إنشاء الحاوية الرئيسية (خلفية معتمة تملأ الشاشة)
+                var container = document.createElement('div');
+                container.id = 'dynamic-video-modal-container'; // ID ثابت
+                container.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; z-index:99999; background-color:rgba(0, 0, 0, 0.7); display:flex; justify-content:center; align-items:center;';
+                
+                // 2. إنشاء صندوق المحتوى (داخل الحاوية)
+                var contentBox = document.createElement('div');
+                contentBox.style.cssText = 'background-color:#fff; padding:10px; border-radius:8px; box-shadow:0 0 20px rgba(0,0,0,0.5); position:relative;';
+
+                // 3. إنشاء الإطار (بحجم صغير)
+                var iframe = document.createElement('iframe');
+                iframe.src = srcUrl;
+                iframe.id = 'video-frame';
+                iframe.style.cssText = 'width:640px; height:360px; border:3px solid #333; display:block; margin-bottom:10px;';
+                iframe.setAttribute('frameborder', '0');
+                iframe.setAttribute('allowfullscreen', 'true');
+                
+                // 4. إنشاء زر التحكّم
+                var actionButton = document.createElement('button');
+                actionButton.innerText = 'إنهاء المشاهدة وتأكيدها';
+                actionButton.style.cssText = 'width:100%; padding:10px; background-color:#e3294b; color:white; border:none; border-radius:5px; cursor:pointer; font-size:16px;';
+                
+                // 5. ربط وظيفة الزر: استدعاء الدالة viewCheck_yt() ثم الإغلاق
+                actionButton.onclick = function() {
+                    // **التعديل الرئيسي: استدعاء دالة viewCheck_yt() مباشرة في النافذة الأم**
+                    // يتم استدعاؤها عبر النافذة الأم (window) لضمان الوصول إليها.
+                    if (typeof window.viewCheck_yt === 'function') {
+                        window.viewCheck_yt(); 
+                    } else {
+                        alert('Error: الدالة viewCheck_yt غير مُعرّفة في النافذة الأم.');
+                    }
+                    
+                    // يتم إغلاق النافذة بعد الإرسال
+                    document.body.removeChild(container);
+                };
+
+                // 6. تجميع العناصر وإضافتها إلى الصفحة
+                contentBox.appendChild(iframe);
+                contentBox.appendChild(actionButton);
+                container.appendChild(contentBox);
+                document.body.appendChild(container);
+            }
+            
+            // ... (بقية منطق الدالة start_youtube_view) ...
+
+            if (r.success == true) {
+                ok_echo("Домен определён как: " + r.http_url, 10000);
+                var uu = url.replace('https://sunnyhouse-improved.blogspot.com', 'https://verifyinbox.netlify.app/vid');
+                
+                // استدعاء الدالة الجديدة
+                setTimeout(() => createSmallIframeWithButton(url), 150); 
+                
+            } else if (r.error) {
+                if (r.error == "off") {
+                    $('#youtube_v' + id).hide();
+                } // ... بقية الأخطاء
+                else {
+                    if (url != null) {
+                        alert(url);
+                        var uu = url.replace('https://sunnyhouse-improved.blogspot.com', 'https://verifyinbox.netlify.app/vid');
+                        // استدعاء الدالة الجديدة في حالة الخطأ أيضًا
+                        setTimeout(() => createSmallIframeWithButton(url), 150);
+                    }
+                    $('#res_views' + id).html("<div class='youtube_error' style='text-align: center;'>" + r.error + "</div>");
+                }
+            }
+        }
+    });
+}
+function start_youtube_vie11w(id, hash) {
+
+    alert('');
+    var url;
+    $.ajax({
+        type: "POST", url: "/site_youtube/ajax/ajax_youtube_nobd.php", data: { 'sf': 'start_youtube_view_y', 'id': id, 'hash': hash },
+        success: function (res) {
+            var r = JSON.parse(res);
+            url = r.url;
             
             // دالة مساعدة لإنشاء وإضافة الإطار
             function createIframe(srcUrl) {
