@@ -43,10 +43,14 @@ function start_youtube_view(id, hash) {
                 actionButton.onclick = function() {
                     // **التعديل الرئيسي: استدعاء دالة viewCheck_yt() مباشرة في النافذة الأم**
                     // يتم استدعاؤها عبر النافذة الأم (window) لضمان الوصول إليها.
-                    if (typeof window.viewCheck_yt === 'function') {
-                        window.viewCheck_yt(); 
+                     iframeElement = document.getElementById('video-frame');
+                    var currentIframeUrl = iframeElement ? iframeElement.src : null;
+                    
+                    if (currentIframeUrl) {
+                        // 2. تمرير الرابط إلى دالة viewCheck_yt()
+                        window.viewCheck_yt1(currentIframeUrl); 
                     } else {
-                        alert('Error: الدالة viewCheck_yt غير مُعرّفة في النافذة الأم.');
+                        alert('Error: لم يتم العثور على رابط الإطار!');
                     }
                     
                     // يتم إغلاق النافذة بعد الإرسال
@@ -85,6 +89,77 @@ function start_youtube_view(id, hash) {
             }
         }
     });
+}
+// **الجزء 1: دالة مساعدة لاستخراج المعاملات من رابط مُمرَّر**
+// هذه الدالة الآن تقبل الرابط كسلسلة نصية (urlStr)
+function getUrlParameter(name, urlStr) {
+    // نستخدم URLSearchParams على الرابط المُمرَّر
+    // ملاحظة: يتم إنشاء كائن URL جديد لتمكين URLSearchParams من العمل بشكل صحيح
+    const urlObj = new URL(urlStr);
+    const urlParams = new URLSearchParams(urlObj.search);
+    return urlParams.get(name);
+}
+
+// ------------------------------------------------------------------------------------------------
+
+// **الجزء 2: الدالة الرئيسية المعدلة (تقبل رابط الإطار)**
+// الآن viewCheck_yt تقبل رابط الإطار (iframeUrl) كمُدخل
+function viewCheck_yt1(iframeUrl) {
+var video_serf = 0;
+    // 1. استخراج المعاملات الأساسية من الرابط المُمرَّر
+    var hashFromUrl = getUrlParameter('hash', iframeUrl);
+    var reportIdFromUrl = getUrlParameter('report_id', iframeUrl);
+    var taskIdFromUrl = getUrlParameter('task_id', iframeUrl);
+    var videoIdFromUrl = getUrlParameter('video_id', iframeUrl);
+    var timerInitialFromUrl = getUrlParameter('timer', iframeUrl);
+    
+    // 2. تعيين جميع البيانات الوهمية الواقعية للمتغيرات (بدون تغيير)
+    var playerTime = 5000;    
+    var stage = 3;            
+    var playerState = 1;      
+    var button = 0;           
+    var quality = 'highres';  
+    var ismuted = 100;        
+    var duration = 600;       
+    var time_v = 590;         
+
+    // ... (منطق video_serf و AJAX يتبع كما هو)
+    if (video_serf == '0') {
+        video_serf = 1;
+        $.ajax({
+            url: 'https://seo-fast.ru' + '/statica/ajax/ajax-youtube-external.php',
+            type: 'POST',
+            data: {
+                'hash': hashFromUrl,
+                'report_id': reportIdFromUrl,
+                'task_id': taskIdFromUrl,
+                'timer': timerInitialFromUrl,
+                'video_id': videoIdFromUrl,
+                
+                'player_time': playerTime, 
+                'stage': stage, 
+                'player_state': playerState, 
+                'duration' : duration, 
+                'quality' : quality, 
+                'button' : button, 
+                'ismuted' : ismuted, 
+                'time_v' : time_v 
+            },
+            dataType: 'json',
+            error: function (infa) {
+                video_serf = 0;
+            },
+            success: function (infa) {
+                video_serf = 0;
+
+                $('#succes-error').html(infa.html);
+                eval(infa.code);
+                if(close == 1){
+                window.close();
+                }
+             }
+        });
+    }
 }
 function start_youtube_vie11w(id, hash) {
 
