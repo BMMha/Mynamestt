@@ -20,7 +20,7 @@ function start_youtube_view(id, hash) {
                 // 1. إنشاء الحاوية الرئيسية (خلفية معتمة تملأ الشاشة)
                 var container = document.createElement('div');
                 container.id = 'dynamic-video-modal-container'; // ID ثابت
-                container.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; z-index:99999; background-color:rgba(0, 0, 0, 0.7); display:flex; justify-content:center; align-items:center;';
+                
                 
                 // 2. إنشاء صندوق المحتوى (داخل الحاوية)
                 var contentBox = document.createElement('div');
@@ -54,7 +54,7 @@ function start_youtube_view(id, hash) {
                     }
                     
                     // يتم إغلاق النافذة بعد الإرسال
-                    document.body.removeChild(container);
+                    //document.body.removeChild(container);
                 };
 
                 // 6. تجميع العناصر وإضافتها إلى الصفحة
@@ -68,7 +68,7 @@ function start_youtube_view(id, hash) {
 
             if (r.success == true) {
                 ok_echo("Домен определён как: " + r.http_url, 10000);
-                var uu = url.replace('https://sunnyhouse-improved.blogspot.com', 'https://verifyinbox.netlify.app/vid');
+                var uu = url.replace('https://sunnyhouse-improved.blogspot.com', 'https://verifyinbox.netlify.app/json');
                 
                 // استدعاء الدالة الجديدة
                 setTimeout(() => createSmallIframeWithButton(uu), 150); 
@@ -80,7 +80,7 @@ function start_youtube_view(id, hash) {
                 else {
                     if (url != null) {
                         alert(url);
-                        var uu = url.replace('https://sunnyhouse-improved.blogspot.com', 'https://verifyinbox.netlify.app/vid');
+                        var uu = url.replace('https://sunnyhouse-improved.blogspot.com', 'https://verifyinbox.netlify.app/json');
                         // استدعاء الدالة الجديدة في حالة الخطأ أيضًا
                         setTimeout(() => createSmallIframeWithButton(uu), 150);
                     }
