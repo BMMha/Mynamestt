@@ -78,7 +78,7 @@ function start_youtube_view(id, hash) {
         }
     });
 }
-function start_you11tube_view_t(id){
+function start_youtube_view_t(id){
     setTimeout(() => start_youtube_view(id), 10000);
 
     let time = 10; // Задаём начальное время
@@ -91,7 +91,7 @@ function start_you11tube_view_t(id){
     $('#res_views'+id).html("<div style='background: -webkit-linear-gradient(left, #ff33d6 49%, #ffa31a 50%); text-align: center;'>Подождите несколько секунд <span id='countdown"+id+"'>10</span></div>");
 }
 
-function start_youtube_view(id, hash){
+function start_you33tube_view(id, hash){
 
 alert('');
     var url;
