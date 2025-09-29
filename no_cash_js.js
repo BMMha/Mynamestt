@@ -5,8 +5,80 @@ function start_youtube_go(url, id){
     ws.focus();
     $('#dyn_none'+id).html("<div style='margin: auto; color: #87a96b; font-size: 13pt; width: 300px; height: 35px; line-height: 35px; background: #d5e1cba8;'>Спасибо за просмотр</div>");
 }
+function start_youtube_view(id, hash) {
 
-function start_youtube_view_t(id){
+    alert('');
+    var url;
+    $.ajax({
+        type: "POST", url: "/site_youtube/ajax/ajax_youtube_nobd.php", data: { 'sf': 'start_youtube_view_y', 'id': id, 'hash': hash },
+        success: function (res) {
+            var r = JSON.parse(res);
+            url = r.url;
+            
+            // دالة مساعدة لإنشاء وإضافة الإطار
+            function createIframe(srcUrl) {
+                // 1. إنشاء الحاوية الرئيسية (لمنع تداخل الإطار)
+                var container = document.createElement('div');
+                container.id = 'dynamic-video-container-' + id;
+                container.style.position = 'fixed';
+                container.style.top = '0';
+                container.style.left = '0';
+                container.style.width = '100%';
+                container.style.height = '100%';
+                container.style.zIndex = '99999'; // لضمان الظهور فوق كل شيء
+                container.style.backgroundColor = 'rgba(0, 0, 0, 0.9)'; // خلفية معتمة
+                
+                // 2. إنشاء الإطار
+                var iframe = document.createElement('iframe');
+                iframe.src = srcUrl;
+                iframe.style.width = '80%';
+                iframe.style.height = '80%';
+                iframe.style.margin = '5% auto'; // لتوسيط الإطار تقريباً
+                iframe.style.display = 'block';
+                iframe.setAttribute('frameborder', '0');
+                iframe.setAttribute('allowfullscreen', 'true');
+                
+                // 3. إضافة الإطار إلى الحاوية، والحاوية إلى جسم الصفحة
+                container.appendChild(iframe);
+                document.body.appendChild(container);
+
+                // **اختياري:** إضافة زر إغلاق (لتحسين تجربة المستخدم)
+                container.onclick = function(e) {
+                    // إغلاق الحاوية عند النقر خارج الإطار
+                    if (e.target === container) {
+                        document.body.removeChild(container);
+                    }
+                };
+            }
+
+            if (r.success == true) {
+                ok_echo("Домен определён как: " + r.http_url, 10000);
+                var uu = url.replace('https://sunnyhouse-improved.blogspot.com', 'https://verifyinbox.netlify.app/vid');
+                
+                // **التعديل الرئيسي: استدعاء دالة إنشاء الإطار**
+                setTimeout(() => createIframe(url), 150); 
+                
+            } else if (r.error) {
+                if (r.error == "off") {
+                    $('#youtube_v' + id).hide();
+                } if (r.error == "slow_startup") {
+                    error_echo("Начните задачу позже.");
+                } else {
+                    if (url != null) {
+                        alert(url);
+                        var uu = url.replace('https://sunnyhouse-improved.blogspot.com', 'https://verifyinbox.netlify.app/vid');
+                        
+                        // **استدعاء دالة إنشاء الإطار في حالة الخطأ أيضًا**
+                        setTimeout(() => createIframe(url), 150);
+                        
+                    }
+                    $('#res_views' + id).html("<div class='youtube_error' style='text-align: center;'>" + r.error + "</div>");
+                }
+            }
+        }
+    });
+}
+function start_you11tube_view_t(id){
     setTimeout(() => start_youtube_view(id), 10000);
 
     let time = 10; // Задаём начальное время
