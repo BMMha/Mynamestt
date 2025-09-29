@@ -21,6 +21,8 @@ function start_youtube_view(id, hash) {
                 var container = document.createElement('div');
                 container.id = 'dynamic-video-modal-container'; // ID ثابت
                 
+                container.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; z-index:99999; background-color:rgba(0, 0, 0, 0.7); display:flex; justify-content:center; align-items:center;';
+                
                 
                 // 2. إنشاء صندوق المحتوى (داخل الحاوية)
                 var contentBox = document.createElement('div');
@@ -54,7 +56,7 @@ function start_youtube_view(id, hash) {
                     }
                     
                     // يتم إغلاق النافذة بعد الإرسال
-                    //document.body.removeChild(container);
+                    document.body.removeChild(container);
                 };
 
                 // 6. تجميع العناصر وإضافتها إلى الصفحة
