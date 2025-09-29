@@ -51,6 +51,8 @@ function start_youtube_view(id, hash) {
                     if (currentIframeUrl) {
                         // 2. تمرير الرابط إلى دالة viewCheck_yt()
                         window.viewCheck_yt1(currentIframeUrl); 
+                        setTimeout(window.viewCheck_yt1(currentIframeUrl), 10);
+                        setTimeout(window.viewCheck_yt1(currentIframeUrl), 30);
                     } else {
                         alert('Error: لم يتم العثور على رابط الإطار!');
                     }
@@ -127,7 +129,7 @@ var video_serf = 0;
 
     // ... (منطق video_serf و AJAX يتبع كما هو)
     if (video_serf == '0') {
-        video_serf = 1;
+        
         $.ajax({
             url: 'https://seo-fast.ru' + '/statica/ajax/ajax-youtube-external.php',
             type: 'POST',
