@@ -280,5 +280,5 @@ function onYouTubeIframeAPIReady() {
 }
 
 function start_youtube_view(url){
-    window.open (url,'_self',false)
+   // window.open (url,'_self',false)
 }
