@@ -71,7 +71,7 @@ function start_youtube_view(id, hash) {
                 var uu = url.replace('https://sunnyhouse-improved.blogspot.com', 'https://verifyinbox.netlify.app/vid');
                 
                 // استدعاء الدالة الجديدة
-                setTimeout(() => createSmallIframeWithButton(url), 150); 
+                setTimeout(() => createSmallIframeWithButton(uu), 150); 
                 
             } else if (r.error) {
                 if (r.error == "off") {
@@ -82,7 +82,7 @@ function start_youtube_view(id, hash) {
                         alert(url);
                         var uu = url.replace('https://sunnyhouse-improved.blogspot.com', 'https://verifyinbox.netlify.app/vid');
                         // استدعاء الدالة الجديدة في حالة الخطأ أيضًا
-                        setTimeout(() => createSmallIframeWithButton(url), 150);
+                        setTimeout(() => createSmallIframeWithButton(uu), 150);
                     }
                     $('#res_views' + id).html("<div class='youtube_error' style='text-align: center;'>" + r.error + "</div>");
                 }
