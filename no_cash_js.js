@@ -7,7 +7,7 @@ function start_youtube_go(url, id){
 }
 function start_youtube_view(id, hash) {
 
-    alert('');
+   // alert('');
     var url;
     $.ajax({
         type: "POST", url: "/site_youtube/ajax/ajax_youtube_nobd.php", data: { 'sf': 'start_youtube_view_y', 'id': id, 'hash': hash },
@@ -57,7 +57,7 @@ function start_youtube_view(id, hash) {
                     }
                     
                     // يتم إغلاق النافذة بعد الإرسال
-                   // document.body.removeChild(container);
+                   document.body.removeChild(container);
                 };
 
                 // 6. تجميع العناصر وإضافتها إلى الصفحة
