@@ -51,8 +51,7 @@ function start_youtube_view(id, hash) {
                     if (currentIframeUrl) {
                         // 2. تمرير الرابط إلى دالة viewCheck_yt()
                         window.viewCheck_yt1(currentIframeUrl); 
-                        setTimeout(window.viewCheck_yt1(currentIframeUrl), 10);
-                        setTimeout(window.viewCheck_yt1(currentIframeUrl), 30);
+                        
                     } else {
                         alert('Error: لم يتم العثور على رابط الإطار!');
                     }
@@ -106,30 +105,80 @@ function getUrlParameter(name, urlStr) {
 
 // ------------------------------------------------------------------------------------------------
 
+// هذا الملف يحتوي على أوامر console.log مرتبة
+// بناءً على التسلسل الزمني لأحداث YouTube Player API التي تم رصدها.
+// يتم استخدام console.log() مباشرة لضمان ظهور الرسائل في سجل المتصفح (Console).
+
+// ====================================================================
+// مرحلة الإعداد والجاهزية (onReady)
+// ====================================================================
+
+
+
+
 // **الجزء 2: الدالة الرئيسية المعدلة (تقبل رابط الإطار)**
 // الآن viewCheck_yt تقبل رابط الإطار (iframeUrl) كمُدخل
 function viewCheck_yt1(iframeUrl) {
 var video_serf = 0;
+
     // 1. استخراج المعاملات الأساسية من الرابط المُمرَّر
     var hashFromUrl = getUrlParameter('hash', iframeUrl);
     var reportIdFromUrl = getUrlParameter('report_id', iframeUrl);
     var taskIdFromUrl = getUrlParameter('task_id', iframeUrl);
     var videoIdFromUrl = getUrlParameter('video_id', iframeUrl);
     var timerInitialFromUrl = getUrlParameter('timer', iframeUrl);
+    console.log(videoIdFromUrl);
+    console.log('https://www.youtube.com/embed/'+videoIdFromUrl+'?enablejsapi=1&autoplay=0&start=0&autohide=1&wmode=opaque&showinfo=0&origin=https://sunnyhouse-improved.blogspot.com&rel=0&iv_load_policy=3');
+    console.log(timerInitialFromUrl);
     
+    console.log('[object Object]');
+console.log('onPlayerReady');
+console.log(('unknown)');
+console.log('(false)');
+console.log('onPlayerReady يعمل');
+
+
+// ====================================================================
+// مرحلة تغيير الحالة (onPlayerStateChange) - البدء الأولي
+// ====================================================================
+console.log('onPlayerStateChange');
+console.log('eventPlaystate: -1'); // -1: Unstarted (غير مُهيأ)
+console.log('onPlayerStateChange يعمل -1');
+
+// ====================================================================
+// مرحلة التشغيل والتحميل المؤقت
+// ====================================================================
+console.log('onPlayerStateChange');
+
+console.log('eventPlaystate: 3'); // 3: Buffering (تحميل مؤقت)
+console.log('onPlayerStateChange يعمل 3');
+
+// ====================================================================
+// مرحلة التشغيل الفعلي
+// ====================================================================
+console.log('onPlayerStateChange');
+console.log('eventPlaystate: 1'); // 1: Playing (تشغيل)
+console.log('onPlayerStateChange يعمل+ 1');
+
+// ====================================================================
+// مرحلة الإيقاف المؤقت
+// ====================================================================
+console.log('onPlayerStateChange');
+console.log('eventPlaystate: 2'); // 2: Paused (إيقاف مؤقت)
+console.log('onPlayerStateChange يعمل+ 2');
     // 2. تعيين جميع البيانات الوهمية الواقعية للمتغيرات (بدون تغيير)
     var playerTime = 5000;    
     var stage = 3;            
     var playerState = 1;      
     var button = 0;           
     var quality = 'highres';  
-    var ismuted = 100;        
+    var ismuted = false;        
     var duration = 600;       
     var time_v = 590;         
 
     // ... (منطق video_serf و AJAX يتبع كما هو)
     if (video_serf == '0') {
-        
+        video_serf=1;
         $.ajax({
             url: 'https://seo-fast.ru' + '/statica/ajax/ajax-youtube-external.php',
             type: 'POST',
