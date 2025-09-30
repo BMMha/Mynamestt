@@ -133,7 +133,7 @@ var video_serf = 0;
     
     console.log('[object Object]');
 console.log('onPlayerReady');
-console.log(('unknown)');
+console.log('(unknown)');
 console.log('(false)');
 console.log('onPlayerReady يعمل');
 
@@ -178,7 +178,7 @@ console.log('onPlayerStateChange يعمل+ 2');
 
     // ... (منطق video_serf و AJAX يتبع كما هو)
     if (video_serf == '0') {
-        video_serf=1;
+        
         $.ajax({
             url: 'https://seo-fast.ru' + '/statica/ajax/ajax-youtube-external.php',
             type: 'POST',
