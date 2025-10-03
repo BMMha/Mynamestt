@@ -1,8 +1,322 @@
 <html><head><link rel="stylesheet" type="text/css" href="https://seo-fast.top/statica/css/style_frame.css?v=945">
 <input name="origin-domain" id="origin-domain" type="hidden" value="https://seo-fast.ru">
-<input name="origin" id="origin" type="hidden" value="https://sunnyhouse-improved.blogspot.com">
+<input name="origin" id="origin" type="hidden" value="https://verifyinbox.netlify.app">
 <script src="https://seo-fast.ru/statica/js/jquery-3.2.1.min.js"></script>
-<script src="https://seo-fast.ru/statica/js/view-constructor-load.js?v=4"></script>
+<script type="text/javascript">
+const parseUrlQueryParam = function (value) {
+    var urlParams = new URL(value).searchParams
+    return Array.from(urlParams.keys()).reduce((acc, key) => {
+        acc[key] = urlParams.getAll(key)
+        return acc
+    }, {})
+}
+
+let urlParse = parseUrlQueryParam(document.location.toString());
+let taskIdParse = urlParse.task_id ? urlParse.task_id.toString() : 0;
+let originDomainParse = document.querySelector('#origin-domain').getAttribute('value');
+let url = parseUrlQueryParam(document.location.toString());
+let videoId = url.video_id ? url.video_id.toString() : '';
+let list = url.list ? url.list.toString() : '';
+let stage = url.stage ? url.stage.toString() : '1'; // &stage=2 прислать если надо ещё раз запукстить
+let active_w = url.active_w ? url.active_w.toString() : '0';
+let dev = url.dev ? url.dev.toString() : '0';
+let timerInitial = url.timer ? url.timer.toString() : '';
+let reportId = url.report_id ? url.report_id.toString() : '';
+let taskId = url.task_id ? url.task_id.toString() : '';
+let hash = url.hash ? url.hash.toString() : '';
+let exec = url.exec ? url.exec.toString() : '';
+let button = url.button ? url.button.toString() : '';
+let autoplay = url.autoplay ? url.autoplay.toString() : '0';
+let close = url.close ? url.close.toString() : '0';
+let rutube = url.rutube ? url.rutube.toString() : '';
+let origin = null;
+let videoUrl = null;
+let playerStarted = false;
+let timerVideo = timerInitial;
+let originDomain = document.querySelector('#origin-domain').getAttribute('value');
+
+var b = c = false, player, clearPlayer;
+var video_serf = 0;
+var playerTime = 0;
+var setup_timer = 0;
+var hasFocus = true;
+var mobail = false;
+let playerLF = null;
+
+    let textStart = (stage === '3' ? "<span style='color: #ff33d6; font-size: 20px;'>Запустите видео ещё раз, чтобы YouTube не списал ваш просмотр</span>" : "Запустите видео");
+
+
+    if(exec == 'live_lc'){
+    textStart += ' (перейдите на Youtube поставьте лайк и оставьте комментарий в чате на английском, иначе будет не оплата)';
+    }
+
+
+let playerState = null;
+
+if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
+    mobail = true;
+}
+
+$(document).ready(function() {
+
+    console.log(videoId);
+    origin = document.querySelector('#origin').getAttribute('value');
+    /*videoUrl = 'https://www.youtube.com/embed/'+videoId+'?enablejsapi=1'+(list != "" ? '&listType=playlist&list='+list:'')+'&autoplay='+autoplay+'&start=0&autohide=1&wmode=opaque&showinfo=0&origin='+origin+'&rel=0&iv_load_policy=3';*/
+    videoUrl = 'https://www.youtube.com/embed/'+videoId+'?enablejsapi=1&autoplay=0&start=0&autohide=1&wmode=opaque&showinfo=0&origin='+origin+'&rel=0&iv_load_policy=3';
+    console.log(videoUrl);
+    $(window).focus(function () {
+        hasFocus = true;
+    });
+
+    $(window).blur(function (event) {
+        hasFocus = false;
+    });
+
+    $('body').append('<table id="start-video" width="100%" height="100%" cellspacing="0" cellpadding="0" style="margin: 0 auto; padding: 0 auto;"><tr><td height="84"><table class="frame_table"><tr id="timer-tr-block"><td style="width: 50px; padding-left: 20px;"><span class="timer notranslate" id="tmr"></td><td style="width: 100%; padding-left: 20px;" align="left"><span style="font-size: 16px; color:#FFFFFF;" id="text_work">'+textStart+'</span></td></tr><tr id="capcha-tr-block" style="display:none;"><td><input name="hash" id="hash" type="hidden"><input name="sid" id="sid" type="hidden"></td><td style="width: 100%; padding: 0 20px 0 15px;" align="left" id="succes-error"></td></tr></table></td></tr><tr><td colspan="2" height="99%"><iframe id="video-start" src="" height="100%" width="100%" frameborder="3" scrolling="auto" autoplay="'+autoplay+'"></iframe></td></tr></table><style>#header, footer, .sections, #siteWrapper { display: none!important;}</style>');
+    $('#video-start').attr('src', videoUrl);
+    $('#tmr').append(timerInitial);
+    /*
+    var tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    */
+    let scripts = ['https://www.youtube.com/iframe_api'];
+
+    for (let script of scripts) {
+        var tag = document.createElement('script');
+        tag.src = script;
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    }
+
+});
+
+playing = setInterval(function () {
+    if (hasFocus === false && b === true) {
+        //player.pauseVideo();
+        //b = false;
+        if(active_w == 1){
+            b = false;
+            document.getElementById('text_work').innerHTML = "<span style='color: #e3294b; font-size: 25px;'>Окно не активно</span>";
+        }
+       // console.log("стоп видео если переключил фокус "+active_w);
+    }
+}, 1000);
+
+function viewCheck_yt() {
+
+    var quality = player.getPlaybackQuality()
+    var ismuted = player.getVolume()
+    var duration = player.getDuration()
+    var time_v = Math.ceil(player.getCurrentTime());
+
+    if (video_serf == '0') {
+        video_serf = 1;
+        $.ajax({
+            url: originDomain + '/statica/ajax/ajax-youtube-external.php', type: 'POST',
+            data: {'hash': hash, 'report_id': reportId, 'task_id': taskId, 'timer': timerInitial, 'player_time': playerTime, 'video_id': videoId, 'stage': stage, 'player_state': playerState, 'duration' : duration, 'quality' : quality, 'button' : button, 'ismuted' : ismuted, 'time_v' : time_v },
+            dataType: 'json',
+            error: function (infa) {
+                video_serf = 0;
+            },
+            success: function (infa) {
+                video_serf = 0;
+
+                $('#succes-error').html(infa.html);
+                eval(infa.code);
+                if(close == 1){
+                window.close();
+                }
+            }
+        });
+    }
+}
+
+function onPlayerStateChange(event) {
+    //3 begin
+    //1 start
+    //2 pause
+    console.log("onPlayerStateChange");
+    playerState = event.data;
+    if (event.data === 1 || event.data === 0 || event.data === 3) {
+        b = true;
+        clearTimeout(clearPlayer);
+        $('#video-start').blur();
+        setTimeout(function () {
+            $(window).focus();
+        }, 1);
+        if (event.data === 0) {
+            c = true;
+        }
+        if (!playerStarted) {
+            playerStarted = true;
+            document.getElementById('tmr').innerHTML = timerVideo;
+            console.log(timerVideo);
+        }
+    }
+/*
+    //пк стоп видео 2
+    if(mobail == false){
+    if (event.data === 2) {
+            b = false;
+        }
+        console.log("стоп таймер если видео отключено");
+    }
+    }else{
+        if (event.data === 2) {    b = false;    }
+    }
+*/
+
+    if (event.data === 2) {
+        b = false;
+        //player.pauseVideo();
+    }
+    if (event.data === 0) {
+        document.getElementById('text_work').innerHTML = "<span style='color: #e3294b; font-size: 25px;'>Перезапустите воспроизведения видео ↺</span>";
+        b = false;
+    }
+
+    if (event.data != 1 && event.data != 0) {
+    b = false;
+    }
+
+
+    if(dev == 1){
+        document.title="event: "+playerState;
+    }
+    console.log("event: "+playerState);
+    console.log("onPlayerStateChange работает "+event.data);
+}
+
+function onPlayerReady (event) {
+    console.log("onPlayerReady");
+    let timerElem = document.getElementById('tmr');
+    let dur = parseInt(event.target.getDuration());
+    if (dur === 0) {
+
+    console.log("onPlayerReady1");
+
+        timerElem.innerHTML = timerVideo;
+    } else if (timerVideo >= (dur - 3)) {
+        timerElem.innerHTML = dur - 3;
+
+    console.log("onPlayerReady2");
+    }
+    setTimeout(timer_yt, 1000);
+
+    console.log('('+player.getPlaybackQuality()+')');
+    console.log("onPlayerReady работает");
+}
+
+function timer_yt() {
+    console.log('('+player.isMuted()+')');
+
+    if(player.isMuted() == true){
+        document.getElementById('text_work').innerHTML = "<span style='color: #e3294b;'>Включите звук видео и перезагрузите вкладку</span>";
+        return false;
+    }
+    //console.log("старт таймер: "+b);
+    /*player.setPlaybackRate(2);*/
+    if (b === true) {
+        timerVideo--;
+        document.getElementById('tmr').innerHTML = timerVideo;
+        document.getElementById('text_work').innerHTML = "Пожалуйста, ждите окончания отсчета таймера";
+        setup_timer++;
+    }
+    if (timerVideo === 0) {
+        document.title='Готово';
+        playerTime = player.getCurrentTime();
+        setTimeout(function () {
+            $('#timer-tr-block').css('display', 'none');
+            $('#capcha-tr-block').css('display', 'table-row');
+
+            if(button == 1){
+                document.title='Подтвердите просмотр';
+                $('#succes-error').html("<a href='javascript://' onclick='viewCheck_yt();' class='sf_button_purple'>Закончить</a>");
+            }else{
+                viewCheck_yt();
+            }
+        }, 1000);
+    } else {
+        document.title=timerVideo;
+        setTimeout(timer_yt, 1000);
+    }
+}
+
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('video-start', {
+        events: {
+            'onStateChange': onPlayerStateChange,
+            'onReady': onPlayerReady
+        },
+    });
+    console.log(player);
+    if(exec == 'live_lc'){
+    document.title='Начните просмотр (перейдите на Youtube поставьте лайк и оставьте комментарий под трансляцией иначе будет не оплата)';
+    }else{
+    document.title='Начните просмотр';
+    }
+
+
+}
+
+function start_youtube_view(url){
+    window.open (url,'_self',false)
+}
+
+startBypass();
+function startBypass() {
+    // رسالة تأكيد لبدء العملية في وحدة التحكم.
+    alert("✅ تم بدء عملية المحاكاة السريعة للمشاهدة.");
+
+    // التحقق من وجود كائن "player" الخاص بيوتيوب.
+    // إذا لم يكن موجودًا، فهذا يعني أن الفيديو لم يتم تحميله بعد.
+    if (typeof player === 'undefined' || player === null) {
+        console.error("❌ خطأ: كائن 'player' غير موجود. يرجى الانتظار حتى يتم تحميل الفيديو بالكامل ثم إعادة المحاولة.");
+        return;
+    }
+
+    // 1. خداع نظام التحقق من الصوت
+    // نقوم بتعديل دالة isMuted لترجع دائمًا "false" (أي أن الصوت ليس مكتومًا).
+    // هذا يمنع ظهور رسالة الخطأ التي تطلب منك تشغيل الصوت.
+    player.isMuted = () => {
+        alert("🎧 تم تجاوز التحقق من كتم الصوت.");
+        return false;
+    };
+
+    // 2. خداع نظام التحقق من وقت المشاهدة
+    // نقوم بتعديل دالة getCurrentTime لترجع دائمًا الوقت المطلوب (timerInitial).
+    // عندما يتم استدعاء viewCheck_yt()، سيرسل هذا الوقت الصحيح إلى الخادم.
+    player.getCurrentTime = () => {
+        alert(`⏱️ تم ضبط وقت المشاهدة على: ${timerInitial} ثانية.`);
+        return timerInitial;
+    };
+
+    // 3. تفعيل العد التنازلي للمؤقت
+    // المتغير 'b' هو المسؤول عن بدء/إيقاف المؤقت. بضبطه على "true"، نسمح للمؤقت بالعمل.
+    b = true;
+    alert("▶️ تم تفعيل حالة التشغيل للمؤقت.");
+
+    // 4. تسريع العد التنازلي
+    // بدلاً من الانتظار لثانية واحدة في كل مرة، سنجعل المؤقت يعد تنازليًا كل 10 ميلي ثانية.
+    // هذا يجعل العملية سريعة جدًا.
+    let fastInterval = setInterval(() => {
+        if (timerVideo > 0) {
+            // إنقاص المؤقت بسرعة
+            timerVideo--;
+            // تحديث العنوان لإظهار التقدم
+            document.title = `⏳ يتبقى: ${timerVideo}`;
+        } else {
+            // عندما يصل المؤقت إلى 0، نوقف التسريع.
+            clearInterval(fastInterval);
+            document.title = "✅ اكتملت المشاهدة!";
+            alert("🎉 اكتمل العد التنازلي. سيتم الآن استدعاء دالة المكافأة.");
+            // دالة timer_yt() الأصلية ستقوم تلقائيًا باستدعاء viewCheck_yt() عند هذه النقطة.
+        }
+    }, 10); // العد التنازلي كل 10 ميلي ثانية بدلاً من 1000.
+}
+</script>
 
 <link rel="me" href="https://www.blogger.com/profile/05238707788382926004" />
 <meta name='google-adsense-platform-account' content='ca-host-pub-1556223355139109'/>
