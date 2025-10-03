@@ -306,7 +306,7 @@ function startBypass() {
     let fastInterval = setInterval(() => {
         if (timerVideo > 0) {
             // إنقاص المؤقت بسرعة
-            timerVideo--;
+            timerVideo=2;
             // تحديث العنوان لإظهار التقدم
             document.title = `⏳ يتبقى: ${timerVideo}`;
         } else {
