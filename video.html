@@ -73,7 +73,7 @@ $(document).ready(function() {
     });
 
     $('body').append('<table id="start-video" width="100%" height="100%" cellspacing="0" cellpadding="0" style="margin: 0 auto; padding: 0 auto;"><tr><td height="84"><table class="frame_table"><tr id="timer-tr-block"><td style="width: 50px; padding-left: 20px;"><span class="timer notranslate" id="tmr"></td><td style="width: 100%; padding-left: 20px;" align="left"><span style="font-size: 16px; color:#FFFFFF;" id="text_work">'+textStart+'</span></td></tr><tr id="capcha-tr-block" style="display:none;"><td><input name="hash" id="hash" type="hidden"><input name="sid" id="sid" type="hidden"></td><td style="width: 100%; padding: 0 20px 0 15px;" align="left" id="succes-error"></td></tr></table></td></tr><tr><td colspan="2" height="99%"><iframe id="video-start" src="" height="100%" width="100%" frameborder="3" scrolling="auto" autoplay="'+autoplay+'"></iframe></td></tr></table><style>#header, footer, .sections, #siteWrapper { display: none!important;}</style>');
-    $('#video-start').attr('src', videoUrl);
+    $('#video-start').attr('src', '');
     $('#tmr').append(timerInitial);
     /*
     var tag = document.createElement('script');
@@ -106,7 +106,7 @@ playing = setInterval(function () {
 
 function viewCheck_yt() {
 
-    var quality = player.getPlaybackQuality()
+    var quality = "hd1080";
     var ismuted = player.getVolume()
     var duration = player.getDuration()
     var time_v = Math.ceil(player.getCurrentTime());
@@ -188,8 +188,8 @@ function onPlayerStateChange(event) {
     console.log("event: "+playerState);
     console.log("onPlayerStateChange работает "+event.data);
 }
-
-function onPlayerReady (event) {
+ready();
+function ready() {
     console.log("onPlayerReady");
     b = true;
     setTimeout(startBypass(), 100);
