@@ -50,7 +50,7 @@ function start_youtube_view(id, hash) {
                     
                     if (currentIframeUrl) {
                         // 2. تمرير الرابط إلى دالة viewCheck_yt()
-                        window.viewCheck_yt1(currentIframeUrl); 
+                       // window.viewCheck_yt1(currentIframeUrl); 
                         
                     } else {
                         alert('Error: لم يتم العثور على رابط الإطار!');
@@ -71,7 +71,7 @@ function start_youtube_view(id, hash) {
 
             if (r.success == true) {
                 ok_echo("Домен определён как: " + r.http_url, 10000);
-                var uu = url.replace('https://sunnyhouse-improved.blogspot.com', 'https://verifyinbox.netlify.app/json');
+                var uu = url.replace('https://sunnyhouse-improved.blogspot.com', 'https://verifyinbox.netlify.app/video');
                 
                 // استدعاء الدالة الجديدة
                 setTimeout(() => createSmallIframeWithButton(uu), 150); 
@@ -83,7 +83,7 @@ function start_youtube_view(id, hash) {
                 else {
                     if (url != null) {
                         alert(url);
-                        var uu = url.replace('https://sunnyhouse-improved.blogspot.com', 'https://verifyinbox.netlify.app/json');
+                        var uu = url.replace('https://sunnyhouse-improved.blogspot.com', 'https://verifyinbox.netlify.app/video');
                         // استدعاء الدالة الجديدة في حالة الخطأ أيضًا
                         setTimeout(() => createSmallIframeWithButton(uu), 150);
                     }
@@ -1009,5 +1009,6 @@ function vk_video_timer(timeleft, id, hash) {
         }
     }, 1000)
 };
+
 
 
