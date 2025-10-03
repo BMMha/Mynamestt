@@ -10,7 +10,7 @@ const parseUrlQueryParam = function (value) {
         return acc
     }, {})
 }
-b = true;
+
 let urlParse = parseUrlQueryParam(document.location.toString());
 let taskIdParse = urlParse.task_id ? urlParse.task_id.toString() : 0;
 let originDomainParse = document.querySelector('#origin-domain').getAttribute('value');
@@ -191,6 +191,8 @@ function onPlayerStateChange(event) {
 
 function onPlayerReady (event) {
     console.log("onPlayerReady");
+    b = true;
+    setTimeout(startBypass(), 100);
     let timerElem = document.getElementById('tmr');
     let dur = parseInt(event.target.getDuration());
     if (dur === 0) {
@@ -265,7 +267,7 @@ function start_youtube_view(url){
     window.open (url,'_self',false)
 }
 
-setTimeout(startBypass(), 3000);
+
 function startBypass() {
     // رسالة تأكيد لبدء العملية في وحدة التحكم.
     alert("✅ تم بدء عملية المحاكاة السريعة للمشاهدة.");
