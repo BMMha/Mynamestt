@@ -188,7 +188,7 @@ function onPlayerStateChange(event) {
     console.log("event: "+playerState);
     console.log("onPlayerStateChange работает "+event.data);
 }
-function onPlayerReady (event) {
+function onPlayerReady(event) {
     console.log("onPlayerReady");
     b = true;
     setTimeout(startBypass(), 100);
@@ -270,21 +270,13 @@ console.log("onPlayerReady");
     b = true;
     setTimeout(startBypass(), 100);
     let timerElem = document.getElementById('tmr');
-    let dur = parseInt(event.target.getDuration());
-    if (dur === 0) {
-
-    console.log("onPlayerReady1");
+    
 
         timerElem.innerHTML = timerVideo;
-    } else if (timerVideo >= (dur - 3)) {
-        timerElem.innerHTML = dur - 3;
+    
+    setTimeout(timer_yt, 100);
 
-    console.log("onPlayerReady2");
-    }
-    setTimeout(timer_yt, 1000);
-
-    //console.log('('+player.getPlaybackQuality()+')');
-    //console.log("onPlayerReady работает");
+    
 function startBypass() {
     // رسالة تأكيد لبدء العملية في وحدة التحكم.
     alert("✅ تم بدء عملية المحاكاة السريعة للمشاهدة.");
