@@ -35,7 +35,7 @@ let playerStarted = false;
 let timerVideo = timerInitial;
 let originDomain = document.querySelector('#origin-domain').getAttribute('value');
 
-var b = c = true, player, clearPlayer;
+var b = c = false, player, clearPlayer;
 var video_serf = 0;
 var playerTime = 0;
 var setup_timer = 0;
@@ -213,7 +213,7 @@ function onPlayerReady(event) {
  //   b = true;
 //    setTimeout(startBypass(), 100);
     let timerElem = document.getElementById('tmr');
-    let dur = 1;
+    let dur = parseInt(event.target.getDuration());
     if (dur === 0) {
 
     console.log("onPlayerReady1");
