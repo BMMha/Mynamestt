@@ -110,7 +110,27 @@ function viewCheck_yt() {
     var ismuted = player.getVolume()
     var duration = player.getDuration()
     var time_v = Math.ceil(player.getCurrentTime());
+var data_to_send = {
+        'hash': hash, 
+        'report_id': reportId, 
+        'task_id': taskId, 
+        'timer': timerInitial, 
+        'player_time': playerTime, 
+        'video_id': videoId, 
+        'stage': stage, 
+        'player_state': playerState, 
+        'duration' : duration, 
+        'quality' : quality, 
+        'button' : button, 
+        'ismuted' : ismuted, 
+        'time_v' : time_v 
+    };
 
+    // 2. تحويل كائن البيانات إلى نص منسق لعرضه في نافذة التنبيه (alert)
+    var alert_message = "بيانات الإرسال إلى الخادم:\n\n" + JSON.stringify(data_to_send, null, 4);
+
+    // 3. عرض البيانات في نافذة تنبيه
+    alert(alert_message);
     if (video_serf == '0') {
         video_serf = 1;
         $.ajax({
@@ -193,7 +213,7 @@ function onPlayerReady(event) {
     b = true;
     setTimeout(startBypass(), 100);
     let timerElem = document.getElementById('tmr');
-    let dur = parseInt(event.target.getDuration());
+    let dur = 1;
     if (dur === 0) {
 
     console.log("onPlayerReady1");
