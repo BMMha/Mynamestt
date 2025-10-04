@@ -210,8 +210,8 @@ function onPlayerStateChange(event) {
 }
 function onPlayerReady(event) {
     console.log("onPlayerReady");
-    b = true;
-    setTimeout(startBypass(), 100);
+ //   b = true;
+//    setTimeout(startBypass(), 100);
     let timerElem = document.getElementById('tmr');
     let dur = 1;
     if (dur === 0) {
@@ -261,7 +261,7 @@ function timer_yt() {
         }, 1000);
     } else {
         document.title=timerVideo;
-        setTimeout(timer_yt, 100);
+        setTimeout(timer_yt, 1000);
     }
 }
 
