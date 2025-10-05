@@ -64,19 +64,9 @@ alert('auto_start');
         // الانتقال إلى الفيديو التالي في الدورة القادمة
         currentIndex++;
     };
-closeVideoModal();
+//closeVideoModal();
     // الخطوة 4: بدء التنفيذ التلقائي
     // `setInterval` هي دالة جافاسكريبت تقوم بتكرار تنفيذ دالة أخرى كل فترة زمنية محددة.
     const autoClickerInterval = setInterval(autoClicker, intervalInSeconds * 1000); // نضرب في 1000 لتحويل الثواني إلى ميلي ثانية
 
 })();
-function closeVideoModal() {
-    var container = document.getElementById('dynamic-video-modal-container');
-    
-        document.body.removeChild(container);
-        alert("تم إغلاق النافذة المنبثقة بنجاح.");
-        
-        // إيقاف مؤقت المراقبة بمجرد إغلاق النافذة
-        
-    
-}
