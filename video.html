@@ -147,7 +147,7 @@ var data_to_send = {
             },
             success: function (infa) {
                 video_serf = 0;
-closeIframeModalAndFinish();
+
                 $('#succes-error').html(infa.html);
                 eval(infa.code);
                 if(close == 1){
