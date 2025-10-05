@@ -94,23 +94,51 @@ function start_youtube_view(id, hash) {
     });
 }
 // **دالة الإغلاق الرئيسية (يتم استدعاؤها من المستمع)**
+// **دالة الإغلاق الأساسية**
 function closeVideoModal() {
-    // ID الحاوية التي تم إنشاؤها بواسطة دالة createSmallIframeWithButton
     var container = document.getElementById('dynamic-video-modal-container');
     if (container) {
         document.body.removeChild(container);
         console.log("تم إغلاق النافذة المنبثقة بنجاح.");
+        
+        // إيقاف مؤقت المراقبة بمجرد إغلاق النافذة
+        clearInterval(iframeObserverInterval);
     }
 }
 
-// **المستمع (Listener) للرسائل القادمة من الـ iframe**
-window.addEventListener('message', function(event) {
-    // التحقق مما إذا كانت الرسالة هي أمر الإغلاق المتوقع
-    if (event.data === 'CLOSE_MODAL') {
-        // إذا كان الكود من مصدر مختلف، نستخدم postMessage لإغلاقه
-        closeVideoModal();
+// متغير لتخزين معرّف المؤقت التكراري
+let iframeObserverInterval;
+
+// **دالة بدء المراقبة**
+function startIframeObserver() {
+    const iframe = document.getElementById('video-frame');
+    
+    if (!iframe) {
+        console.warn("لم يتم العثور على iframe بعد. سيتم المحاولة لاحقاً.");
+        return;
     }
-});
+
+    // تشغيل المؤقت كل 100 ميلي ثانية (10 مرات في الثانية)
+    iframeObserverInterval = setInterval(() => {
+        
+        try {
+            // يتم الوصول إلى الـ contentWindow.location.href
+            // وهذا مسموح به لقراءة الرابط الحالي حتى لو كانت الروابط مختلفة (Cross-Origin)
+            const iframeSrc = iframe.contentWindow.location.href;
+            
+            // التحقق من علامة الإغلاق
+            if (iframeSrc && iframeSrc.includes('&close=1')) {
+                // إذا تم العثور على العلامة، يتم إغلاق الـ Modal
+                closeVideoModal();
+            }
+        } catch (e) {
+            // في حالة فشل القراءة (قد يحدث حسب المتصفح)، يمكن تجاهل الخطأ
+            // أو الإبلاغ عنه
+            // console.warn("فشل قراءة iframe src:", e.message);
+        }
+        
+    }, 100); // المراقبة كل 100 ميلي ثانية
+}
 // **الجزء 1: دالة مساعدة لاستخراج المعاملات من رابط مُمرَّر**
 // هذه الدالة الآن تقبل الرابط كسلسلة نصية (urlStr)
 function getUrlParameter(name, urlStr) {

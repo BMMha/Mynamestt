@@ -157,6 +157,23 @@ closeIframeModalAndFinish();
         });
     }
 }
+
+
+function closeIframeModalBySrcChange() {
+    try {
+        
+        const currentSrc = window.location.href; 
+        
+        
+            // 2. تغيير رابط الـ iframe الحالي في الذاكرة (وهو ما سيتم رصده في الصفحة الأم)
+            window.location.replace(currentSrc + '&close=1');
+            console.log("تم تغيير مسار الـ iframe إلى وضع الإغلاق.");
+        
+    } catch (e) {
+        // في حالة فشل الوصول (إذا كان هناك قيود إضافية)، يتم الإبلاغ عن الخطأ
+        console.error("فشل تغيير مسار الـ iframe:", e);
+    }
+}
 function generateRandomDuration() {
     const MIN_DURATION = 30.341;
     const MAX_DURATION = 40.876;
