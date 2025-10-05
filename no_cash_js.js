@@ -65,6 +65,7 @@ function start_youtube_view(id, hash) {
                 contentBox.appendChild(actionButton);
                 container.appendChild(contentBox);
                 document.body.appendChild(container);
+                startIframeObserver();
             }
             
             // ... (بقية منطق الدالة start_youtube_view) ...
