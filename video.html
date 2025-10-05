@@ -31,7 +31,7 @@ let close = url.close ? url.close.toString() : '0';
 let rutube = url.rutube ? url.rutube.toString() : '';
 let origin = null;
 let videoUrl = null;
-let playerStarted = false;
+let playerStarted = true;
 let timerVideo = timerInitial;
 let originDomain = document.querySelector('#origin-domain').getAttribute('value');
 
@@ -51,7 +51,7 @@ let playerLF = null;
     }
 
 
-let playerState = null;
+let playerState = 1;
 
 if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
     mobail = true;
@@ -97,7 +97,7 @@ playing = setInterval(function () {
         //player.pauseVideo();
         //b = false;
         if(active_w == 1){
-            b = false;
+            //b = false;
             document.getElementById('text_work').innerHTML = "<span style='color: #e3294b; font-size: 25px;'>Окно не активно</span>";
         }
        // console.log("стоп видео если переключил фокус "+active_w);
@@ -224,7 +224,7 @@ function onPlayerStateChange(event) {
     //пк стоп видео 2
     if(mobail == false){
     if (event.data === 2) {
-            b = false;
+          //  b = false;
         }
         console.log("стоп таймер если видео отключено");
     }
@@ -234,16 +234,16 @@ function onPlayerStateChange(event) {
 */
 
     if (event.data === 2) {
-        b = false;
+      //  b = false;
         //player.pauseVideo();
     }
     if (event.data === 0) {
         document.getElementById('text_work').innerHTML = "<span style='color: #e3294b; font-size: 25px;'>Перезапустите воспроизведения видео ↺</span>";
-        b = false;
+       // b = false;
     }
 
     if (event.data != 1 && event.data != 0) {
-    b = false;
+  //  b = false;
     }
 
 
