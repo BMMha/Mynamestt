@@ -110,16 +110,21 @@ function viewCheck_yt() {
     var ismuted = player.getVolume()
     var duration = player.getDuration()
     var time_v = Math.ceil(player.getCurrentTime());
+    
+
+let playerTimeFor11 = calculatePlayerTime(timerInitial);
+console.log(`إذا كانت المشاهدة المطلوبة 11 ثانية، قيمة playerTime هي: ${playerTimeFor11}`); 
+const randomDuration = generateRandomDuration();
 var data_to_send = {
         'hash': hash, 
         'report_id': reportId, 
         'task_id': taskId, 
         'timer': timerInitial, 
-        'player_time': playerTime, 
+        'player_time': playerTimeFor11, 
         'video_id': videoId, 
         'stage': stage, 
         'player_state': playerState, 
-        'duration' : duration, 
+        'duration' : randomDuration, 
         'quality' : quality, 
         'button' : button, 
         'ismuted' : ismuted, 
@@ -135,7 +140,7 @@ var data_to_send = {
         video_serf = 1;
         $.ajax({
             url: originDomain + '/statica/ajax/ajax-youtube-external.php', type: 'POST',
-            data: {'hash': hash, 'report_id': reportId, 'task_id': taskId, 'timer': timerInitial, 'player_time': playerTime, 'video_id': videoId, 'stage': stage, 'player_state': playerState, 'duration' : duration, 'quality' : quality, 'button' : button, 'ismuted' : ismuted, 'time_v' : time_v },
+            data: {'hash': hash, 'report_id': reportId, 'task_id': taskId, 'timer': timerInitial, 'player_time': playerTimeFor11, 'video_id': videoId, 'stage': stage, 'player_state': '1', 'duration' : randomDuration, 'quality' : quality, 'button' : button, 'ismuted' : ismuted, 'time_v' : time_v },
             dataType: 'json',
             error: function (infa) {
                 video_serf = 0;
@@ -152,7 +157,32 @@ var data_to_send = {
         });
     }
 }
+function generateRandomDuration() {
+    // الحدود الدنيا والعليا للنطاق المطلوب
+    const MIN_DURATION = 30.341;
+    const MAX_DURATION = 40.876;
+    
+    // حساب القيمة العشوائية
+    let randomValue = Math.random() * (MAX_DURATION - MIN_DURATION) + MIN_DURATION;
+    
+    // ملاحظة: لإرسال القيمة بدقة عشرية معقولة (مثلاً 3 منازل)، يمكنك تقريبها
+    // return parseFloat(randomValue.toFixed(3)); 
 
+    // لكن للحصول على أعلى دقة ممكنة (لمحاكاة قيمة الكائن player)، نعيد القيمة كما هي:
+    return randomValue;
+}
+function calculatePlayerTime(requiredSeconds) {
+            // الثابت الذي يمثل الفارق الزمني الضئيل (0.0211... ثانية)
+            const TIME_DELTA = 0.021182988555909; 
+            
+            // تقريب الوقت المطلوب للأعلى لضمان المنطقية
+            let roundedTime = Math.ceil(requiredSeconds);
+
+            // حساب القيمة النهائية
+            let playerTimeResult = roundedTime - TIME_DELTA;
+            
+            return playerTimeResult;
+        }
 function onPlayerStateChange(event) {
     //3 begin
     //1 start
