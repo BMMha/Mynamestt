@@ -36,7 +36,7 @@ alert('auto_start');
 
     // الخطوة 3: إعداد المؤقت للنقر التلقائي
     let currentIndex = 0; // متغير لتتبع الفيديو التالي الذي سيتم النقر عليه
-    const intervalInSeconds = 8; // الفترة الزمنية بالثواني بين كل نقرة
+    const intervalInSeconds = 7; // الفترة الزمنية بالثواني بين كل نقرة
 
     // دالة النقر التلقائي التي سيتم استدعاؤها بشكل متكرر
     const autoClicker = () => {
@@ -55,7 +55,7 @@ alert('auto_start');
         const videoId = parentRowId.replace('youtube_v', '');
 
         // طباعة رسالة في الكونسول للمتابعة
-        console.log(`[${currentIndex + 1}/${videoLinks.length}] Clicking video with ID: ${videoId}`);
+     //   console.log(`[${currentIndex + 1}/${videoLinks.length}] Clicking video with ID: ${videoId}`);
 
         // محاكاة النقر على الرابط
         // هذا سيؤدي إلى تنفيذ دالة `start_youtube_view` الموجودة في ملف `no_cash_js.js`
