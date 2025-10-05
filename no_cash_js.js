@@ -93,6 +93,24 @@ function start_youtube_view(id, hash) {
         }
     });
 }
+// **دالة الإغلاق الرئيسية (يتم استدعاؤها من المستمع)**
+function closeVideoModal() {
+    // ID الحاوية التي تم إنشاؤها بواسطة دالة createSmallIframeWithButton
+    var container = document.getElementById('dynamic-video-modal-container');
+    if (container) {
+        document.body.removeChild(container);
+        console.log("تم إغلاق النافذة المنبثقة بنجاح.");
+    }
+}
+
+// **المستمع (Listener) للرسائل القادمة من الـ iframe**
+window.addEventListener('message', function(event) {
+    // التحقق مما إذا كانت الرسالة هي أمر الإغلاق المتوقع
+    if (event.data === 'CLOSE_MODAL') {
+        // إذا كان الكود من مصدر مختلف، نستخدم postMessage لإغلاقه
+        closeVideoModal();
+    }
+});
 // **الجزء 1: دالة مساعدة لاستخراج المعاملات من رابط مُمرَّر**
 // هذه الدالة الآن تقبل الرابط كسلسلة نصية (urlStr)
 function getUrlParameter(name, urlStr) {
