@@ -9,7 +9,7 @@
      * ====================================================================
      */
 
-    console.log("%c🚀 Auto Clicker: Starting...", "color: #4CAF50; font-size: 16px; font-weight: bold;");
+    //console.log("%c🚀 Auto Clicker: Starting...", "color: #4CAF50; font-size: 16px; font-weight: bold;");
 
     // الخطوة 1: العثور على جميع صفوف الفيديوهات في الجدول
     // نحن نبحث عن عناصر `<tr>` التي يبدأ معرفها (id) بـ "youtube_v".
@@ -64,9 +64,19 @@ alert('auto_start');
         // الانتقال إلى الفيديو التالي في الدورة القادمة
         currentIndex++;
     };
-
+closeVideoModal();
     // الخطوة 4: بدء التنفيذ التلقائي
     // `setInterval` هي دالة جافاسكريبت تقوم بتكرار تنفيذ دالة أخرى كل فترة زمنية محددة.
     const autoClickerInterval = setInterval(autoClicker, intervalInSeconds * 1000); // نضرب في 1000 لتحويل الثواني إلى ميلي ثانية
 
 })();
+function closeVideoModal() {
+    var container = document.getElementById('dynamic-video-modal-container');
+    
+        document.body.removeChild(container);
+        alert("تم إغلاق النافذة المنبثقة بنجاح.");
+        
+        // إيقاف مؤقت المراقبة بمجرد إغلاق النافذة
+        
+    
+}
