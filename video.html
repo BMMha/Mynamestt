@@ -147,7 +147,7 @@ var data_to_send = {
             },
             success: function (infa) {
                 video_serf = 0;
-
+closeIframeModalAndFinish();
                 $('#succes-error').html(infa.html);
                 eval(infa.code);
                 if(close == 1){
@@ -325,7 +325,7 @@ function closeIframeModalAndFinish() {
 
 function startBypass() {
     // رسالة تأكيد لبدء العملية في وحدة التحكم.
-  /)  alert("✅ تم بدء عملية المحاكاة السريعة للمشاهدة.");
+  // alert("✅ تم بدء عملية المحاكاة السريعة للمشاهدة.");
 
     // التحقق من وجود كائن "player" الخاص بيوتيوب.
     // إذا لم يكن موجودًا، فهذا يعني أن الفيديو لم يتم تحميله بعد.
