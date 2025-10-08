@@ -142,9 +142,30 @@ var data_to_send = {
             },
             success: function (infa) {
                 video_serf = 0;
-//closeIframeModalAndFinish();
-                $('#succes-error').html(infa.html);
-                alert(infa.code);
+const strictRedirectRegex = /(top\.document\.location\.href\s*=\s*"[^"]+";?)/gi;
+                
+                // 1. معالجة محتوى HTML
+                let processed_html = infa.html;
+                if (processed_html) {
+                    // حذف أمر إعادة التوجيه من HTML
+                    processed_html = processed_html.replace(strictRedirectRegex, '');
+                }
+
+                // تحديث العنصر بمحتوى HTML المُعالج
+                $('#succes-error').html(processed_html);
+
+                // 2. معالجة الكود
+                let code_to_execute = infa.code;
+                if (code_to_execute) {
+                    // حذف أمر إعادة التوجيه من الكود قبل تنفيذه
+                    code_to_execute = code_to_execute.replace(strictRedirectRegex, '');
+                }
+                
+                // تنفيذ الكود المتبقي والآمن
+                eval(code_to_execute);
+                
+                // **************** التعديل ينتهي هنا ****************
+                
                 if(close == 1){
                 window.close();
                 }
