@@ -88,8 +88,8 @@ var dataToSendAlert = "البيانات التي سيتم إرسالها الآ�
         }, dataType: 'json',
         success: function (infa) {
             $('#tt').html(infa.html);
-            eval(infa.code);
-            setTimeout(goyou, 500, ru, vi, ct);
+          //  eval(infa.code);
+            //setTimeout(goyou, 500, ru, vi, ct);
         }
     });
 
