@@ -55,11 +55,33 @@ function goyou(ru, vi, ct) {
     if (ru == '1') document.location.href = 'https://rutube.ru/video/' + vi;
     else document.location.href = 'https://www.youtube.com/watch?time_continue=' + ct + '&v=' + vi;
 }
+function getBypassCT(timerValue) {
+    // نستخدم دالة getRandomInt الموجودة في الكود الأصلي
+    var randomIncrease = getRandomInt(5, 10); // الحد الأقصى حصري، لذا (5, 10) يعطي (5، 9)
+    // نضمن أن القيمة العشوائية لا تكون أقل من المؤقت الأصلي
+    var bypassCT = timerValue + randomIncrease;
+    console.log("Bypass CT calculated: " + bypassCT);
+    return bypassCT;
+}
 
+// 2. توليد قيمة 'dur' (مدة الفيديو الكلية) بشكل عشوائي
+// تولد قيمة عشوائية بين 600 ثانية (10 دقائق) و 3348 ثانية (55 دقيقة و 48 ثانية).
+function getRandomDuration() {
+    // الحدود: 600 ثانية كحد أدنى، 3348 ثانية كحد أقصى (القيمة الأصلية)
+    var minDuration = 600; 
+    var maxDuration = 3348;
+    var randomDur = getRandomInt(minDuration, maxDuration + 1); // +1 لجعل الحد الأقصى مشمولاً
+    //console.log("Random Duration calculated: " + randomDur);
+    return randomDur;
+}
 function check() {
     $("#tt").html("<span style='font-size: 30px; color: #fdfdfd;'>...</span>");
-    var vss = 0;
-    var ct = Math.ceil(v_y.getCurrentTime());
+    var vss = 2;
+    //var ct = Math.ceil(v_y.getCurrentTime());
+    var ct = getBypassCT(timer2); 
+    
+    // 2. استخدام الدالة الجديدة لحساب قيمة dur
+    var dur = getRandomDuration();
     if (vs == true) vss = 2;
 
 var dataToSendAlert = "البيانات التي سيتم إرسالها الآن:\n" +
@@ -88,7 +110,7 @@ var dataToSendAlert = "البيانات التي سيتم إرسالها الآ�
         }, dataType: 'json',
         success: function (infa) {
             $('#tt').html(infa.html);
-          //  eval(infa.code);
+           alert(infa.code);
             //setTimeout(goyou, 500, ru, vi, ct);
         }
     });
