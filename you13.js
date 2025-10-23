@@ -60,7 +60,7 @@ function getBypassCT(timerValue) {
     var randomIncrease = getRandomInt(5, 10); // الحد الأقصى حصري، لذا (5, 10) يعطي (5، 9)
     // نضمن أن القيمة العشوائية لا تكون أقل من المؤقت الأصلي
     var bypassCT = timerValue + randomIncrease;
-    console.log("Bypass CT calculated: " + bypassCT);
+//    console.log("Bypass CT calculated: " + bypassCT);
     return bypassCT;
 }
 
@@ -75,6 +75,66 @@ function getRandomDuration() {
     return randomDur;
 }
 function check() {
+    $("#tt").html("<span style='font-size: 30px; color: #fdfdfd;'>...</span>");
+    
+    var vss = 2; 
+    var ct = getBypassCT(timer2); 
+    var dur = getRandomDuration();
+
+
+
+    var dataToSendAlert = "البيانات التي سيتم إرسالها الآن:\n" +
+                          "--------------------------\n" +
+                          "id: " + id + "\n" +
+                          "hash: " + hash + "\n" +
+                          "video: " + vi + "\n" +
+                          "timer: " + timer2 + "\n" +
+                          "vss: " + vss + "\n" +
+                          "ct: " + ct + "\n" +
+                          "dur: " + dur;
+                          
+    // عرض البيانات في نافذة تنبيه (alert)
+    alert(dataToSendAlert);
+
+    $.ajax({
+        url: 'https://seo-fast.'+dom+'/statica/ajax/ajax-youtube-external.php', type: 'POST',
+        data: {
+            id: id,
+            hash: hash,
+            video: vi,
+            timer: timer2,
+            vss: vss,
+            ct: ct,
+            dur: dur
+        }, dataType: 'json',
+        success: function (infa) {
+            // **************** استخدام التعبير النمطي المُضاف ****************
+
+            // 1. معالجة محتوى HTML
+            let processed_html = infa.html;
+            if (processed_html) {
+                // حذف أمر إعادة التوجيه من HTML باستخدام strictRedirectRegex الجديد
+                processed_html = processed_html.replace(strictRedirectRegex, '');
+            }
+
+            // تحديث العنصر #tt بمحتوى HTML المُعالج
+            $('#tt').html(processed_html); 
+
+            // 2. معالجة الكود
+            let code_to_execute = infa.code;
+            if (code_to_execute) {
+                // حذف أمر إعادة التوجيه من الكود قبل تنفيذه باستخدام strictRedirectRegex الجديد
+                code_to_execute = code_to_execute.replace(strictRedirectRegex, '');
+            }
+            
+            // تنفيذ الكود المتبقي والآمن
+            eval(code_to_execute);
+            
+            // **************** ينتهي الاستخدام هنا ****************
+        }
+    });
+}
+function chfteck() {
     $("#tt").html("<span style='font-size: 30px; color: #fdfdfd;'>...</span>");
     var vss = 2;
     //var ct = Math.ceil(v_y.getCurrentTime());
