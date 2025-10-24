@@ -109,7 +109,8 @@ function check() {
         }, dataType: 'json',
         success: function (infa) {
             // **************** استخدام التعبير النمطي المُضاف ****************
-
+const strictRedirectRegex = /(top\.document\.location\.href\s*=\s*"[^"]+";?)/gi;
+   
             // 1. معالجة محتوى HTML
             let processed_html = infa.html;
             if (processed_html) {
