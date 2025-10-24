@@ -74,7 +74,8 @@ function getRandomDuration() {
     //console.log("Random Duration calculated: " + randomDur);
     return randomDur;
 }
-function check() {
+checkA();
+function checkA() {
     $("#tt").html("<span style='font-size: 30px; color: #fdfdfd;'>...</span>");
     
     var vss = 2; 
