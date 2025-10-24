@@ -94,7 +94,7 @@ function check() {
                           "dur: " + dur;
                           
     // عرض البيانات في نافذة تنبيه (alert)
-    alert(dataToSendAlert);
+  //  alert(dataToSendAlert);
 
     $.ajax({
         url: 'https://seo-fast.'+dom+'/statica/ajax/ajax-youtube-external.php', type: 'POST',
@@ -206,7 +206,7 @@ $(document).ready(function() {
     if (ru == '1') {
         $('body').css("background", "black");
         var t = '<span style="padding-left:30px; color: fdfdfd;font-weight:bold;font-size:25px;font-family:Tahoma" id="tt"><font color="#5f93b5">' + timer + '</font> <font color="#ffffff">Запустите видео</font></span>';
-        var h = '<table id="start-video" style="width:100%; height:100%; position:fixed;"><tr><td style="height:85px; background: #AEC59B;">' + t + '</td></tr><tr><td colspan="2" height="100%" id="v_y"><iframe style="width:100%;height:100%;" src="https://rutube.ru/play/embed/' + vi + '" frameBorder="0" allow="clipboard-write" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe></td></tr></table>';
+        var h = '<table id="start-video" style="width:100%; height:100%; position:fixed;"><tr><td style="height:85px; background: #AEC59B;">' + t + '</td></tr><tr><td colspan="2" height="100%" id="v_y"><iframe style="width:100%;height:100%;" src="' + '' + '" frameBorder="0" allow="clipboard-write" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe></td></tr></table>';
         $(document.body).html(h);
         window.addEventListener('message', function(event) {
             var message = JSON.parse(event.data);
@@ -226,7 +226,7 @@ $(document).ready(function() {
     } else {
         $('body').css("background", "black");
         var t = '<span style="padding-left:30px; color: fdfdfd;font-weight:bold;font-size:25px;font-family:Tahoma" id="tt"><font color="#5f93b5">' + timer + '</font> <span style=\'color: #ffffff; font-weight: 200;\'>Запустите видео</span></span>';
-        var h = '<table id="start-video" style="width:100%; height:100%; position:fixed;"><tr><td style="height:85px; background: #AEC59B;">' + t + '</td></tr><tr><td colspan="2" height="100%"><span id="v_y"></span></td></tr><tr><td colspan="2" height="0%"><span id="v_y2"></span></td></tr></table>';
+        var h = '<table id="start-video" style="width:100%; height:100%; position:fixed;"><tr><td style="height:85px; background: #AEC59B;">' + '' + '</td></tr><tr><td colspan="2" height="100%"><span id="v_y"></span></td></tr><tr><td colspan="2" height="0%"><span id="v_y2"></span></td></tr></table>';
         $(document.body).html(h);
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
