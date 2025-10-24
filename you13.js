@@ -206,7 +206,7 @@ $(document).ready(function() {
     if (ru == '1') {
         $('body').css("background", "black");
         var t = '<span style="padding-left:30px; color: fdfdfd;font-weight:bold;font-size:25px;font-family:Tahoma" id="tt"><font color="#5f93b5">' + timer + '</font> <font color="#ffffff">Запустите видео</font></span>';
-        var h = '<table id="start-video" style="width:100%; height:100%; position:fixed;"><tr><td style="height:85px; background: #AEC59B;">' + t + '</td></tr><tr><td colspan="2" height="100%" id="v_y"><iframe style="width:100%;height:100%;" src="' + '' + '" frameBorder="0" allow="clipboard-write" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe></td></tr></table>';
+        var h = '<table id="start-video" style="width:100%; height:100%; position:fixed;"><tr><td style="height:85px; background: #AEC59B;">' + '' + '</td></tr><tr><td colspan="2" height="100%" id="v_y"><iframe style="width:100%;height:100%;" src="' + '' + '" frameBorder="0" allow="clipboard-write" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe></td></tr></table>';
         $(document.body).html(h);
         window.addEventListener('message', function(event) {
             var message = JSON.parse(event.data);
