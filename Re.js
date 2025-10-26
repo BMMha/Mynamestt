@@ -840,29 +840,35 @@ const captchaModule = (function() { // k -> captchaModule
          * بدء الكابتشا والمؤقت.
          * @param {number} [isRefresh=0] - 1 إذا كانت عملية تحديث مهمة.
          */
+        /**
+         * ***************************************************************
+         * الوظيفة المعدَّلة: تجاوز الكابتشا وإرسال إحداثيات النقر التلقائي
+         * ***************************************************************
+         * @param {number} [isRefresh=0] - 1 إذا كانت عملية تحديث مهمة.
+         */
         start: function(isRefresh = 0) {
-            reloadCount = 0;
-            timerDuration = 30;
-            stopTimer(); // التأكد من إيقاف أي مؤقت سابق
+            // إيقاف أي مؤقت سابق لضمان عدم حدوث أي تداخل
+            stopTimer(); 
+            
+            // ❌ تم إزالة: reset reloadCount = 0
+            // ❌ تم إزالة: reset timerDuration = 30
+            // ❌ تم إزالة: دالة setInterval بالكامل لمنع ظهور المؤقت والـ Timeout
 
-            timerInterval = setInterval(function() {
-                timerDisplay.text(timerDuration);
-                timerDuration--;
+            // 🤖 الإحداثيات التلقائية (Auto-Click Coordinates)
+            // تم اختيار 120 (منتصف 240) و 46 (قيمة زوجية قريبة من منتصف 90)
+            const autoClickX = 120;
+            const autoClickY = 46;
 
-                if (timerDuration < 0) {
-                    displayAlert(translations[language]["Время проверки истекло"]);
-                    $("#mac2View").text("mac3Start");
-                    $("body,html").animate({ scrollTop: 2 }, 100).animate({ scrollTop: 0 }, 200);
-                    
-                    if (typeof eventHandlers.timeout === "function") {
-                        eventHandlers.timeout();
-                    }
-                    sendComplaint(currentTaskData.id, 1);
-                    stopTimer();
-                }
-            }, 1000);
-
-            getCaptcha(isRefresh); // جلب الكابتشا
+            // إرسال النقر التلقائي (التحقق الفوري)
+            // نستخدم sendCaptchaCheck مباشرة مع تطبيق منطق الإحداثيات الزوجية
+            sendCaptchaCheck({
+                // إذا كانت القيمة فردية، اطرح 1 لجعلها زوجية (كما كان يحدث في الكود الأصلي)
+                x: autoClickX % 2 ? autoClickX - 1 : autoClickX, 
+                y: autoClickY % 2 ? autoClickY - 1 : autoClickY, 
+                refreshTask: isRefresh 
+            });
+            
+            // ❌ تم إزالة: استدعاء getCaptcha(isRefresh) الذي كان يقوم بالتحميل
         },
         /**
          * إخفاء نافذة الكابتشا.
