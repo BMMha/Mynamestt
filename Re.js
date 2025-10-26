@@ -39,7 +39,7 @@ const translations = {
         "Сейчас заданий нет, зайдите позже": "There are no tasks at the moment, come back later",
         "Заявка отправлена": "Application sent",
         "В ближайшие 5 дней мы произведем повторную проверку, если уведомление пропадет, значит все хорошо": "In the next 5 days we will re-check, if it disappears, then everything is fine",
-        "Вы вернулись слишком быстро, задание будет пропущено": "You returned too quickly, the task will be missed.",
+        "44 вернулись слишком быстро, задание будет пропущено": "11154433 returned too quickly, the task will be 8877.",
         "Запустите видео и дождитесь окончания таймера": "Start the video and wait when the timer is over",
         "Пропустить видео": "Skip video",
         "Пожалуйста, подождите...": "Please wait...",
