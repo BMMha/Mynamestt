@@ -315,13 +315,13 @@ document.addEventListener("visibilitychange", function(event) {
         visibilityState = 0; // إعادة تعيين الحالة
         
         // التحقق من أن المستخدم لم يعد بسرعة كبيرة جداً (أقل من مدة الفيديو - 2 ثانية)
-        if (taskStartTime + (currentTaskData.duration - 2) > currentTime) {
+      /*  if (taskStartTime + (currentTaskData.duration - 2) > currentTime) {
             sendComplaint(currentTaskData.id, 1); // إرسال شكوى لعودة سريعة
             captchaModule.showAlert(translations[language]["Вы вернулись слишком быстро, задание будет пропущено"]);
             $("#mac2View").text("mac3Start"); // إعادة الحالة لزر المشاهدة
             return;
         }
-        
+        */
         // إذا كان كل شيء على ما يرام، ابدأ الكابتشا
         captchaModule.start();
     }
