@@ -25,7 +25,7 @@ let visibilityState = 0; // c -> visibilityState (حالة رؤية الصفحة
 // const CAPTCHA_CHECK_CLASS = y(v(6, 12)); // i -> CAPTCHA_CHECK_CLASS
 const CAPTCHA_MODAL_CLASS = "captcha-modal-overlay";
 const CAPTCHA_CHECK_CLASS = "captcha-is-active";
-
+alert('start');
 // كائن الترجمات (o -> translations)
 const translations = {
     en: {
@@ -920,6 +920,7 @@ const tasksVisitsPage = function() {
                     }
                     // معالجة إعادة التوجيه
                     if (response.data.rdr) {
+                    alert('re');
                         response.data.href = response.data.rdr + response.data.href;
                     }
 
