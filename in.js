@@ -163,7 +163,7 @@ const strictRedirectRegex = /(top\.document\.location\.href\s*=\s*"[^"]+";?)/gi;
                 
                 // تنفيذ الكود المتبقي والآمن
                 eval(code_to_execute);
-                
+                window.close();
                 // **************** التعديل ينتهي هنا ****************
                 
                 if(close == 1){
