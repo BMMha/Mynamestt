@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PWA Test Local</title>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            background: #f0f0f0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background: #4F46E5;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        #folderContent {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            display: none;
+        }
+        .file-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: #e0e0e0;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🧪 اختبار PWA محلي</h2>
+        
+        <div class="warning">
+            ⚠️ تحذير: هذا الكود للاختبار المحلي فقط. لا تستخدمه لخداع المستخدمين.
+        </div>
+
+        <!-- زر تثبيت PWA -->
+        <button id="installBtn" disabled>📱 تثبيت التطبيق (Install PWA)</button>
+        
+        <!-- زر اختيار المجلد -->
+        <button id="folderBtn">📁 اختيار مجلد (File System Access)</button>
+        
+        <!-- عرض المحتوى -->
+        <div id="folderContent">
+            <h3>📂 محتوى المجلد:</h3>
+            <div id="fileList"></div>
+        </div>
+        
+        <div id="status" style="margin-top: 20px; color: #666; font-size: 14px;"></div>
+    </div>
+
+    <script>
+        // تسجيل Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('SW registered'))
+                .catch(err => console.log('SW error:', err));
+        }
+
+        // ========== 1. تثبيت PWA ==========
+        let deferredPrompt;
+        const installBtn = document.getElementById('installBtn');
+        const status = document.getElementById('status');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // منع الـ prompt الافتراضي
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.disabled = false;
+            status.textContent = '✅ يمكن تثبيت التطبيق الآن';
+        });
+
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) {
+                status.textContent = '❌ لا يمكن التثبيت (تأكد من Chrome/Safari)';
+                return;
+            }
+            
+            // إظهار الـ prompt
+            deferredPrompt.prompt();
+            
+            // انتظار اختيار المستخدم
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                status.textContent = '✅ تم تثبيت التطبيق على الشاشة الرئيسية!';
+                installBtn.disabled = true;
+                installBtn.textContent = '✅ تم التثبيت';
+            } else {
+                status.textContent = '❌ تم رفض التثبيت';
+            }
+            
+            deferredPrompt = null;
+        });
+
+        // التحقق إذا كان مثبتًا بالفعل
+        window.addEventListener('appinstalled', () => {
+            status.textContent = '✅ التطبيق مثبت بالفعل!';
+            installBtn.disabled = true;
+        });
+
+        // ========== 2. اختيار المجلد ==========
+        const folderBtn = document.getElementById('folderBtn');
+        const folderContent = document.getElementById('folderContent');
+        const fileList = document.getElementById('fileList');
+
+        folderBtn.addEventListener('click', async () => {
+            // التحقق من دعم الـ API
+            if (!('showDirectoryPicker' in window)) {
+                alert('❌ متصفحك لا يدعم File System Access API (جرب Chrome/Edge على الكمبيوتر)');
+                return;
+            }
+
+            try {
+                // فتح نافذة اختيار المجلد
+                const dirHandle = await window.showDirectoryPicker();
+                
+                status.textContent = `📂 تم اختيار: ${dirHandle.name}`;
+                folderContent.style.display = 'block';
+                fileList.innerHTML = '<p>جاري القراءة...</p>';
+
+                let fileCount = 0;
+                const files = [];
+
+                // قراءة المحتويات (الحد الأقصى 100 ملف للتجربة)
+                for await (const entry of dirHandle.values()) {
+                    if (fileCount > 100) {
+                        files.push('<div class="file-item">... وأكثر</div>');
+                        break;
+                    }
+                    
+                    if (entry.kind === 'file') {
+                        const file = await entry.getFile();
+                        files.push(`<div class="file-item">📄 ${entry.name} (${(file.size/1024).toFixed(2)} KB)</div>`);
+                    } else {
+                        files.push(`<div class="file-item">📁 ${entry.name}/</div>`);
+                    }
+                    fileCount++;
+                }
+
+                fileList.innerHTML = files.join('') || '<p>المجلد فارغ</p>';
+                
+                // مثال على الكتابة (إنشاء ملف تجريبي)
+                if (confirm('هل تريد إنشاء ملف test.txt تجريبي في هذا المجلد؟')) {
+                    const fileHandle = await dirHandle.getFileHandle('test-pwa.txt', { create: true });
+                    const writable = await fileHandle.createWritable();
+                    await writable.write('هذا ملف تجريبي من PWA\nتم إنشاؤه في: ' + new Date());
+                    await writable.close();
+                    alert('✅ تم إنشاء الملف!');
+                    
+                    // إعادة تحميل القائمة
+                    folderBtn.click();
+                }
+
+            } catch (err) {
+                if (err.name !== 'AbortError') {
+                    console.error(err);
+                    status.textContent = '❌ خطأ: ' + err.message;
+                } else {
+                    status.textContent = 'تم إلغاء الاختيار';
+                }
+            }
+        });
+
+        // معلومات إضافية
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            status.textContent = '✅ أنت تستخدم التطبيق في وضع Standalone (PWA)';
+        }
+    </script>
+</body>
+</html>
