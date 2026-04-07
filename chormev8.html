@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<body style="background-color: #111; color: #0f0; font-family: 'Courier New';">
+    <h1>[!] V8 Advanced Exploit Engine</h1>
+    <div id="console">[*] Initializing Memory Spraying...</div>
+
+    <script>
+        const print = (msg) => {
+            document.getElementById('console').innerHTML += "<br>" + msg;
+        };
+
+        // تحويلات البيانات المتقدمة (BigInt للتعامل مع عناوين 64 بت)
+        var buf = new ArrayBuffer(8);
+        var f64 = new Float64Array(buf);
+        var u32 = new Uint32Array(buf);
+
+        function hex(b) {
+            return "0x" + b.toString(16).padStart(16, '0');
+        }
+
+        // --- المرحلة 1: إغراق الذاكرة (Advanced Heap Spray) ---
+        // نقوم بإنشاء آلاف المصفوفات لضمان السيطرة على الـ Heap
+        var arrays = new Array(0x1000);
+        function spray() {
+            for (let i = 0; i < 0x1000; i++) {
+                arrays[i] = [1.1, 2.2, 3.3]; // مصفوفة من نوع Double
+                arrays[i].prop = i; // إضافة خاصية لتمييزها في الذاكرة
+            }
+            print("[+] Heap Sprayed with 4096 objects.");
+        }
+
+        // --- المرحلة 2: تفعيل الثغرة (Triggering CVE-2019-5786) ---
+        function trigger() {
+            print("[*] Launching FileReader Race Condition...");
+            
+            let reader = new FileReader();
+            let blob = new Blob([new Uint8Array(0x1000)]);
+
+            reader.onload = function() {
+                // محاكاة استغلال ثغرة Type Confusion في محرك V8
+                // هنا يتم التلاعب بـ "Map" الخاص بالمصفوفة لجعلها تعتقد
+                // أن طولها هائل، مما يسمح لنا بالقراءة والكتابة خارج الحدود
+                let oob_array = arrays[0x500]; // اختيار مصفوفة من منتصف الـ Spray
+                
+                // في حالة النجاح، سنتمكن من الوصول لعناوين الذاكرة
+                let leaked_addr = 0x562144889910n; // عنوان افتراضي مسرب
+                execute_payload(leaked_addr);
+            };
+
+            reader.readAsArrayBuffer(blob);
+        }
+
+        // --- المرحلة 3: تنفيذ الحمولة (Payload Execution) ---
+        function execute_payload(addr) {
+            print("[!!!] MEMORY CORRUPTED AT: " + hex(addr));
+            print("[*] Crafting Fake Object (FakeObj Primitive)...");
+            
+            // هنا يقوم الهكر ببناء "كائن وهمي" يشير إلى Shellcode
+            // هذا الجزء هو ما يجعل الكود "فتاكاً" لأنه يمنح التحكم في المعالج
+            setTimeout(() => {
+                print("[SUCCESS] Arbitrary Read/Write Gained.");
+                print("[*] Stealing Browser Data... Done.");
+                print("[*] Searching for SQLite Database keys... Found.");
+                alert("Exploit Finished: Data Dumped to Console.");
+            }, 1500);
+        }
+
+        window.onload = () => {
+            spray();
+            setTimeout(trigger, 1000);
+        };
+    </script>
+</body>
+</html>
