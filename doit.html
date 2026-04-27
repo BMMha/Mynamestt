@@ -3,153 +3,274 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منفذ أوامر Gemini المباشر</title>
+    <title>بيئة التنفيذ الفوري - Gemini</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&display=swap');
+        
         body {
-            font-family: 'Noto Sans Arabic', sans-serif;
+            font-family: 'Cairo', sans-serif;
             background-color: #0f172a;
             color: #f8fafc;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
         }
-        .code-preview {
+        
+        .app-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            height: 100vh;
+            gap: 1px;
             background: #1e293b;
-            border-right: 4px solid #3b82f6;
-            font-family: monospace;
-            direction: ltr;
         }
+
+        /* تخصيص السكرول */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        
+        /* شاشة المحادثة */
+        .chat-section {
+            background: #0f172a;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* الكونسول وساحة العرض */
+        .execution-section {
+            background: #1e293b;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .playground {
+            flex: 2;
+            background: #ffffff;
+            color: #000;
+            position: relative;
+            overflow: auto;
+            padding: 20px;
+            border-bottom: 4px solid #0f172a;
+        }
+
+        .console-area {
+            flex: 1;
+            background: #000000;
+            color: #10b981;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            padding: 15px;
+            overflow-y: auto;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .log-entry { border-left: 3px solid #3b82f6; padding-left: 10px; margin-bottom: 5px; }
+        .error-entry { border-left: 3px solid #ef4444; color: #ef4444; padding-left: 10px; margin-bottom: 5px; }
+        
+        .typing-indicator { display: none; }
+        .typing-indicator.active { display: flex; }
     </style>
 </head>
-<body class="h-screen flex flex-col items-center justify-center p-4">
+<body>
 
-    <div class="w-full max-w-3xl bg-slate-800 rounded-3xl shadow-2xl border border-slate-700 flex flex-col overflow-hidden h-[90vh]">
+    <div class="app-grid">
         
-        <!-- Header -->
-        <div class="p-5 border-b border-slate-700 bg-slate-900 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-blue-500 rounded-lg animate-pulse">
-                    <i class="fas fa-code text-white"></i>
+        <!-- القسم الأيمن: المحادثة والأوامر -->
+        <div class="chat-section">
+            <div class="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-microchip text-blue-500 text-2xl"></i>
+                    <div>
+                        <h1 class="font-bold text-lg leading-tight">محرك Gemini البرمجي</h1>
+                        <p class="text-xs text-slate-400">تنفيذ فوري للأكواد في الوقت الفعلي</p>
+                    </div>
                 </div>
-                <h1 class="font-bold text-lg">منفذ الأكواد اللحظي</h1>
+                <div class="flex gap-2">
+                    <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse self-center"></span>
+                </div>
             </div>
-            <div id="connectionStatus" class="text-xs text-green-400 flex items-center gap-2">
-                <span class="w-2 h-2 bg-green-400 rounded-full"></span> جاهز للاستلام
+
+            <div id="chatMessages" class="messages-area">
+                <div class="bg-blue-900/30 border border-blue-500/30 p-4 rounded-xl text-sm w-full">
+                    <h3 class="font-bold text-blue-400 mb-2"><i class="fas fa-info-circle"></i> كيف تعمل هذه البيئة؟</h3>
+                    <ul class="list-disc list-inside space-y-1 text-slate-300">
+                        <li>أي كود مرئي (أزرار، ألوان، نصوص) سيتم رسمه في <b>"ساحة العرض"</b> البيضاء يساراً.</li>
+                        <li>أي كود برمجي بحت (عمليات حسابية، طباعة بيانات) سيظهر في <b>"شاشة الكونسول"</b> السوداء بالأسفل.</li>
+                        <li>جرب: <i class="text-blue-300">"أرسم دائرة حمراء تتحرك"</i> أو <i class="text-blue-300">"اطبع الأرقام من 1 لـ 5"</i></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="typingIndicator" class="px-6 py-2 typing-indicator items-center gap-2 text-xs text-slate-400">
+                <i class="fas fa-cog fa-spin"></i> جاري كتابة الكود وتنفيذه...
+            </div>
+
+            <div class="p-4 bg-slate-900 border-t border-slate-800">
+                <form id="chatForm" class="flex gap-2">
+                    <input type="text" id="userInput" placeholder="أدخل أمرك البرمجي ليتم تنفيذه فوراً..." class="flex-1 bg-slate-800 border border-slate-700 text-white rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-blue-500" autocomplete="off">
+                    <button type="submit" id="sendBtn" class="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-xl font-bold transition-all text-white"><i class="fas fa-play"></i></button>
+                </form>
             </div>
         </div>
 
-        <!-- Chat Log -->
-        <div id="chatLog" class="flex-1 overflow-y-auto p-6 space-y-4">
-            <div class="bg-slate-700/50 p-4 rounded-2xl rounded-tr-none text-sm border border-slate-600">
-                مرحباً! جرب الآن أن تطلب مني: <strong>"اعمل تنبيه alert مكتوب فيه تم الاختراق"</strong> أو <strong>"غير لون الخلفية للأحمر"</strong>.
+        <!-- القسم الأيسر: ساحة التنفيذ -->
+        <div class="execution-section">
+            <!-- ساحة العرض المرئية -->
+            <div class="relative flex flex-col h-2/3">
+                <div class="absolute top-0 right-0 bg-slate-800 text-white text-[10px] px-3 py-1 rounded-bl-lg z-10 flex gap-2 items-center">
+                    <i class="fas fa-desktop"></i> ساحة العرض (Playground)
+                    <button onclick="document.getElementById('playground').innerHTML=''" class="ml-2 text-red-400 hover:text-red-300"><i class="fas fa-eraser"></i> مسح</button>
+                </div>
+                <div id="playground" class="playground h-full w-full">
+                    <!-- سيتم حقن العناصر المرئية هنا -->
+                </div>
+            </div>
+
+            <!-- الكونسول البرمجي -->
+            <div class="relative flex flex-col h-1/3">
+                <div class="absolute top-0 right-0 bg-slate-800 text-white text-[10px] px-3 py-1 rounded-bl-lg z-10 flex gap-2 items-center">
+                    <i class="fas fa-terminal"></i> مخرجات النظام (Console)
+                    <button onclick="document.getElementById('consoleArea').innerHTML=''" class="ml-2 text-slate-400 hover:text-white"><i class="fas fa-trash"></i></button>
+                </div>
+                <div id="consoleArea" class="console-area h-full pt-8">
+                    <div class="text-slate-500 text-xs">Waiting for execution...</div>
+                </div>
             </div>
         </div>
 
-        <!-- System Message / Code Preview -->
-        <div id="codeDisplay" class="hidden px-6 py-3 code-preview text-xs overflow-x-auto whitespace-pre"></div>
-
-        <!-- Input -->
-        <div class="p-4 bg-slate-900">
-            <form id="actionForm" class="flex gap-2">
-                <input 
-                    type="text" 
-                    id="userPrompt" 
-                    placeholder="اكتب أمرك البرمجي هنا..." 
-                    class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm"
-                >
-                <button type="submit" id="btnSend" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-bold transition-all">
-                    <i class="fas fa-bolt"></i>
-                </button>
-            </form>
-        </div>
     </div>
 
     <script>
-        const apiKey = ""; // اتركها فارغة للبيئة التلقائية
-        const modelName = "gemini-2.5-flash-preview-09-2025";
-        
-        const chatLog = document.getElementById('chatLog');
-        const userPrompt = document.getElementById('userPrompt');
-        const codeDisplay = document.getElementById('codeDisplay');
-        const btnSend = document.getElementById('btnSend');
+        const API_KEY = "AIzaSyBcwF991AVopxXwmBXTzvXeHPcCAbcI3r8";
+        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
 
-        function addLog(text, isUser = false) {
+        const chatMessages = document.getElementById('chatMessages');
+        const chatForm = document.getElementById('chatForm');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const consoleArea = document.getElementById('consoleArea');
+        const playground = document.getElementById('playground');
+
+        // دالة لعرض رسائل المحادثة
+        function addMessage(text, isUser = false) {
             const div = document.createElement('div');
-            div.className = isUser ? "flex justify-end" : "flex justify-start";
-            div.innerHTML = `<div class="${isUser ? 'bg-blue-600' : 'bg-slate-700'} p-3 rounded-2xl max-w-[85%] text-sm shadow-md">${text}</div>`;
-            chatLog.appendChild(div);
-            chatLog.scrollTop = chatLog.scrollHeight;
+            div.className = isUser 
+                ? "self-end bg-blue-600 p-3 rounded-2xl rounded-tl-none text-sm max-w-[85%] shadow-md" 
+                : "self-start bg-slate-800 border border-slate-700 p-3 rounded-2xl rounded-tr-none text-sm max-w-[85%] shadow-md text-slate-300";
+            
+            div.innerHTML = text.replace(/\n/g, '<br>');
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        async function callGemini(prompt) {
-            const systemMsg = `
-            You are a direct browser controller.
-            IF the user wants an action, YOU MUST return the JavaScript code inside [ACTION]...[/ACTION].
-            Example: [ACTION] alert('Hello'); [/ACTION]
-            Keep explanations very short and in Arabic.
+        // دالة للكتابة في الكونسول المخصص
+        function systemLog(msg, isError = false) {
+            const log = document.createElement('div');
+            log.className = isError ? 'error-entry' : 'log-entry';
+            
+            // تحويل الكائنات إلى نصوص ليتم عرضها
+            if (typeof msg === 'object') {
+                log.innerText = JSON.stringify(msg, null, 2);
+            } else {
+                log.innerText = `> ${msg}`;
+            }
+            
+            consoleArea.appendChild(log);
+            consoleArea.scrollTop = consoleArea.scrollHeight;
+        }
+
+        async function executeAIRequest(prompt) {
+            typingIndicator.classList.add('active');
+            sendBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i>';
+            userInput.disabled = true;
+
+            // تعليمات صارمة للذكاء الاصطناعي ليتحكم بالساحة والكونسول
+            const systemContext = `
+            You are a real-time JavaScript executor engine.
+            CRITICAL RULES:
+            1. If the user wants to create UI, buttons, text, or shapes, append them to the element with id 'playground'. 
+               Example: document.getElementById('playground').innerHTML += '<button>Click</button>';
+            2. For calculations, logic, fetching data, or debugging, use customConsole(message) instead of console.log.
+            3. YOU MUST wrap ONLY the JavaScript code inside [EXEC] and [/EXEC]. No markdown.
+            4. Provide a very brief 1-sentence confirmation in Arabic outside the tags.
             `;
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-            
-            const response = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }],
-                    systemInstruction: { parts: [{ text: systemMsg }] }
-                })
-            });
-
-            if (!response.ok) throw new Error("فشل في استلام البيانات من الخادم");
-            const data = await response.json();
-            return data.candidates[0].content.parts[0].text;
-        }
-
-        document.getElementById('actionForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const msg = userPrompt.value.trim();
-            if (!msg) return;
-
-            addLog(msg, true);
-            userPrompt.value = '';
-            btnSend.disabled = true;
-            btnSend.innerHTML = '<i class="fas fa-spinner animate-spin"></i>';
-
             try {
-                const response = await callGemini(msg);
-                
-                // البحث عن الوسم التنفيذي
-                const match = response.match(/\[ACTION\]([\s\S]*?)\[\/ACTION\]/);
-                
-                if (match) {
-                    const jsCode = match[1].trim();
-                    
-                    // إظهار الكود للمعاينة
-                    codeDisplay.innerText = "// جاري التنفيذ:\n" + jsCode;
-                    codeDisplay.classList.remove('hidden');
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-goog-api-key": API_KEY
+                    },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: systemContext + "\nUSER: " + prompt }] }]
+                    })
+                });
 
+                if (!response.ok) throw new Error("فشل الاتصال بالخادم");
+
+                const data = await response.json();
+                const aiResult = data.candidates[0].content.parts[0].text;
+                
+                // استخراج الكود
+                const codeMatch = aiResult.match(/\[EXEC\]([\s\S]*?)\[\/EXEC\]/);
+                
+                if (codeMatch) {
+                    const jsCode = codeMatch[1].trim();
+                    
                     try {
-                        // محاولة تنفيذ الكود بطريقتين لضمان العمل
-                        const execute = new Function(jsCode);
-                        execute();
+                        // إنشاء بيئة تنفيذ آمنة وتمرير دالة كونسول مخصصة
+                        const executeFunc = new Function('customConsole', jsCode);
+                        executeFunc(systemLog); // تنفيذ الكود برمجياً
                         
-                        // للتأكيد في الـ Console
-                        console.log("Executed JS:", jsCode);
-                    } catch (err) {
-                        addLog("خطأ في تنفيذ الكود: " + err.message);
+                    } catch (evalError) {
+                        systemLog(evalError.message, true);
+                        addMessage("❌ حدث خطأ أثناء تنفيذ الكود. تفقد الكونسول.", false);
                     }
                 }
 
-                const cleanText = response.replace(/\[ACTION\][\s\S]*?\[\/ACTION\]/g, '').trim();
-                if (cleanText) addLog(cleanText);
+                // عرض الرد النصي المتبقي
+                const cleanResponse = aiResult.replace(/\[EXEC\][\s\S]*?\[\/EXEC\]/g, '').trim();
+                if(cleanResponse) addMessage(cleanResponse, false);
 
             } catch (err) {
-                addLog("حدث خطأ: " + err.message);
+                addMessage("⚠️ " + err.message, false);
             } finally {
-                btnSend.disabled = false;
-                btnSend.innerHTML = '<i class="fas fa-bolt"></i>';
+                typingIndicator.classList.remove('active');
+                sendBtn.innerHTML = '<i class="fas fa-play"></i>';
+                userInput.disabled = false;
+                userInput.focus();
             }
+        }
+
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const val = userInput.value.trim();
+            if (!val) return;
+
+            addMessage(val, true);
+            userInput.value = '';
+            executeAIRequest(val);
         });
+
+        // تهيئة الكونسول
+        systemLog("System initialized. API connection ready.");
     </script>
 </body>
 </html>
