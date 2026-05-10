@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>نشر على فيسبوك - v25.0</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Arial; }
+        body { background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .box { background: white; padding: 30px; border-radius: 12px; width: 100%; max-width: 420px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #1877f2; margin-bottom: 20px; }
+        label { display: block; margin: 12px 0 4px; font-size: 14px; color: #555; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+        textarea { resize: vertical; }
+        button { width: 100%; padding: 12px; margin-top: 16px; background: #1877f2; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
+        button:hover { background: #166fe5; }
+        #out { margin-top: 14px; padding: 10px; border-radius: 6px; font-size: 14px; text-align: center; min-height: 40px; }
+        .ok { background: #e7f3e8; color: #1b5e20; }
+        .err { background: #ffebee; color: #c62828; }
+        .load { color: #555; }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>📘 نشر على فيسبوك</h2>
+    
+    <label>Page ID</label>
+    <input type="text" id="pid" placeholder="مثال: 1234567890">
+    
+    <label>Page Access Token</label>
+    <input type="text" id="tok" placeholder="التوكن الخاص بالصفحة">
+    
+    <label>نص المنشور</label>
+    <textarea id="txt" rows="4" placeholder="اكتب هنا..."></textarea>
+    
+    <button onclick="post()">نشر الآن</button>
+    
+    <div id="out"></div>
+</div>
+
+<script>
+async function post() {
+    const pid = document.getElementById('pid').value.trim();
+    const tok = document.getElementById('tok').value.trim();
+    const txt = document.getElementById('txt').value.trim();
+    const out = document.getElementById('out');
+
+    if (!pid || !tok || !txt) {
+        out.className = 'err';
+        out.innerText = '❌ املأ جميع الحقول';
+        return;
+    }
+
+    out.className = 'load';
+    out.innerText = '⏳ جاري النشر...';
+
+    try {
+        const res = await fetch(`https://graph.facebook.com/v25.0/${pid}/feed`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ message: txt, access_token: tok })
+        });
+
+        const data = await res.json();
+
+        if (data.id) {
+            out.className = 'ok';
+            out.innerHTML = `✅ تم النشر!<br><small>ID: ${data.id}</small>`;
+        } else {
+            out.className = 'err';
+            out.innerText = '❌ ' + (data.error?.message || 'خطأ غير معروف');
+        }
+    } catch (e) {
+        out.className = 'err';
+        out.innerText = '❌ خطأ: ' + e.message;
+    }
+}
+</script>
+
+</body>
+</html>
