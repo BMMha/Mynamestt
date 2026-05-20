@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المستكشف الكوني ثلاثي الأبعاد</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #020208;
+            font-family: 'Tajawal', sans-serif;
+            color: #fff;
+        }
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        /* واجهة المستخدم المستقبلية */
+        .hud-interface {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 25px;
+        }
+        .interactive {
+            pointer-events: auto;
+        }
+        /* لوحة التحكم العلوية والمسار */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .breadcrumbs {
+            background: rgba(10, 10, 30, 0.6);
+            padding: 12px 25px;
+            border-radius: 30px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            font-size: 1.1rem;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
+        }
+        .breadcrumbs span {
+            color: #00e5ff;
+            text-shadow: 0 0 8px rgba(0, 229, 255, 0.5);
+        }
+        .back-btn {
+            background: linear-gradient(135deg, #ff007f, #7f00ff);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Tajawal', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+            display: none;
+        }
+        .back-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(255, 0, 127, 0.7);
+        }
+        /* اللوحة الجانبية للمعلومات */
+        .info-panel {
+            background: rgba(10, 10, 25, 0.75);
+            border-right: 3px solid #00e5ff;
+            padding: 30px;
+            width: 350px;
+            border-radius: 0 20px 20px 0;
+            backdrop-filter: blur(12px);
+            box-shadow: -10px 0 30px rgba(0,0,0,0.5), 0 0 20px rgba(0, 229, 255, 0.1);
+            transform: translateX(400px);
+            transition: transform 0.5s cubic-bezier(0.1, 1, 0.1, 1);
+            align-self: flex-start;
+            margin-top: 20px;
+        }
+        .info-panel.active {
+            transform: translateX(0);
+        }
+        .info-panel h2 {
+            color: #00e5ff;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+        }
+        .info-panel p {
+            line-height: 1.7;
+            color: #cbd5e1;
+            font-size: 1rem;
+        }
+        /* تلميحات أسفل الشاشة */
+        .instructions {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 10px 30px;
+            border-radius: 20px;
+            align-self: center;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255,255,255,0.1);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        /* شاشة التحميل */
+        #loader {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #03030c;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 1s ease;
+        }
+        .spinner {
+            width: 60px; height: 60px;
+            border: 4px solid rgba(0, 229, 255, 0.1);
+            border-left-color: #00e5ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+        }
+        @keyframes spin { to { transform: rotate(300deg); } }
+        #loader p { margin-top: 20px; font-size: 1.2rem; color: #00e5ff; }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <p>جاري توليد الأبعاد والأنظمة الكونية...</p>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div class="hud-interface">
+        <div class="top-bar">
+            <div class="breadcrumbs">المستكشف الكوني &gt; <span id="current-view-label">الفضاء العام</span></div>
+            <button class="back-btn interactive" id="back-button" onclick="handleBackClick()">الرجوع للخلف ↩</button>
+        </div>
+
+        <div class="info-panel interactive" id="info-panel">
+            <h2 id="panel-title">درب التبانة</h2>
+            <p id="panel-desc">مسكننا الكوني، وهي مجرة حلزونية هائلة تحتوي على مئات المليارات من النجوم والأنظمة الكوكبية ومن ضمنها نظامنا الشمسي.</p>
+        </div>
+
+        <div class="instructions">💡 انقر أو المس أي مجرة أو كوكب للغوص والتنقل داخله</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+    <script>
+        // إعدادات البيئة الأساسية وثوابت البيانات الكونية
+        const container = document.getElementById('canvas-container');
+        let scene, camera, renderer, raycaster, mouse;
+        let currentView = 'UNIVERSE'; // الأنواع المتاحة: UNIVERSE, GALAXY, PLANET
+        let activeObject = null;
+        
+        // المجموعات الحركية الفردية لتنظيم المشهد
+        let universeGroup, milkyWayGroup, andromedaGroup, solarSystemGroup;
+        let galaxies = [], planets = [];
+
+        // بيانات الأجرام الكونية المتاحة باللغة العربية
+        const cosmicData = {
+            'milkyway': { title: 'مجرة درب التبانة', desc: 'المجرة الأم لنظامنا الشمسي. مجرة حلزونية ضخمة تمتد لنحو 100,000 سنة ضوئية وتضم مليارات الكواكب العابرة.' },
+            'andromeda': { title: 'مجرة أندروميدا (المرأة المسلسلة)', desc: 'أقرب مجرة كبرى لمجرتنا. تبعد عنا 2.5 مليون سنة ضوئية وتتحرك بمسار تصادمي رائع ومثير مع درب التبانة مستقبلاً.' },
+            'sun': { title: 'الشمس', desc: 'النجم المركزي للنظام الشمسي. تشكل كتلتها حوالي 99.8% من كتلة النظام الكلي وتمد الكواكب بالضوء والحرارة.' },
+            'mercury': { title: 'كوكب عطارد', desc: 'أصغر كواكب النظام الشمسي وأقربها إلى الشمس، سطحه مليء بالفوهات والمنخفضات الشديدة ودرجات حرارته متطرفة.' },
+            'venus': { title: 'كوكب الزهرة', desc: 'توأم الأرض من حيث الحجم، لكنه يمتلك غلافاً جوياً ساماً وكثيفاً يحبس الحرارة ليجعله الكوكب الأكثر سخونة على الإطلاق.' },
+            'earth': { title: 'كوكب الأرض', desc: 'واحتنا الحية الزرقاء. الكوكب الوحيد المعروف حتى الآن الذي تتوفر فيه مقومات الحياة والمياه السائلة والغطاء النباتي.' },
+            'mars': { title: 'كوكب المريخ', desc: 'الكوكب الأحمر الشهير. غني بأكسيد الحديد ويحتوي على أكبر البراكين الخامدة في النظام الشمسي ويشكل هدف البشرية الأول للاستكشاف الخارجي.' },
+            'jupiter': { title: 'كوكب المشتري', desc: 'عملاق الغاز وأكبر كواكب النظام الشمسي على الإطلاق. يمتلك عاصفة حمراء كبرى تفوق حجم الأرض، وعشرات الأقمار التابعة.' },
+            'saturn': { title: 'كوكب زحل', desc: 'أيقونة الجمال الكوني بفضل نظام حلقاته البراقة المذهلة المكونة من جزيئات الجليد والغبار الصخري المتناثر.' },
+            'uranus': { title: 'كوكب أورانوس', desc: 'العملاق الجليدي الأزرق البارد. يتميز بمحور دوران مائل بشدة يجعله يبدو وكأنه يدور على جانبه مقارنة ببقية الكواكب.' },
+            'neptune': { title: 'كوكب نبتون', desc: 'الكوكب الأبعد عن الشمس. غلافه الجوي يمتاز بالرياح العاتية الأسرع في النظام الشمسي ولونه الأزرق الداكن الساحر.' }
+        };
+
+        init();
+        animate();
+
+        function init() {
+            // 1. إنشاء المشهد والإضاءة والكاميرا
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x020208, 0.0015);
+
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 3000);
+            camera.position.set(0, 400, 700);
+            camera.lookAt(0, 0, 0);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+
+            // إضاءة محيطية خفيفة وإضاءة مركزية قوية للنظام الشمسي
+            const ambientLight = new THREE.AmbientLight(0x33334c);
+            scene.add(ambientLight);
+
+            const sunLight = new THREE.PointLight(0xffffff, 2, 1200);
+            scene.add(sunLight);
+
+            // 2. بناء المجموعات الهيكلية للمشهد
+            universeGroup = new THREE.Group();
+            milkyWayGroup = new THREE.Group();
+            andromedaGroup = new THREE.Group();
+            solarSystemGroup = new THREE.Group();
+            scene.add(universeGroup);
+
+            // وضع المجرات في مواقع متباعدة في الفضاء العام
+            milkyWayGroup.position.set(0, 0, 0);
+            andromedaGroup.position.set(600, 100, -500);
+            universeGroup.add(milkyWayGroup);
+            universeGroup.add(andromedaGroup);
+
+            // 3. بناء العناصر الفنية (النجوم، المجرات، الكواكب)
+            createGlobalStarfield();
+            buildGalaxy(milkyWayGroup, 0x00e5ff, 0xff00ff, 'milkyway');
+            buildGalaxy(andromedaGroup, 0x7f00ff, #ffaa00, 'andromeda');
+            buildSolarSystem();
+
+            // تفعيل مستشعرات التفاعل واللمس
+            window.addEventListener('click', onDocumentClick);
+            window.addEventListener('touchstart', onDocumentTouch);
+            window.addEventListener('resize', onWindowResize);
+
+            // إخفاء شاشة التحميل بعد بناء البيئة بالكامل
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = 0;
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 1000);
+            }, 1200);
+        }
+
+        // بناء خلفية النجوم العامة العشوائية المتلألئة
+        function createGlobalStarfield() {
+            const starsGeometry = new THREE.BufferGeometry();
+            const starsCount = 8000;
+            const positions = new Float32Array(starsCount * 3);
+
+            for(let i=0; i<starsCount*3; i+=3) {
+                positions[i] = (Math.random() - 0.5) * 2500;
+                positions[i+1] = (Math.random() - 0.5) * 2000;
+                positions[i+2] = (Math.random() - 0.5) * 2500;
+            }
+            starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const starsMaterial = new THREE.PointsMaterial({color: 0xffffff, size: 0.8, transparent: true, opacity: 0.8});
+            const starfield = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(starfield);
+        }
+
+        // بناء مجرة حلزونية تعتمد على نظام الرياضيات الجزيئية الرائع
+        function buildGalaxy(group, innerColor, outerColor, nameKey) {
+            const particleCount = 15000;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+
+            const colorInner = new THREE.Color(innerColor);
+            const colorOuter = new THREE.Color(outerColor);
+
+            for (let i = 0; i < particleCount; i++) {
+                // حسابات التوزيع الحلزوني والأذرع المجرية
+                const r = Math.pow(Math.random(), 2.5) * 160; 
+                const arms = 4;
+                const armIndex = i % arms;
+                const angle = ((armIndex / arms) * Math.PI * 2) + (r * 0.04);
+
+                const randomX = (Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1)) * 12;
+                const randomY = (Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1)) * 8;
+                const randomZ = (Math.pow(Math.random(), 3) * (Math.random() < 0.5 ? 1 : -1)) * 12;
+
+                positions[i * 3] = Math.cos(angle) * r + randomX;
+                positions[i * 3 + 1] = randomY;
+                positions[i * 3 + 2] = Math.sin(angle) * r + randomZ;
+
+                // مزج وتدرج الألوان بشكل انسيابي من المركز للأطراف
+                const mixedColor = colorInner.clone();
+                mixedColor.lerp(colorOuter, r / 160);
+                colors[i * 3] = mixedColor.r;
+                colors[i * 3 + 1] = mixedColor.g;
+                colors[i * 3 + 2] = mixedColor.b;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.95,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.85,
+                blending: THREE.AdditiveBlending
+            });
+
+            const galaxyParticles = new THREE.Points(geometry, material);
+            group.add(galaxyParticles);
+
+            // إنشاء مجسم مركزي غير مرئي لخدمة نظام النقر الحسي بدقة
+            const coreGeo = new THREE.SphereGeometry(25, 16, 16);
+            const coreMat = new THREE.MeshBasicMaterial({ visible: false });
+            const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+            coreMesh.userData = { type: 'GALAXY', name: nameKey, group: group };
+            group.add(coreMesh);
+            galaxies.push(coreMesh);
+        }
+
+        // بناء النظام الشمسي التفصيلي داخل درب التبانة
+        function buildSolarSystem() {
+            milkyWayGroup.add(solarSystemGroup);
+
+            // 1. إضافة الشمس المتوهجة بمركز النظام
+            const sunGeo = new THREE.SphereGeometry(14, 32, 32);
+            const sunMat = new THREE.MeshBasicMaterial({ color: 0xffdd44 });
+            const sun = new THREE.Mesh(sunGeo, sunMat);
+            sun.userData = { type: 'PLANET', name: 'sun', targetPos: new THREE.Vector3(0,30,50) };
+            solarSystemGroup.add(sun);
+            planets.push(sun);
+
+            // 2. مصفوفة بيانات الكواكب التفصيلية (المسافة، الحجم، اللون، سرعة المدار)
+            const planetSpecs = [
+                { name: 'mercury', dist: 30, size: 1.5, color: 0x888888, speed: 0.03 },
+                { name: 'venus', dist: 45, size: 2.8, color: 0xe3bb76, speed: 0.02 },
+                { name: 'earth', dist: 65, size: 3.2, color: 0x2233ff, speed: 0.015 },
+                { name: 'mars', dist: 85, size: 2.0, color: 0xc1440e, speed: 0.012 },
+                { name: 'jupiter', dist: 120, size: 8.5, color: 0xd8ca9d, speed: 0.007 },
+                { name: 'saturn', dist: 160, size: 7.0, color: 0xe2bf7d, speed: 0.005, hasRings: true },
+                { name: 'uranus', dist: 200, size: 4.5, color: 0x4b70dd, speed: 0.003 },
+                { name: 'neptune', dist: 240, size: 4.2, color: 0x274687, speed: 0.002 }
+            ];
+
+            planetSpecs.forEach(spec => {
+                const pivot = new THREE.Group();
+                solarSystemGroup.add(pivot);
+
+                // بناء مجسم الكوكب الفعلي
+                const geom = new THREE.SphereGeometry(spec.size, 32, 32);
+                const mat = new THREE.MeshStandardMaterial({ color: spec.color, roughness: 0.7 });
+                const mesh = new THREE.Mesh(geom, mat);
+                mesh.position.x = spec.dist;
+                
+                // حفظ البيانات التعريفية لتسهيل جلبها عند الضغط واللمس
+                mesh.userData = { 
+                    type: 'PLANET', 
+                    name: spec.name, 
+                    pivot: pivot, 
+                    dist: spec.dist,
+                    targetPos: new THREE.Vector3(spec.dist, spec.size * 3, spec.size * 4)
+                };
+
+                // رسم خطوط المدارات الدائرية الخفيفة للتوضيح الجمالي
+                const orbitGeo = new THREE.BufferGeometry();
+                const points = [];
+                for(let j=0; j<=64; j++) {
+                    let theta = (j/64) * Math.PI * 2;
+                    points.push(new THREE.Vector3(Math.cos(theta)*spec.dist, 0, Math.sin(theta)*spec.dist));
+                }
+                orbitGeo.setFromPoints(points);
+                const orbitMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.05 });
+                const orbitLine = new THREE.Line(orbitGeo, orbitMat);
+                solarSystemGroup.add(orbitLine);
+
+                // إضافة الحلقات الرائعة لكوكب زحل
+                if (spec.hasRings) {
+                    const ringGeo = new THREE.RingGeometry(spec.size * 1.4, spec.size * 2.3, 32);
+                    const ringMat = new THREE.MeshBasicMaterial({ color: 0xa68a53, side: THREE.DoubleSide, transparent: true, opacity: 0.5 });
+                    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+                    ringMesh.rotation.x = Math.PI / 2;
+                    mesh.add(ringMesh);
+                }
+
+                pivot.add(mesh);
+                planets.push(mesh);
+            });
+
+            // إخفاء النظام الشمسي في البداية لكي لا يشوه منظر المجرة الخارجي
+            solarSystemGroup.visible = false;
+        }
+
+        // تفاعلات اللمس وأجهزة الجوال والتابلت
+        function onDocumentTouch(event) {
+            if(event.touches.length === 1) {
+                mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
+                checkIntersections();
+            }
+        }
+
+        function onDocumentClick(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            checkIntersections();
+        }
+
+        // رصد التقاطعات والأجرام المحددة بواسطة Raycasting الحسي
+        function checkIntersections() {
+            raycaster.setFromCamera(mouse, camera);
+            
+            if (currentView === 'UNIVERSE') {
+                const intersects = raycaster.intersectObjects(galaxies);
+                if (intersects.length > 0) {
+                    zoomToGalaxy(intersects[0].object.userData);
+                }
+            } else if (currentView === 'GALAXY' || currentView === 'PLANET') {
+                const intersects = raycaster.intersectObjects(planets);
+                if (intersects.length > 0) {
+                    zoomToPlanet(intersects[0].object);
+                }
+            }
+        }
+
+        // التحريك والانتقال الذكي داخل المجرة المحددة
+        function zoomToGalaxy(galaxyData) {
+            currentView = 'GALAXY';
+            activeObject = galaxyData.group;
+            
+            document.getElementById('current-view-label').innerText = cosmicData[galaxyData.name].title;
+            document.getElementById('back-button').style.display = 'block';
+
+            // إذا دخل درب التبانة، أظهر النظام الشمسي الكامن بداخلها
+            if(galaxyData.name === 'milkyway') {
+                solarSystemGroup.visible = true;
+                gsap.to(solarSystemGroup.scale, { x: 1, y: 1, z: 1, duration: 1 });
+            }
+
+            // تحريك الكاميرا بسلاسة فائقة لمركز المجرة المختار
+            const targetPos = galaxyData.group.position;
+            gsap.to(camera.position, {
+                x: targetPos.x,
+                y: targetPos.y + 160,
+                z: targetPos.z + 240,
+                duration: 2.5,
+                ease: 'power2.inOut',
+                onUpdate: () => camera.lookAt(targetPos)
+            });
+
+            showInfoPanel(galaxyData.name);
+        }
+
+        // التحريك والانتقال التفاعلي المقرب نحو الكوكب المحدد
+        function zoomToPlanet(planetMesh) {
+            currentView = 'PLANET';
+            activeObject = planetMesh;
+            const name = planetMesh.userData.name;
+
+            document.getElementById('current-view-label').innerText = `${cosmicData['milkyway'].title} > ${cosmicData[name].title}`;
+
+            showInfoPanel(name);
+        }
+
+        // إظهار لوحة المعلومات الجانبية وتحديث محتواها النصي
+        function showInfoPanel(key) {
+            const panel = document.getElementById('info-panel');
+            document.getElementById('panel-title').innerText = cosmicData[key].title;
+            document.getElementById('panel-desc').innerText = cosmicData[key].desc;
+            panel.classList.add('active');
+        }
+
+        // معالجة الضغط على زر الرجوع خطوة للخلف في فضاء الكون
+        function handleBackClick() {
+            const panel = document.getElementById('info-panel');
+            panel.classList.remove('active');
+
+            if (currentView === 'PLANET') {
+                currentView = 'GALAXY';
+                document.getElementById('current-view-label').innerText = cosmicData['milkyway'].title;
+                // إعادة الكاميرا لوضعية المجرة الشاملة
+                gsap.to(camera.position, {
+                    x: milkyWayGroup.position.x,
+                    y: milkyWayGroup.position.y + 160,
+                    z: milkyWayGroup.position.z + 240,
+                    duration: 2,
+                    ease: 'power2.out'
+                });
+            } else if (currentView === 'GALAXY') {
+                currentView = 'UNIVERSE';
+                document.getElementById('current-view-label').innerText = 'الفضاء العام';
+                document.getElementById('back-button').style.display = 'none';
+
+                // إعادة الكاميرا للمنظور الكوني العام الشامل لكافة المجرات
+                gsap.to(camera.position, {
+                    x: 0, y: 400, z: 700,
+                    duration: 2.5,
+                    ease: 'power2.inOut',
+                    onUpdate: () => camera.lookAt(0,0,0),
+                    onComplete: () => {
+                        solarSystemGroup.visible = false;
+                    }
+                });
+            }
+        }
+
+        // محاذاة أبعاد العرض عند تغيير حجم نافذة المتصفح
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // حلقة التحديث المستمر والتحريك المداري المستقر لجميع عناصر الفضاء
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // 1. تدوير المجرات ببطء دائم لمنح شعور الحيوية الكونية
+            milkyWayGroup.rotation.y += 0.0015;
+            andromedaGroup.rotation.y -= 0.0012;
+
+            // 2. تدوير الكواكب حول الشمس وحول نفسها في حال كانت الرؤية نشطة
+            planets.forEach(planet => {
+                if(planet.userData.pivot) {
+                    // دوران الكوكب في مدار دائري حول الشمس
+                    const spec = planet.userData;
+                    // تدوير المدار بمقدار السرعة الخاصة بكل كوكب
+                    spec.pivot.rotation.y += spec.dist ? (0.15 / spec.dist) : 0.005;
+                    // تدوير الكوكب حول نفسه
+                    planet.rotation.y += 0.01;
+                }
+            });
+
+            // 3. إذا كان المستخدم يركز النظر على كوكب متحرك محدد، تتبعه الكاميرا بسلاسة في الفضاء
+            if (currentView === 'PLANET' && activeObject) {
+                const worldPos = new THREE.Vector3();
+                activeObject.getWorldPosition(worldPos);
+                
+                // وضع الكاميرا بالنسبة للموقع الديناميكي الحالي للكوكب
+                const offset = activeObject.userData.targetPos;
+                camera.position.lerp(new THREE.Vector3(worldPos.x + offset.x, worldPos.y + offset.y, worldPos.z + offset.z), 0.05);
+                camera.lookAt(worldPos);
+            } else if (currentView === 'GALAXY' && activeObject) {
+                // تتبع مركز المجرة عند الدخول فيها
+                camera.lookAt(activeObject.position);
+            } else if (currentView === 'UNIVERSE') {
+                camera.lookAt(0, 0, 0);
+            }
+
+            renderer.render(scene, camera);
+        }
+    </script>
+</body>
+</html>
