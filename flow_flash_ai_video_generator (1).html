@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Flow Flash AI - Minimal Studio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Arabic Fonts: Tajawal & Cairo for ultra-clear legible prompts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#080a0f',
+                        darkcard: '#121620',
+                        darkborder: '#1e2638',
+                        neonCyan: '#00f2fe',
+                    },
+                    fontFamily: {
+                        sans: ['Tajawal', 'sans-serif'],
+                        prompt: ['Cairo', 'Tajawal', 'sans-serif'],
+                    },
+                    animation: {
+                        'scan-line': 'scanLine 2.5s infinite linear',
+                    },
+                    keyframes: {
+                        scanLine: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(1000%)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #05070a;
+            color: #f3f4f6;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .glass-rectangle {
+            background: rgba(18, 22, 32, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .aspect-preview {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        textarea::-webkit-scrollbar {
+            width: 4px;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: #1e2638;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-3 sm:p-6">
+
+    <!-- HIDDEN / POPUP AUTO-PROMPT MODAL -->
+    <div id="autoPromptModal" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 z-50 transition-all duration-300">
+        <div class="w-full max-w-[360px] glass-rectangle rounded-2xl p-4 sm:p-5 border border-darkborder shadow-2xl space-y-3.5">
+            <div class="flex items-center justify-between pb-2 border-b border-darkborder/60">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-neonCyan text-xs"></i>
+                    <h3 class="text-xs font-black text-white">إدخال الوصف الذكي</h3>
+                </div>
+                <button onclick="closeAutoModal()" class="text-gray-400 hover:text-white text-xs p-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <p class="text-[11px] text-gray-400 leading-relaxed">
+                أدخل الوصف المبدئي هنا، وسيقوم النظام بتنسيقه وكتابته تلقائياً كلمة بكلمة في محرر الفيديو.
+            </p>
+
+            <textarea id="modalPromptInput" rows="3" 
+                class="w-full bg-darkbg border border-darkborder rounded-xl p-3 text-xs sm:text-sm font-prompt font-medium text-slate-100 placeholder-gray-500 focus:outline-none focus:border-neonCyan transition-all resize-none leading-relaxed tracking-wide"
+                placeholder="اكتب فكرة المشهد هنا..."></textarea>
+
+            <button id="modalStartBtn" onclick="startAutoTypingFlow()" 
+                class="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-slate-950 font-black text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-cyan-500/20 active:scale-[0.98]">
+                <i class="fa-solid fa-play text-[10px]"></i>
+                <span>أبدأ</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN COMPACT PROFESSIONAL CONTAINER -->
+    <main class="w-full max-w-[420px] glass-rectangle rounded-3xl p-4 sm:p-5 shadow-2xl border border-darkborder/80 flex flex-col gap-3.5 relative overflow-hidden">
+        
+        <!-- HEADER: Title & Small Control Buttons -->
+        <header class="flex items-center justify-between pb-2.5 border-b border-darkborder/60">
+            <!-- Brand Logo / Title -->
+            <div class="flex items-center gap-2 cursor-pointer" onclick="openAutoModal()" title="انقر لفتح النافذة الذكية">
+                <div class="w-7 h-7 rounded-lg bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shadow-md shadow-cyan-500/20">
+                    <i class="fa-solid fa-bolt text-slate-950 text-xs font-black"></i>
+                </div>
+                <h1 class="text-xs font-black tracking-wider text-white">FLOW FLASH</h1>
+            </div>
+
+            <!-- COMPACT SELECTORS (Aspect Ratio & Quality Buttons) -->
+            <div class="flex items-center gap-2">
+                <button onclick="openAutoModal()" title="إدخال وصف تلقائي" class="w-7 h-7 rounded-lg bg-darkcard hover:bg-darkborder border border-darkborder text-neonCyan flex items-center justify-center text-xs transition-all">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </button>
+
+                <!-- Small Quality Button -->
+                <button id="qualityBtn" onclick="toggleQuality()" title="تغيير جودة الفيديو" 
+                        class="px-2 py-1 rounded-lg bg-darkcard hover:bg-darkborder border border-darkborder text-[10px] text-gray-300 hover:text-amber-400 flex items-center gap-1.5 transition-all">
+                    <i class="fa-solid fa-sliders text-[10px] text-amber-400"></i>
+                    <span id="qualityLabel" class="font-bold">1080p</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- PROMPT INPUT & ACTION -->
+        <section class="space-y-2.5">
+            <!-- Textarea Prompt Field -->
+            <div class="relative">
+                <textarea id="promptField" rows="2" 
+                    class="w-full bg-darkbg border border-darkborder rounded-xl p-3 pb-8 text-xs sm:text-sm font-prompt font-medium text-slate-100 placeholder-gray-500 focus:outline-none focus:border-neonCyan focus:ring-1 focus:ring-neonCyan transition-all resize-none leading-relaxed tracking-wide max-h-48 overflow-y-auto"
+                    placeholder="اكتب وصف المشهد هنا... مثال: مدينة مستقبلية مضاءة بالنُيون ليلاً مع حركة سيارات طائرة"></textarea>
+                
+                <button onclick="quickPrompt()" title="وصف مقترح" class="absolute bottom-2 left-2 text-[10px] bg-darkcard hover:bg-darkborder border border-darkborder text-neonCyan px-2 py-0.5 rounded-md flex items-center gap-1 transition-all z-10">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>مقترح</span>
+                </button>
+            </div>
+
+            <!-- PROGRESS BAR CONTAINER (Hidden initially) -->
+            <div id="progressContainer" class="hidden space-y-1 pt-1">
+                <div class="flex justify-between text-[10px] font-bold px-0.5">
+                    <span id="loadingStep" class="text-neonCyan">جاري المعالجة...</span>
+                    <span id="progressVal" class="text-white">0%</span>
+                </div>
+                <div class="w-full h-1.5 bg-darkbg rounded-full overflow-hidden border border-darkborder/50">
+                    <div id="progressBar" class="h-full bg-gradient-to-r from-cyan-500 via-indigo-500 to-purple-500 w-0 transition-all duration-200"></div>
+                </div>
+            </div>
+
+            <!-- GENERATE BUTTON -->
+            <button id="generateBtn" onclick="runGeneration()" class="w-full py-3 rounded-xl bg-gradient-to-r from-cyan-500 via-indigo-600 to-purple-600 font-bold text-xs text-white shadow-lg shadow-cyan-500/15 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                <i id="btnIcon" class="fa-solid fa-bolt text-amber-300"></i>
+                <span id="btnText" class="text-xs font-black">توليد الفيديو</span>
+            </button>
+        </section>
+
+    </main>
+
+    <!-- LOGIC & ANIMATIONS -->
+    <script>
+        const promptField = document.getElementById('promptField');
+        const generateBtn = document.getElementById('generateBtn');
+        const btnText = document.getElementById('btnText');
+        const btnIcon = document.getElementById('btnIcon');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        const progressVal = document.getElementById('progressVal');
+        const loadingStep = document.getElementById('loadingStep');
+
+        // State Options
+        const aspectRatios = ['9:16', '16:9', '1:1'];
+        let currentRatioIdx = 0;
+
+        const qualities = ['1080p', '4K', '720p'];
+        let currentQualityIdx = 0;
+
+        // Auto Resize Textarea logic
+        function adjustPromptHeight() {
+            promptField.style.height = 'auto';
+            promptField.style.height = Math.min(promptField.scrollHeight, 200) + 'px';
+        }
+
+        promptField.addEventListener('input', adjustPromptHeight);
+
+        // --- POPUP AUTO-PROMPT FEATURE ---
+        const autoPromptModal = document.getElementById('autoPromptModal');
+        const modalPromptInput = document.getElementById('modalPromptInput');
+        const modalStartBtn = document.getElementById('modalStartBtn');
+
+        function openAutoModal() {
+            autoPromptModal.classList.remove('hidden');
+            setTimeout(() => modalPromptInput.focus(), 100);
+        }
+
+        function closeAutoModal() {
+            autoPromptModal.classList.add('hidden');
+        }
+
+        function startAutoTypingFlow() {
+            const rawText = modalPromptInput.value.trim();
+            if (!rawText) {
+                modalPromptInput.focus();
+                modalPromptInput.classList.add('border-red-500');
+                setTimeout(() => modalPromptInput.classList.remove('border-red-500'), 1000);
+                return;
+            }
+
+            // 1. Show waiting state on button
+            modalStartBtn.disabled = true;
+            modalStartBtn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles fa-spin text-xs"></i> <span>جاري التنسيق والتنظيف...</span>';
+
+            // 2. Format & clean the text automatically (trim excess spaces, fix punctuation)
+            const formattedText = rawText
+                .replace(/\s+/g, ' ')
+                .replace(/\s*([،,.!؟])\s*/g, '$1 ')
+                .trim();
+
+            // 3. Wait 2 seconds delay
+            setTimeout(() => {
+                // Hide Modal
+                closeAutoModal();
+
+                // Reset modal button state
+                modalStartBtn.disabled = false;
+                modalStartBtn.innerHTML = '<i class="fa-solid fa-play text-[10px]"></i> <span>أبدأ</span>';
+
+                // Clear main textarea
+                promptField.value = '';
+                adjustPromptHeight();
+
+                // 4. Word by word typing animation with natural smooth rhythm
+                const words = formattedText.split(' ');
+                let wordIdx = 0;
+
+                const wordTimer = setInterval(() => {
+                    if (wordIdx < words.length) {
+                        if (promptField.value.length > 0) {
+                            promptField.value += ' ' + words[wordIdx];
+                        } else {
+                            promptField.value = words[wordIdx];
+                        }
+                        adjustPromptHeight();
+                        promptField.scrollTop = promptField.scrollHeight; // Smooth continuous autoscroll
+                        wordIdx++;
+                    } else {
+                        clearInterval(wordTimer);
+                    }
+                }, 110); // Smooth typing interval per word
+            }, 2000);
+        }
+
+        // Focus modal automatically on page load
+        window.onload = function() {
+            modalPromptInput.focus();
+        };
+
+        // Toggle Aspect Ratio Function
+        function toggleRatio() {
+            currentRatioIdx = (currentRatioIdx + 1) % aspectRatios.length;
+            document.getElementById('ratioLabel').textContent = aspectRatios[currentRatioIdx];
+        }
+
+        // Toggle Quality Function
+        function toggleQuality() {
+            currentQualityIdx = (currentQualityIdx + 1) % qualities.length;
+            document.getElementById('qualityLabel').textContent = qualities[currentQualityIdx];
+        }
+
+        // Preset Prompt Suggestion
+        function quickPrompt() {
+            const prompts = [
+                "لقطة سينمائية لغابة نيون مستقبلية مع رذاذ مطر خفيف وانعكاسات ضوئية 4K",
+                "طائرة درون تحلق فوق ساحل بحري صخري أثناء غروب شمس ذهبي دافئ",
+                "سيارة رياضية تسير داخل نفق مستقبلي مع أضواء متسارعة"
+            ];
+            promptField.value = prompts[Math.floor(Math.random() * prompts.length)];
+            adjustPromptHeight();
+        }
+
+        // Generation Flow
+        let timer = null;
+        let isGenerating = false;
+
+        function runGeneration() {
+            if (isGenerating) return;
+
+            const val = promptField.value.trim();
+            if (!val) {
+                promptField.focus();
+                promptField.classList.add('border-red-500');
+                setTimeout(() => promptField.classList.remove('border-red-500'), 1200);
+                return;
+            }
+
+            isGenerating = true;
+            generateBtn.disabled = true;
+            generateBtn.classList.add('opacity-80', 'cursor-not-allowed');
+            btnIcon.className = "fa-solid fa-spinner fa-spin text-amber-300";
+            btnText.textContent = "جاري التوليد...";
+            
+            progressContainer.classList.remove('hidden');
+            progressBar.style.width = '0%';
+            progressVal.textContent = '0%';
+
+            let progress = 0;
+            const steps = [
+                { p: 30, txt: 'تحليل الوصف...' },
+                { p: 70, txt: 'رندرة الإطارات...' },
+                { p: 100, txt: 'تم التوليد بنجاح!' }
+            ];
+
+            if (timer) clearInterval(timer);
+
+            timer = setInterval(() => {
+                progress += 5;
+                if (progress > 100) progress = 100;
+
+                progressVal.textContent = `${progress}%`;
+                progressBar.style.width = `${progress}%`;
+
+                for (let s of steps) {
+                    if (progress <= s.p) {
+                        loadingStep.textContent = s.txt;
+                        break;
+                    }
+                }
+
+                if (progress >= 100) {
+                    clearInterval(timer);
+                    setTimeout(completeGeneration, 400);
+                }
+            }, 80);
+        }
+
+        function completeGeneration() {
+            isGenerating = false;
+            generateBtn.disabled = false;
+            generateBtn.classList.remove('opacity-80', 'cursor-not-allowed');
+            btnIcon.className = "fa-solid fa-check text-green-400";
+            btnText.textContent = "تم التوليد بنجاح!";
+
+            setTimeout(() => {
+                btnIcon.className = "fa-solid fa-bolt text-amber-300";
+                btnText.textContent = "توليد الفيديو";
+                progressContainer.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
