@@ -213,11 +213,24 @@
             modalStartBtn.disabled = true;
             modalStartBtn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles fa-spin text-xs"></i> <span>جاري التنسيق والتنظيف...</span>';
 
-            // 2. Format & clean the text automatically (trim excess spaces, fix punctuation)
-            const formattedText = rawText
-                .replace(/\s+/g, ' ')
-                .replace(/\s*([،,.!؟])\s*/g, '$1 ')
-                .trim();
+            // 2. Format while explicitly preserving line breaks (\n) and paragraph spaces
+            const lines = rawText.split(/\r?\n/).map(line => line.trim().replace(/[ \t]+/g, ' '));
+            const cleanedText = lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+
+            // Tokenize into words and explicit line break markers
+            const tokens = [];
+            const textLines = cleanedText.split('\n');
+            textLines.forEach((line, lineIdx) => {
+                if (lineIdx > 0) {
+                    tokens.push({ type: 'newline' });
+                }
+                if (line.length > 0) {
+                    const words = line.split(' ');
+                    words.forEach(w => {
+                        if (w.length > 0) tokens.push({ type: 'word', value: w });
+                    });
+                }
+            });
 
             // 3. Wait 2 seconds delay
             setTimeout(() => {
@@ -232,24 +245,28 @@
                 promptField.value = '';
                 adjustPromptHeight();
 
-                // 4. Word by word typing animation with natural smooth rhythm
-                const words = formattedText.split(' ');
-                let wordIdx = 0;
+                // 4. Token-by-token typing animation (preserves words and \n line breaks)
+                let tokenIdx = 0;
 
-                const wordTimer = setInterval(() => {
-                    if (wordIdx < words.length) {
-                        if (promptField.value.length > 0) {
-                            promptField.value += ' ' + words[wordIdx];
-                        } else {
-                            promptField.value = words[wordIdx];
+                const typingTimer = setInterval(() => {
+                    if (tokenIdx < tokens.length) {
+                        const token = tokens[tokenIdx];
+                        if (token.type === 'newline') {
+                            promptField.value += '\n';
+                        } else if (token.type === 'word') {
+                            if (promptField.value.length === 0 || promptField.value.endsWith('\n')) {
+                                promptField.value += token.value;
+                            } else {
+                                promptField.value += ' ' + token.value;
+                            }
                         }
                         adjustPromptHeight();
                         promptField.scrollTop = promptField.scrollHeight; // Smooth continuous autoscroll
-                        wordIdx++;
+                        tokenIdx++;
                     } else {
-                        clearInterval(wordTimer);
+                        clearInterval(typingTimer);
                     }
-                }, 110); // Smooth typing interval per word
+                }, 90); // Smooth natural typing interval
             }, 2000);
         }
 
